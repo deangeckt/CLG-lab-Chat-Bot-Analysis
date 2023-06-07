@@ -5,7 +5,7 @@ import json
 import os
 import datetime
 
-root_folder = r"../data/gpt_bot_navigator/english/"
+root_folder = r"data/gpt_bot_navigator/english/"
 version_details = {'2.1.0_p': 'Bot - navigator GPT based. the human had a 5 minutes timer',
                    '2.1.1_p': 'Bot - navigator GPT based. the human had a 7 minutes timer',}
 
@@ -69,7 +69,7 @@ map_img_col, general_info_col, nav_btns_col = st.columns([0.4,0.4,0.4])
 
 with map_img_col:
     map_idx = st.session_state.game_idx
-    image = Image.open(f"../maps/map{map_idx+1}_1.jpg")
+    image = Image.open(f"maps/map{map_idx+1}_1.jpg")
     st.image(image, width=450, caption=f'Map: {map_idx+1}')
 
 
