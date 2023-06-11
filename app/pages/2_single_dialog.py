@@ -5,9 +5,12 @@ import json
 import os
 import datetime
 
-root_folder = r"data/gpt_bot_navigator/english/"
-version_details = {'2.1.0_p': 'Bot - navigator GPT based. the human had a 5 minutes timer',
-                   '2.1.1_p': 'Bot - navigator GPT based. the human had a 7 minutes timer',}
+# root_folder = r"data/gpt_bot_navigator/english/"
+root_folder = r"data/prolific/"
+
+version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
+                   '2.1.0_p': 'GPT based navigator bot. the human had 5 minutes timer',
+                   '2.1.1_p': 'GPT based navigator bot the human had 7 minutes timer'}
 
 def read_raw_data():
     data_list = []
@@ -29,7 +32,7 @@ def read_raw_data():
 
 
 data_list = read_raw_data()
-st.set_page_config(page_title="singleDialog", page_icon="📈", layout="wide")
+st.set_page_config(page_title="singleDialog", page_icon="📈  ", layout="wide")
 st.sidebar.success("Single Dialog")
 
 
@@ -50,7 +53,6 @@ def last_call_click():
         return
     st.session_state.file_idx -= 1
     st.session_state.game_idx = 0
-
 
 def next_game_click():
     games_data = data_list[st.session_state.file_idx]['games_data']
@@ -80,10 +82,10 @@ with general_info_col:
 
     st.subheader('General info')
     st.markdown(f"Human role: {curr_game_data['config']['game_role']} 🧭")
-    st.text(f"Game time: {curr_game_data['game_time']} seconds ⌛")
-    st.text(f"Date: {call_data['date']} 📅")
-    st.text(f"Experiment: {version_details[client_version]}")
+    st.text(f"Experiment: {version_details.get(client_version, '')}")
     st.text(f"Code-switch strategy: {call_data['cs_strategy']} ")
+    st.text(f"Date: {call_data['date']} 📅")
+    st.text(f"Game time: {curr_game_data['game_time']} seconds ⌛")
     st.text(f"Client version: {client_version} ")
     st.text(f"Server Version: {call_data['server_version']} ")
     st.text(f"Prolific id: {call_data['prolific']['prolific_id']} ")
@@ -99,7 +101,6 @@ with nav_btns_col:
     with next_col:
         next_call = st.button('Next Call ⏭️️', on_click=next_call_click)
         next_game = st.button('Next Map ⏭️⏭️️', on_click=next_game_click)
-
 
 
 def render_chat():
@@ -162,10 +163,6 @@ def render_survey(dash_key: str):
                 },
             )
 
-
-
-
-
 with elements("dashboard"):
     layout = [
         # Parameters: element_identifier, x_pos, y_pos, width, height, [item properties...]
@@ -180,4 +177,3 @@ with elements("dashboard"):
         render_survey('general_survey')
         render_survey('game_survey')
         render_chat()
-

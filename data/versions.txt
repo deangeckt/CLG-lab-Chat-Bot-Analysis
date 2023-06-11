@@ -1,6 +1,0 @@
-
-client: 2.1.0.p - prolific + gpt
-server: 2.2.0.p - prolific + gpt 
-
-client: 2.1.1.p - prolific + gpt + timer changed from 5 mins to 7 mins
-

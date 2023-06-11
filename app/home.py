@@ -6,5 +6,5 @@ st.set_page_config(
     page_icon="👋",
     layout="wide"
 )
-st.write("# Welcome to Map Task Analysis! 👋")
+st.write("# Welcome to Map Task Analysis Site 👋")
 st.sidebar.success("Select a page above.")
