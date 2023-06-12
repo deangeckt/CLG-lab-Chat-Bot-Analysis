@@ -10,7 +10,7 @@ root_folder = r"data/prolific/"
 
 version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
                    '2.1.0_p': 'GPT based navigator bot. the human had 5 minutes timer',
-                   '2.1.1_p': 'GPT based navigator bot the human had 7 minutes timer'}
+                   '2.1.1_p': 'GPT based navigator bot. the human had 7 minutes timer'}
 
 def read_raw_data():
     data_list = []
