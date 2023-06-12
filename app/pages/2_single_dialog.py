@@ -66,7 +66,7 @@ def last_game_click():
     st.session_state.game_idx -= 1
 
 
-st.header(f'Call: {st.session_state.file_idx+1}/{len(data_list)}')
+st.header(f"Participant's Dialog: {st.session_state.file_idx+1}/{len(data_list)}")
 map_img_col, general_info_col, nav_btns_col = st.columns([0.4,0.4,0.4])
 
 with map_img_col:
@@ -81,7 +81,7 @@ with general_info_col:
     client_version = call_data['clinet_version']
 
     st.subheader('General info')
-    st.markdown(f"Human role: {curr_game_data['config']['game_role']} 🧭")
+    st.text(f"Human role: {curr_game_data['config']['game_role']} 🧭")
     st.text(f"Experiment: {version_details.get(client_version, '')}")
     st.text(f"Code-switch strategy: {call_data['cs_strategy']} ")
     st.text(f"Date: {call_data['date']} 📅")
@@ -96,12 +96,11 @@ with nav_btns_col:
 
     prev_col, next_col = st.columns([0.5, 0.5])
     with prev_col:
-        last_call = st.button('⏮️ Previous Call ', on_click=last_call_click)
+        last_call = st.button('⏮️ Previous Participant ', on_click=last_call_click)
         last_game = st.button('⏮️⏮️ Previous Map', on_click=last_game_click)
     with next_col:
-        next_call = st.button('Next Call ⏭️️', on_click=next_call_click)
+        next_call = st.button('Next Participant ⏭️️', on_click=next_call_click)
         next_game = st.button('Next Map ⏭️⏭️️', on_click=next_game_click)
-
 
 def render_chat():
     curr_chat = data_list[st.session_state.file_idx]['games_data'][st.session_state.game_idx]['chat']
@@ -142,7 +141,10 @@ def render_survey(dash_key: str):
     call_data = data_list[st.session_state.file_idx]
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
 
-    survey_header = 'General survey:' if dash_key == 'general_survey' else 'Game survey:'
+    map_idx = st.session_state.game_idx
+
+
+    survey_header = 'General survey:' if dash_key == 'general_survey' else f'Game survey - map: {map_idx+1}'
     survey_data = call_data['general_survey'] if dash_key == 'general_survey' else curr_game_data['survey']
 
     with mui.Paper(key=dash_key, sx={
