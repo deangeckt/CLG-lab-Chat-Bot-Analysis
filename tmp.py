@@ -4,6 +4,7 @@ import json
 import os
 import altair as alt
 from collections import defaultdict
+import datetime
 
 root_folder = r"data/prolific/"
 version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
@@ -13,8 +14,6 @@ version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
 experiments_short_names = {'2.1.0_0_p': 'rb navigator',
                            '2.1.0_p': 'GPT navigator, 5',
                            '2.1.1_p': 'GPT navigator, 7'}
-
-#TODO: select questions:
 
 def read_games_data():
     agg_data = defaultdict(lambda : defaultdict(list))
@@ -52,6 +51,53 @@ def read_games_data():
         "Mean": flat_mean_ans,
         "Median": flat_median_ans
     }), samples
+
+
+def get_ex_date(data):
+    game_data = data['games_data'][0]
+    chat_ele = game_data['chat'][0]
+    timestamp = chat_ele['timestamp']
+    date_obj = datetime.datetime.fromtimestamp(timestamp / 1000.0)
+    return date_obj.strftime("%D")
+
+def get_human_role(data):
+    game_data = data['games_data'][0]
+    return game_data['config']['game_role']
+
+
+def read_general_data() -> tuple[pd.DataFrame, dict]:
+    agg_data = defaultdict(lambda : defaultdict(list))
+    count = defaultdict(int)
+    more_data = defaultdict(lambda : defaultdict(dict))
+
+    for file_name in os.listdir(root_folder):
+        json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
+        data = json.load(json_file)
+
+        client_version = data['clinet_version']
+        experiment = experiments_short_names.get(client_version, 'err')
+        count[experiment] += 1
+        more_data[experiment]['date'] = get_ex_date(data)
+        more_data[experiment]['huamn_role'] = get_human_role(data)
+
+
+        for qa in data['general_survey']:
+            question = qa['question']
+            answer = qa['answer']
+            if type(answer) == int:
+                agg_data[experiment][question].append(answer)
+            elif question == 'Age:':
+                agg_data[experiment]['Age'].append(int(answer))
+
+    for ex in more_data:
+        more_data[ex]['participants'] = count[ex]
+
+
+    # df = agg_dict_data_to_df(agg_data)
+    return df, more_data
+
+
+general_data, general_more_data = read_general_data()
 
 
 data, game_samples = read_games_data()

@@ -1,5 +1,3 @@
-from typing import Tuple, Dict
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -7,6 +5,7 @@ import json
 import os
 import altair as alt
 from collections import defaultdict
+import datetime
 
 
 root_folder = r"data/prolific/"
@@ -17,6 +16,12 @@ version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
 experiments_short_names = {'2.1.0_0_p': 'rb navigator',
                            '2.1.0_p': 'GPT navigator, 5',
                            '2.1.1_p': 'GPT navigator, 7'}
+
+time_success_metric = {'2.1.0_0_p': 300,
+                       '2.1.0_p': 300,
+                       '2.1.1_p': 420
+                    }
+
 
 default_rating_range = 'not at all: 0 -> extremely: 100'
 rating_likely_range = 'not at all likely: 0 -> extremely likely: 100'
@@ -65,6 +70,8 @@ def agg_dict_data_to_df(agg_data: dict):
 
 def read_games_data() -> tuple[pd.DataFrame, dict]:
     agg_data = defaultdict(lambda : defaultdict(list))
+    agg_time = defaultdict(list)
+    agg_time_success = defaultdict(list)
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
@@ -72,24 +79,49 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
         client_version = data['clinet_version']
         experiment = experiments_short_names.get(client_version, 'err')
 
+        # human_role = get_human_role(data)
+
         for game_data in data['games_data']:
+            game_time = game_data['game_time']
+            agg_time[experiment].append(game_time)
+
+            max_game_time = time_success_metric.get(client_version, 'err')
+            is_time_success = 1 if game_time < max_game_time else 0
+            agg_time_success[experiment].append(is_time_success)
+
             for qa in game_data['survey']:
                 question = qa['question']
                 answer = qa['answer']
                 agg_data[experiment][question].append(answer)
 
-    samples = {}
+    more_data = defaultdict(lambda : defaultdict(dict))
     for exp in agg_data:
         for question in agg_data[exp]:
-            samples[exp] = len(agg_data[exp][question])
-
+            more_data[exp]['samples'] = len(agg_data[exp][question])
+        more_data[exp]['game_time_mean'] = np.mean(agg_time[exp])
+        more_data[exp]['game_time_median'] = np.median(agg_time[exp])
+        more_data[exp]['game_time_success'] = f'{np.count_nonzero(agg_time_success[exp])}'
 
     df = agg_dict_data_to_df(agg_data)
-    return df, samples
+    return df, more_data
+
+def get_ex_date(data):
+    game_data = data['games_data'][0]
+    chat_ele = game_data['chat'][0]
+    timestamp = chat_ele['timestamp']
+    date_obj = datetime.datetime.fromtimestamp(timestamp / 1000.0)
+    return date_obj.strftime("%D")
+
+def get_human_role(data):
+    game_data = data['games_data'][0]
+    return game_data['config']['game_role']
+
+
 
 def read_general_data() -> tuple[pd.DataFrame, dict]:
     agg_data = defaultdict(lambda : defaultdict(list))
-    more_data = defaultdict(lambda : defaultdict(int))
+    count = defaultdict(int)
+    more_data = defaultdict(lambda : defaultdict(dict))
 
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
@@ -97,7 +129,9 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
 
         client_version = data['clinet_version']
         experiment = experiments_short_names.get(client_version, 'err')
-        more_data[experiment]['participants'] += 1
+        count[experiment] += 1
+        more_data[experiment]['date'] = get_ex_date(data)
+        more_data[experiment]['human_role'] = get_human_role(data)
 
         for qa in data['general_survey']:
             question = qa['question']
@@ -106,6 +140,9 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
                 agg_data[experiment][question].append(answer)
             elif question == 'Age:':
                 agg_data[experiment]['Age'].append(int(answer))
+
+    for ex in more_data:
+        more_data[ex]['participants'] = count[ex]
 
 
     df = agg_dict_data_to_df(agg_data)
@@ -127,15 +164,20 @@ def plot_chart(data, title, cols):
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
 st.sidebar.success("Dashboard")
 
-games_data, game_samples = read_games_data()
+games_data, game_more_data = read_games_data()
 general_data, general_more_data = read_general_data()
 
 ex_details = {}
 for key in experiments_short_names:
     name_key = experiments_short_names[key]
     ex_details[name_key] = {'details': version_details[key],
-                            'map samples': game_samples[name_key],
-                            'participants': general_more_data[name_key]['participants']
+                            'human role': general_more_data[name_key]['human_role'],
+                            'participants': general_more_data[name_key]['participants'],
+                            'date': general_more_data[name_key]['date'],
+                            'mean game time [S]': game_more_data[name_key]['game_time_mean'],
+                            'median game time [S]': game_more_data[name_key]['game_time_median'],
+                            'number of games': game_more_data[name_key]['samples'],
+                            'games finished before time is over [%]': game_more_data[name_key]['game_time_success']
                             }
 display_details_table = pd.DataFrame.from_dict(ex_details)
 
