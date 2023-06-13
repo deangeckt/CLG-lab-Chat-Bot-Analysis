@@ -79,8 +79,6 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
         client_version = data['clinet_version']
         experiment = experiments_short_names.get(client_version, 'err')
 
-        # human_role = get_human_role(data)
-
         for game_data in data['games_data']:
             game_time = game_data['game_time']
             agg_time[experiment].append(game_time)
@@ -177,7 +175,7 @@ for key in experiments_short_names:
                             'mean game time [S]': game_more_data[name_key]['game_time_mean'],
                             'median game time [S]': game_more_data[name_key]['game_time_median'],
                             'number of games': game_more_data[name_key]['samples'],
-                            'games finished before time is over [%]': game_more_data[name_key]['game_time_success']
+                            'games finished before time is over': game_more_data[name_key]['game_time_success']
                             }
 display_details_table = pd.DataFrame.from_dict(ex_details)
 

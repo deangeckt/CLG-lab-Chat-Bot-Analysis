@@ -5,7 +5,6 @@ import json
 import os
 import datetime
 
-# root_folder = r"data/gpt_bot_navigator/english/"
 root_folder = r"data/prolific/"
 
 version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
@@ -32,7 +31,7 @@ def read_raw_data():
 
 
 data_list = read_raw_data()
-st.set_page_config(page_title="singleDialog", page_icon="📈  ", layout="wide")
+st.set_page_config(page_title="singleDialog", page_icon="📈", layout="wide")
 st.sidebar.success("Single Dialog")
 
 
