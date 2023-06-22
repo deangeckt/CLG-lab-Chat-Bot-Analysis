@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_elements import dashboard, mui, elements, html
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import json
 import os
 import datetime
@@ -9,7 +9,8 @@ root_folder = r"data/prolific/"
 
 version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
                    '2.1.0_p': 'GPT based navigator bot. the human had 5 minutes timer',
-                   '2.1.1_p': 'GPT based navigator bot. the human had 7 minutes timer'}
+                   '2.1.1_p': 'GPT based navigator bot. the human had 7 minutes timer',
+                   '2.2.2_p': 'GPT based instructor bot. the human had 7 minutes timer'}
 
 def read_raw_data():
     data_list = []
@@ -17,6 +18,7 @@ def read_raw_data():
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
         for game_data in data['games_data']:
+            # fix chat times
             chat = game_data['chat']
             for chat_ele in chat:
                 timestamp = chat_ele['timestamp']
@@ -68,10 +70,46 @@ def last_game_click():
 st.header(f"Participant's Dialog: {st.session_state.file_idx+1}/{len(data_list)}")
 map_img_col, general_info_col, nav_btns_col = st.columns([0.4,0.4,0.4])
 
+def draw_nav_path(im, user_path: list, map_idx: int):
+    font_size = 50 if map_idx == 2 else 100
+    fnt = ImageFont.truetype("font/arial.ttf", font_size)
+    rows = 18
+    cols = 24
+
+    draw = ImageDraw.Draw(im)
+    width, height = im.size
+    col_size = width / cols
+    row_size = height / rows
+    for idx, user_coord in enumerate(user_path):
+
+        if idx % 4 == 0:
+            color = 'white'
+        elif idx % 4 == 1:
+            color = 'red'
+        elif idx % 4 == 2:
+            color = 'cyan'
+        else:
+            color = (124,252,0)
+
+        row = user_coord['r']
+        col = user_coord['c']
+        text = f'{idx+1}'
+        x = col_size * col
+        y = row_size * row
+        draw.text((x, y), text, font=fnt, fill=color)
+
 with map_img_col:
     map_idx = st.session_state.game_idx
     image = Image.open(f"maps/map{map_idx+1}_1.jpg")
-    st.image(image, width=450, caption=f'Map: {map_idx+1}')
+
+    call_data = data_list[st.session_state.file_idx]
+    curr_game_data = call_data['games_data'][st.session_state.game_idx]
+    img_width = 450
+    if curr_game_data['config']['game_role'] == 'navigator':
+        draw_nav_path(image, curr_game_data['user_map_path'], map_idx)
+        img_width = 550
+
+    st.image(image, width=img_width, caption=f'Map: {map_idx+1}')
 
 
 with general_info_col:
@@ -102,7 +140,10 @@ with nav_btns_col:
         next_game = st.button('Next Map ⏭️⏭️️', on_click=next_game_click)
 
 def render_chat():
-    curr_chat = data_list[st.session_state.file_idx]['games_data'][st.session_state.game_idx]['chat']
+    curr_game_data = data_list[st.session_state.file_idx]['games_data'][st.session_state.game_idx]
+    curr_chat = curr_game_data['chat']
+    is_nav = curr_game_data['config']['game_role'] == 'navigator'
+
     with mui.Paper(key="dialog", sx={
                 "display": 'flex',
                 "flexDirection": 'column',
@@ -112,11 +153,18 @@ def render_chat():
                 side = 'flex-end' if chat_ele['id'] == 'navigator' else 'flex-start'
                 textAlign = 'end' if chat_ele['id'] == 'navigator' else 'start'
                 bg_color = 'rgb(72, 70, 68)' if chat_ele['id'] == 'navigator' else 'rgb(63, 81, 181)'
+                chat_map_path_idx = ''
+                if is_nav and chat_ele['id'] == 'navigator':
+                    coord = chat_ele['curr_nav_cell']
+                    chat_map_path_idx = curr_game_data['user_map_path'].index(coord) + 1
+                    chat_map_path_idx = f"path idx: {chat_map_path_idx}"
                 html.div(
                     html.div(
                         html.p(f"{chat_ele['id']}: ", css={'fontWeight':'700'}),
                         html.p(f"{chat_ele['msg']}"),
                         html.p(f"{chat_ele['time']}", css={'font-size':'14px', 'margin-bottom': '14px'}),
+                        html.p(chat_map_path_idx, css={'font-size': '14px', 'margin-bottom': '14px'}),
+
                         css={
                             "display": "flex",
                             "gap": '0.5em',
@@ -139,9 +187,7 @@ def render_chat():
 def render_survey(dash_key: str):
     call_data = data_list[st.session_state.file_idx]
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
-
     map_idx = st.session_state.game_idx
-
 
     survey_header = 'General survey:' if dash_key == 'general_survey' else f'Game survey - map: {map_idx+1}'
     survey_data = call_data['general_survey'] if dash_key == 'general_survey' else curr_game_data['survey']

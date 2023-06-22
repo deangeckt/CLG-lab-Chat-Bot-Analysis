@@ -6,6 +6,7 @@ import altair as alt
 from collections import defaultdict
 import datetime
 
+
 root_folder = r"data/prolific/"
 version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
                    '2.1.0_p': 'GPT based navigator bot. the human had 5 minutes timer',
@@ -15,107 +16,83 @@ experiments_short_names = {'2.1.0_0_p': 'rb navigator',
                            '2.1.0_p': 'GPT navigator, 5',
                            '2.1.1_p': 'GPT navigator, 7'}
 
-def read_games_data():
-    agg_data = defaultdict(lambda : defaultdict(list))
-    for file_name in os.listdir(root_folder):
-        json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
-        data = json.load(json_file)
+import sys
+from PIL import Image, ImageDraw, ImageFont
+map_idx = 2
 
-        client_version = data['clinet_version']
-        experiment = experiments_short_names.get(client_version, 'err')
+rows= 18
+cols= 24
 
-        for game_data in data['games_data']:
-            for qa in game_data['survey']:
-                question = qa['question']
-                answer = qa['answer']
-                agg_data[experiment][question].append(answer)
+user_path = [
+    {
+        "r": 3,
+        "c": 9
+    },
+    {
+        "r": 4,
+        "c": 9
+    },
+    {
+        "r": 5,
+        "c": 9
+    },
+    {
+        "r": 6,
+        "c": 9
+    },
+    {
+        "r": 7,
+        "c": 9
+    },
+    {
+        "r": 7,
+        "c": 10
+    },
+    {
+        "r": 7,
+        "c": 11
+    },
+    {
+        "r": 7,
+        "c": 12
+    },
+    {
+        "r": 7,
+        "c": 13
+    },
+    {
+        "r": 7,
+        "c": 14
+    },
+    {
+        "r": 7,
+        "c": 13
+    },
+]
 
-    flat_exp = []
-    flat_q = []
-    flat_mean_ans = []
-    flat_median_ans = []
-    samples = {}
-    for exp in agg_data:
+with Image.open(f"maps/map{map_idx+1}_1.jpg") as im:
+    fnt = ImageFont.truetype("font/arial.ttf", 40)
 
-        for question in agg_data[exp]:
-            answers = agg_data[exp][question]
-            flat_exp.append(exp)
-            flat_q.append(question)
-            flat_mean_ans.append(np.mean(answers))
-            flat_median_ans.append(np.median(answers))
-            samples[exp] = len(agg_data[exp][question])
+    draw = ImageDraw.Draw(im)
+    width, height = im.size
+    col_size = width / cols
+    row_size = height / rows
+    for idx, user_coord in enumerate(user_path):
+        color = ''
+        if idx % 4 == 0:
+            color = 'white'
+        elif idx % 4 == 1:
+            color = 'red'
+        elif idx % 4 == 2:
+            color = 'blue'
+        else:
+            color = 'orange'
+        row = user_coord['r']
+        col = user_coord['c']
+        text = f'{idx+1}'
+        x = col_size * col
+        y = row_size * row
+        draw.text((x, y), text, font=fnt, fill=color)
 
-    return pd.DataFrame({
-        "Experiment": flat_exp,
-        "Question": flat_q,
-        "Mean": flat_mean_ans,
-        "Median": flat_median_ans
-    }), samples
-
-
-def get_ex_date(data):
-    game_data = data['games_data'][0]
-    chat_ele = game_data['chat'][0]
-    timestamp = chat_ele['timestamp']
-    date_obj = datetime.datetime.fromtimestamp(timestamp / 1000.0)
-    return date_obj.strftime("%D")
-
-def get_human_role(data):
-    game_data = data['games_data'][0]
-    return game_data['config']['game_role']
-
-
-def read_general_data() -> tuple[pd.DataFrame, dict]:
-    agg_data = defaultdict(lambda : defaultdict(list))
-    count = defaultdict(int)
-    more_data = defaultdict(lambda : defaultdict(dict))
-
-    for file_name in os.listdir(root_folder):
-        json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
-        data = json.load(json_file)
-
-        client_version = data['clinet_version']
-        experiment = experiments_short_names.get(client_version, 'err')
-        count[experiment] += 1
-        more_data[experiment]['date'] = get_ex_date(data)
-        more_data[experiment]['huamn_role'] = get_human_role(data)
-
-
-        for qa in data['general_survey']:
-            question = qa['question']
-            answer = qa['answer']
-            if type(answer) == int:
-                agg_data[experiment][question].append(answer)
-            elif question == 'Age:':
-                agg_data[experiment]['Age'].append(int(answer))
-
-    for ex in more_data:
-        more_data[ex]['participants'] = count[ex]
-
-
-    # df = agg_dict_data_to_df(agg_data)
-    return df, more_data
-
-
-general_data, general_more_data = read_general_data()
-
-
-data, game_samples = read_games_data()
-
-# display_ex_details = {experiments_short_names[key]: version_details[key] for key in experiments_short_names}
-display_ex_details = {}
-for key in experiments_short_names:
-    name_key = experiments_short_names[key]
-    display_ex_details[name_key] = {'details': version_details[key], 'samples': game_samples[name_key]}
-
-df = pd.DataFrame(display_ex_details)
-
-med_games_data = data[['Experiment', 'Question', 'Median']]
-
-
-alt.Chart(data).mark_bar().encode(
-    x="Question:N",
-    y="Mean:Q",
-    xOffset="Experiment:N",
-    color="Experiment:N"
-).interactive()
+    im.show()
+    # im.save(sys.stdout, "PNG")

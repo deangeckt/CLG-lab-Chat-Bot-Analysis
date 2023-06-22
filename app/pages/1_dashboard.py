@@ -6,21 +6,22 @@ import os
 import altair as alt
 from collections import defaultdict
 import datetime
+import math
 
 
 root_folder = r"data/prolific/"
 version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
                    '2.1.0_p': 'GPT based navigator bot. the human had 5 minutes timer',
-                   '2.1.1_p': 'GPT based navigator bot. the human had 7 minutes timer'}
-
+                   '2.1.1_p': 'GPT based navigator bot. the human had 7 minutes timer',
+                   '2.2.2_p': 'GPT based instructor bot. the human had 7 minutes timer'}
 experiments_short_names = {'2.1.0_0_p': 'rb navigator',
                            '2.1.0_p': 'GPT navigator, 5',
-                           '2.1.1_p': 'GPT navigator, 7'}
-
+                           '2.1.1_p': 'GPT navigator, 7',
+                           '2.2.2_p': 'GPT instructor 7'}
 time_success_metric = {'2.1.0_0_p': 300,
                        '2.1.0_p': 300,
-                       '2.1.1_p': 420
-                    }
+                       '2.1.1_p': 420,
+                       '2.2.2_p': 420}
 
 
 default_rating_range = 'not at all: 0 -> extremely: 100'
@@ -98,7 +99,9 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
             more_data[exp]['samples'] = len(agg_data[exp][question])
         more_data[exp]['game_time_mean'] = np.mean(agg_time[exp])
         more_data[exp]['game_time_median'] = np.median(agg_time[exp])
-        more_data[exp]['game_time_success'] = f'{np.count_nonzero(agg_time_success[exp])}'
+        game_time_success_abs = np.count_nonzero(agg_time_success[exp])
+        more_data[exp]['game_time_success_abs'] = game_time_success_abs
+        more_data[exp]['game_time_success_perc'] = round((game_time_success_abs / len(agg_data[exp][question])) * 100, 2)
 
     df = agg_dict_data_to_df(agg_data)
     return df, more_data
@@ -114,7 +117,10 @@ def get_human_role(data):
     game_data = data['games_data'][0]
     return game_data['config']['game_role']
 
-
+def game_time_format(t: int):
+    mins = math.floor(t / 60)
+    sec = math.floor(t % 60)
+    return f'{mins} minutes and {sec} seconds'
 
 def read_general_data() -> tuple[pd.DataFrame, dict]:
     agg_data = defaultdict(lambda : defaultdict(list))
@@ -168,14 +174,17 @@ general_data, general_more_data = read_general_data()
 ex_details = {}
 for key in experiments_short_names:
     name_key = experiments_short_names[key]
+    if name_key not in general_more_data:
+        continue
     ex_details[name_key] = {'details': version_details[key],
                             'human role': general_more_data[name_key]['human_role'],
                             'participants': general_more_data[name_key]['participants'],
                             'date': general_more_data[name_key]['date'],
-                            'mean game time [S]': game_more_data[name_key]['game_time_mean'],
-                            'median game time [S]': game_more_data[name_key]['game_time_median'],
+                            'mean game time': game_time_format(game_more_data[name_key]['game_time_mean']),
+                            'median game time': game_time_format(game_more_data[name_key]['game_time_median']),
                             'number of games': game_more_data[name_key]['samples'],
-                            'games finished before time is over': game_more_data[name_key]['game_time_success']
+                            'number of games finished before time is over': game_more_data[name_key]['game_time_success_abs'],
+                            'percentage of games finished before time is over': f"{game_more_data[name_key]['game_time_success_perc']}%"
                             }
 display_details_table = pd.DataFrame.from_dict(ex_details)
 
