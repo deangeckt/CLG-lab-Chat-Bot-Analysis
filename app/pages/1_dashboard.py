@@ -153,6 +153,9 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
     return df, more_data
 
 def plot_chart(data, title, cols):
+    if st.session_state.selected_ex != 'all':
+        data = data.loc[data['Experiment'] == st.session_state.selected_ex]
+
     sub_data = data[cols]
     chart = alt.Chart(sub_data, title=title).mark_bar().encode(
         x="Question:N",
@@ -168,12 +171,23 @@ def plot_chart(data, title, cols):
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
 st.sidebar.success("Dashboard")
 
+if 'selected_ex' not in st.session_state:
+    st.session_state.selected_ex = 'all'
+
+
+st.subheader("Experiments")
+all_experiments = list(experiments_short_names.values())
+all_experiments.insert(0, 'all')
+st.session_state.selected_ex = st.selectbox('Choose experiment:',  tuple(all_experiments))
+
 games_data, game_more_data = read_games_data()
 general_data, general_more_data = read_general_data()
 
 ex_details = {}
 for key in experiments_short_names:
     name_key = experiments_short_names[key]
+    if name_key != st.session_state.selected_ex and st.session_state.selected_ex != 'all':
+        continue
     if name_key not in general_more_data:
         continue
     ex_details[name_key] = {'details': version_details[key],
@@ -187,8 +201,6 @@ for key in experiments_short_names:
                             'percentage of games finished before time is over': f"{game_more_data[name_key]['game_time_success_perc']}%"
                             }
 display_details_table = pd.DataFrame.from_dict(ex_details)
-
-st.subheader("Experiments")
 st.table(display_details_table)
 
 st.subheader("Game Survey")

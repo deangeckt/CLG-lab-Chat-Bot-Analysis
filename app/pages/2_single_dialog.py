@@ -11,7 +11,10 @@ version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
                    '2.1.0_p': 'GPT based navigator bot. the human had 5 minutes timer',
                    '2.1.1_p': 'GPT based navigator bot. the human had 7 minutes timer',
                    '2.2.2_p': 'GPT based instructor bot. the human had 7 minutes timer'}
-
+experiments_short_names = {'2.1.0_0_p': 'rb navigator',
+                           '2.1.0_p': 'GPT navigator, 5',
+                           '2.1.1_p': 'GPT navigator, 7',
+                           '2.2.2_p': 'GPT instructor 7'}
 def read_raw_data():
     data_list = []
     for file_name in os.listdir(root_folder):
@@ -41,10 +44,20 @@ if 'file_idx' not in st.session_state:
     st.session_state.file_idx = 0
 if 'game_idx' not in st.session_state:
     st.session_state.game_idx = 0
+if 'selected_ex' not in st.session_state:
+    st.session_state.selected_ex = 'all'
+
+def filter_data(data_ele):
+    curr_ex = st.session_state.selected_ex
+    if curr_ex == 'all':
+        return True
+    short_name = experiments_short_names[data_ele['clinet_version']]
+    return short_name == curr_ex
 
 
 def next_call_click():
-    if st.session_state.file_idx == len(data_list) - 1:
+    fdata = list(filter(filter_data, data_list))
+    if st.session_state.file_idx == len(fdata) - 1:
         return
     st.session_state.file_idx += 1
     st.session_state.game_idx = 0
@@ -56,7 +69,8 @@ def last_call_click():
     st.session_state.game_idx = 0
 
 def next_game_click():
-    games_data = data_list[st.session_state.file_idx]['games_data']
+    fdata = list(filter(filter_data, data_list))
+    games_data = fdata[st.session_state.file_idx]['games_data']
     if st.session_state.game_idx == len(games_data) - 1:
         return
     st.session_state.game_idx += 1
@@ -66,8 +80,19 @@ def last_game_click():
         return
     st.session_state.game_idx -= 1
 
+def reset():
+    st.session_state.file_idx = 0
+    st.session_state.game_idx = 0
 
-st.header(f"Participant's Dialog: {st.session_state.file_idx+1}/{len(data_list)}")
+all_experiments = list(experiments_short_names.values())
+all_experiments.insert(0, 'all')
+
+# keep in first render
+st.session_state.selected_ex = st.selectbox('Choose experiment:',  tuple(all_experiments), on_change=reset)
+
+fdata = list(filter(filter_data, data_list))
+st.header(f"Participant's Dialog: {st.session_state.file_idx+1}/{len(fdata)}")
+
 map_img_col, general_info_col, nav_btns_col = st.columns([0.4,0.4,0.4])
 
 def draw_nav_path(im, user_path: list, map_idx: int):
@@ -102,7 +127,8 @@ with map_img_col:
     map_idx = st.session_state.game_idx
     image = Image.open(f"maps/map{map_idx+1}_1.jpg")
 
-    call_data = data_list[st.session_state.file_idx]
+    # fdata = list(filter(filter_data, data_list))
+    call_data = fdata[st.session_state.file_idx]
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
     img_width = 450
     if curr_game_data['config']['game_role'] == 'navigator':
@@ -113,7 +139,8 @@ with map_img_col:
 
 
 with general_info_col:
-    call_data = data_list[st.session_state.file_idx]
+    fdata = list(filter(filter_data, data_list))
+    call_data = fdata[st.session_state.file_idx]
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
     client_version = call_data['clinet_version']
 
@@ -140,7 +167,8 @@ with nav_btns_col:
         next_game = st.button('Next Map ⏭️⏭️️', on_click=next_game_click)
 
 def render_chat():
-    curr_game_data = data_list[st.session_state.file_idx]['games_data'][st.session_state.game_idx]
+    fdata = list(filter(filter_data, data_list))
+    curr_game_data = fdata[st.session_state.file_idx]['games_data'][st.session_state.game_idx]
     curr_chat = curr_game_data['chat']
     is_nav = curr_game_data['config']['game_role'] == 'navigator'
 
@@ -185,7 +213,8 @@ def render_chat():
                 )
 
 def render_survey(dash_key: str):
-    call_data = data_list[st.session_state.file_idx]
+    fdata = list(filter(filter_data, data_list))
+    call_data = fdata[st.session_state.file_idx]
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
     map_idx = st.session_state.game_idx
 
@@ -217,7 +246,6 @@ with elements("dashboard"):
         dashboard.Item("general_survey", 0, 0, 4, 3, isDraggable=False, moved=False, isResizable=False),
         dashboard.Item("dialog", 4, 0, 6, 3, isDraggable=False, moved=False, isResizable=False),
         dashboard.Item("game_survey", 0, 6, 10, 3, isDraggable=False, moved=False, isResizable=False),
-
     ]
 
     with dashboard.Grid(layout):

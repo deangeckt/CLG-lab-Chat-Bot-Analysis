@@ -1,98 +1,47 @@
-import pandas as pd
-import numpy as np
+import streamlit as st
+from streamlit_elements import dashboard, mui, elements, html
+from PIL import Image, ImageDraw, ImageFont
 import json
 import os
-import altair as alt
-from collections import defaultdict
 import datetime
 
-
 root_folder = r"data/prolific/"
+
 version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
                    '2.1.0_p': 'GPT based navigator bot. the human had 5 minutes timer',
-                   '2.1.1_p': 'GPT based navigator bot the human had 7 minutes timer'}
-
+                   '2.1.1_p': 'GPT based navigator bot. the human had 7 minutes timer',
+                   '2.2.2_p': 'GPT based instructor bot. the human had 7 minutes timer'}
 experiments_short_names = {'2.1.0_0_p': 'rb navigator',
                            '2.1.0_p': 'GPT navigator, 5',
-                           '2.1.1_p': 'GPT navigator, 7'}
+                           '2.1.1_p': 'GPT navigator, 7',
+                           '2.2.2_p': 'GPT instructor 7'}
 
-import sys
-from PIL import Image, ImageDraw, ImageFont
-map_idx = 2
+def read_raw_data():
+    data_list = []
+    for file_name in os.listdir(root_folder):
+        json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
+        data = json.load(json_file)
+        for game_data in data['games_data']:
+            # fix chat times
+            chat = game_data['chat']
+            for chat_ele in chat:
+                timestamp = chat_ele['timestamp']
 
-rows= 18
-cols= 24
+                date_obj = datetime.datetime.fromtimestamp(timestamp / 1000.0)
+                date_of_chat = date_obj.strftime("%D")
+                chat_ele['time'] = date_obj.strftime("%H:%M:%S")
+                data['date'] = date_of_chat
 
-user_path = [
-    {
-        "r": 3,
-        "c": 9
-    },
-    {
-        "r": 4,
-        "c": 9
-    },
-    {
-        "r": 5,
-        "c": 9
-    },
-    {
-        "r": 6,
-        "c": 9
-    },
-    {
-        "r": 7,
-        "c": 9
-    },
-    {
-        "r": 7,
-        "c": 10
-    },
-    {
-        "r": 7,
-        "c": 11
-    },
-    {
-        "r": 7,
-        "c": 12
-    },
-    {
-        "r": 7,
-        "c": 13
-    },
-    {
-        "r": 7,
-        "c": 14
-    },
-    {
-        "r": 7,
-        "c": 13
-    },
-]
+        data_list.append(data)
+    return data_list
 
-with Image.open(f"maps/map{map_idx+1}_1.jpg") as im:
-    fnt = ImageFont.truetype("font/arial.ttf", 40)
 
-    draw = ImageDraw.Draw(im)
-    width, height = im.size
-    col_size = width / cols
-    row_size = height / rows
-    for idx, user_coord in enumerate(user_path):
-        color = ''
-        if idx % 4 == 0:
-            color = 'white'
-        elif idx % 4 == 1:
-            color = 'red'
-        elif idx % 4 == 2:
-            color = 'blue'
-        else:
-            color = 'orange'
-        row = user_coord['r']
-        col = user_coord['c']
-        text = f'{idx+1}'
-        x = col_size * col
-        y = row_size * row
-        draw.text((x, y), text, font=fnt, fill=color)
+def foo(data_ele):
+    curr = 'GPT instructor 7'
+    short_name = experiments_short_names[data_ele['clinet_version']]
+    return short_name == curr
 
-    im.show()
-    # im.save(sys.stdout, "PNG")
+
+data_list = read_raw_data()
+fdata = list(filter(foo, data_list))
+print(3)
