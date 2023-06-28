@@ -91,7 +91,7 @@ all_experiments.insert(0, 'all')
 st.session_state.selected_ex = st.selectbox('Choose experiment:',  tuple(all_experiments), on_change=reset)
 
 fdata = list(filter(filter_data, data_list))
-st.header(f"Participant's Dialog: {st.session_state.file_idx+1}/{len(fdata)}")
+st.header(f"Participant: {st.session_state.file_idx+1}/{len(fdata)}")
 
 map_img_col, general_info_col, nav_btns_col = st.columns([0.4,0.4,0.4])
 
@@ -130,10 +130,10 @@ with map_img_col:
     # fdata = list(filter(filter_data, data_list))
     call_data = fdata[st.session_state.file_idx]
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
-    img_width = 450
+    img_width = 500
     if curr_game_data['config']['game_role'] == 'navigator':
         draw_nav_path(image, curr_game_data['user_map_path'], map_idx)
-        img_width = 550
+        # img_width = 500
 
     st.image(image, width=img_width, caption=f'Map: {map_idx+1}')
 

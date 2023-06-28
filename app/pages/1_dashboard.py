@@ -120,7 +120,8 @@ def get_human_role(data):
 def game_time_format(t: int):
     mins = math.floor(t / 60)
     sec = math.floor(t % 60)
-    return f'{mins} minutes and {sec} seconds'
+    sec = f'{sec}' if sec >= 10 else f'0{sec}'
+    return f'{mins}:{sec}'
 
 def read_general_data() -> tuple[pd.DataFrame, dict]:
     agg_data = defaultdict(lambda : defaultdict(list))
