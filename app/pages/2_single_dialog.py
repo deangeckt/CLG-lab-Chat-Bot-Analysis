@@ -6,15 +6,18 @@ import os
 import datetime
 
 root_folder = r"data/prolific/"
-
 version_details = {'2.1.0_0_p': 'Rule Based navigator Bot',
-                   '2.1.0_p': 'GPT based navigator bot. the human had 5 minutes timer',
-                   '2.1.1_p': 'GPT based navigator bot. the human had 7 minutes timer',
-                   '2.2.2_p': 'GPT based instructor bot. the human had 7 minutes timer'}
+                   '2.1.0_p': 'GPT based navigator bot - experiment #1. the human had 5 minutes timer',
+                   '2.1.1_p': 'GPT based navigator bot - experiment #1. the human had 7 minutes timer',
+                   '2.2.2_p': 'GPT based instructor bot - experiment #1. the human had 7 minutes timer',
+                   '2.2.3_p': 'GPT based instructor bot - experiment #2. step by step prompt. the human had 7 minutes timer',
+                   }
 experiments_short_names = {'2.1.0_0_p': 'rb navigator',
-                           '2.1.0_p': 'GPT navigator, 5',
-                           '2.1.1_p': 'GPT navigator, 7',
-                           '2.2.2_p': 'GPT instructor 7'}
+                           '2.1.0_p': 'GPT navigator, 5 - #1',
+                           '2.1.1_p': 'GPT navigator, 7- #1',
+                           '2.2.2_p': 'GPT instructor, 7 - #1',
+                           '2.2.3_p': 'GPT instructor, 7 - #2',
+                           }
 def read_raw_data():
     data_list = []
     for file_name in os.listdir(root_folder):
