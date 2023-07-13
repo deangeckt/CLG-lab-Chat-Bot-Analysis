@@ -79,8 +79,8 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
 
             # dist score fot navigators
             if game_data['config']['game_role'] == 'navigator':
-                dist_score = dtw_distance(game_data['config']['map_index'],
-                                          game_data['user_map_path'])
+                dist_score = levenshtein_distance(game_data['config']['map_index'],
+                                                  game_data['user_map_path'])
             else:
                 dist_score = -1
 
@@ -206,7 +206,7 @@ for key in experiments_short_names:
                             'number of games': game_more_data[name_key]['samples'],
                             'number of games finished before time is over': game_more_data[name_key]['game_time_success_abs'],
                             'percentage of games finished before time is over': f"{game_more_data[name_key]['game_time_success_perc']}%",
-                            'mean navigator distance score': f"{game_more_data[name_key]['navigator_dist_score']}"
+                            'mean navigator levenshtein distance': f"{game_more_data[name_key]['navigator_dist_score']}"
                             }
 display_details_table = pd.DataFrame.from_dict(ex_details)
 st.table(display_details_table)

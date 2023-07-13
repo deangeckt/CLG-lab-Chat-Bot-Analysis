@@ -145,15 +145,11 @@ with general_info_col:
     st.text(f"Server Version: {call_data['server_version']} ")
     st.text(f"Prolific id: {call_data['prolific']['prolific_id']} ")
 
-
     is_nav = curr_game_data['config']['game_role'] == 'navigator'
     if is_nav:
-        dist_score = dtw_distance(st.session_state.game_idx,
-                                  curr_game_data['user_map_path'])
+        dist_score = levenshtein_distance(st.session_state.game_idx,
+                                          curr_game_data['user_map_path'])
         st.text(f"Dist Score: {dist_score} ")
-
-    # navigator score
-
 
 
 with nav_btns_col:

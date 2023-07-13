@@ -10,19 +10,44 @@ map6 = [{'r': 8, 'c': 7}, {'r': 7, 'c': 7}, {'r': 6, 'c': 7}, {'r': 5, 'c': 7}, 
 gt_maps = [map1, map2, map3, map4, map5, map6]
 
 
-def euclidean_distance(p1, p2):
-    return np.sqrt(np.sum((p1 - p2) ** 2))
+def tuple_distance(tuple1, tuple2):
+    # Calculate the Euclidean distance between two tuples
+    return ((tuple1[0] - tuple2[0]) ** 2 + (tuple1[1] - tuple2[1]) ** 2) ** 0.5
 
-def dtw_distance(map_idx, pred):
+def levenshtein_distance(map_idx: int, pred: list):
+
     gt = gt_maps[map_idx]
-    gt = np.array([(g['r'], g['c']) for g in gt])
-    pred = np.array([(p['r'], p['c']) for p in pred])
+    path1 = [(g['r'], g['c']) for g in gt]
+    path2 = [(p['r'], p['c']) for p in pred]
 
-    n = len(gt)
-    m = len(pred)
-    DTW = np.zeros((n+1, m+1))
-    for i in range(1, n+1):
-        for j in range(1, m+1):
-            dist = euclidean_distance(gt[i-1], pred[j-1])
-            DTW[i, j] = dist + min(DTW[i-1, j], DTW[i, j-1], DTW[i-1, j-1])
-    return DTW[n, m]
+    m = len(path1)
+    n = len(path2)
+
+    # Create a matrix to store the edit distances
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+
+    # Initialize the first row and column of the matrix
+    for i in range(m + 1):
+        dp[i][0] = i
+    for j in range(n + 1):
+        dp[0][j] = j
+
+    # Calculate the edit distances
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            # Calculate the cost of the current edit operation
+            cost = tuple_distance(path1[i - 1], path2[j - 1])
+
+            # Calculate the minimum edit distance
+            dp[i][j] = min(
+                dp[i - 1][j] + 1,  # Deletion
+                dp[i][j - 1] + 1,  # Insertion
+                dp[i - 1][j - 1] + cost  # Substitution
+            )
+
+    # Return the edit distance between the two paths
+    return dp[m][n]
+
+# print(levenshtein_distance(0, gt_maps[0]))
+# print(levenshtein_distance(0, []))
+# print(levenshtein_distance(0, gt_maps[1]))
