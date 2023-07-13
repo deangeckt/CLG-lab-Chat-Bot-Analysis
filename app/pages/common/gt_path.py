@@ -13,7 +13,8 @@ gt_maps = [map1, map2, map3, map4, map5, map6]
 def euclidean_distance(p1, p2):
     return np.sqrt(np.sum((p1 - p2) ** 2))
 
-def dtw_distance(gt, pred):
+def dtw_distance(map_idx, pred):
+    gt = gt_maps[map_idx]
     gt = np.array([(g['r'], g['c']) for g in gt])
     pred = np.array([(p['r'], p['c']) for p in pred])
 

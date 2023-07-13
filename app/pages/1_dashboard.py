@@ -9,6 +9,7 @@ import datetime
 import math
 
 from pages.common.versions import *
+from pages.common.gt_path import *
 
 
 default_rating_range = 'not at all: 0 -> extremely: 100'
@@ -60,6 +61,7 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
     agg_data = defaultdict(lambda : defaultdict(list))
     agg_time = defaultdict(list)
     agg_time_success = defaultdict(list)
+    agg_dist_score = defaultdict(list)
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
@@ -75,6 +77,16 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
             is_time_success = 1 if game_time < max_game_time else 0
             agg_time_success[experiment].append(is_time_success)
 
+            # dist score fot navigators
+            if game_data['config']['game_role'] == 'navigator':
+                dist_score = dtw_distance(game_data['config']['map_index'],
+                                          game_data['user_map_path'])
+            else:
+                dist_score = -1
+
+
+            agg_dist_score[experiment].append(dist_score)
+
             for qa in game_data['survey']:
                 question = qa['question']
                 answer = qa['answer']
@@ -89,6 +101,8 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
         game_time_success_abs = np.count_nonzero(agg_time_success[exp])
         more_data[exp]['game_time_success_abs'] = game_time_success_abs
         more_data[exp]['game_time_success_perc'] = round((game_time_success_abs / len(agg_data[exp][question])) * 100, 2)
+        more_data[exp]['navigator_dist_score'] = np.mean(agg_dist_score[exp])
+
 
     df = agg_dict_data_to_df(agg_data)
     return df, more_data
@@ -191,7 +205,8 @@ for key in experiments_short_names:
                             'median game time': game_time_format(game_more_data[name_key]['game_time_median']),
                             'number of games': game_more_data[name_key]['samples'],
                             'number of games finished before time is over': game_more_data[name_key]['game_time_success_abs'],
-                            'percentage of games finished before time is over': f"{game_more_data[name_key]['game_time_success_perc']}%"
+                            'percentage of games finished before time is over': f"{game_more_data[name_key]['game_time_success_perc']}%",
+                            'mean navigator distance score': f"{game_more_data[name_key]['navigator_dist_score']}"
                             }
 display_details_table = pd.DataFrame.from_dict(ex_details)
 st.table(display_details_table)

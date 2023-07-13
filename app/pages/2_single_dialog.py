@@ -5,6 +5,7 @@ import json
 import os
 import datetime
 from pages.common.versions import *
+from pages.common.gt_path import *
 
 def read_raw_data():
     data_list = []
@@ -124,7 +125,6 @@ with map_img_col:
     img_width = 500
     if curr_game_data['config']['game_role'] == 'navigator':
         draw_nav_path(image, curr_game_data['user_map_path'], map_idx)
-        # img_width = 500
 
     st.image(image, width=img_width, caption=f'Map: {map_idx+1}')
 
@@ -144,6 +144,16 @@ with general_info_col:
     st.text(f"Client version: {client_version} ")
     st.text(f"Server Version: {call_data['server_version']} ")
     st.text(f"Prolific id: {call_data['prolific']['prolific_id']} ")
+
+
+    is_nav = curr_game_data['config']['game_role'] == 'navigator'
+    if is_nav:
+        dist_score = dtw_distance(st.session_state.game_idx,
+                                  curr_game_data['user_map_path'])
+        st.text(f"Dist Score: {dist_score} ")
+
+    # navigator score
+
 
 
 with nav_btns_col:

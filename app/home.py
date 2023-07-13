@@ -7,5 +7,4 @@ st.set_page_config(
 )
 st.write("# Welcome to Map Task Analysis Site 👋")
 st.sidebar.success("Select a page above.")
-st.write('test')
 
