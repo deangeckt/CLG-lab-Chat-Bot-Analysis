@@ -20,4 +20,4 @@ time_success_metric = {'2.1.0_0_p': 300,
                        '2.2.4_p': 420
                        }
 
-root_folder = r"data/tmp/"
+root_folder = r"data/prolific/"
