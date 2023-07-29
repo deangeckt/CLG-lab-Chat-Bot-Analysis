@@ -206,7 +206,7 @@ for key in experiments_short_names:
                             'number of games': game_more_data[name_key]['samples'],
                             'number of games finished before time is over': game_more_data[name_key]['game_time_success_abs'],
                             'percentage of games finished before time is over': f"{game_more_data[name_key]['game_time_success_perc']}%",
-                            'mean navigator levenshtein distance': f"{game_more_data[name_key]['navigator_dist_score']}"
+                            'mean navigator levenshtein distance': f"{game_more_data[name_key]['navigator_dist_score']:.2f}"
                             }
 display_details_table = pd.DataFrame.from_dict(ex_details)
 st.table(display_details_table)

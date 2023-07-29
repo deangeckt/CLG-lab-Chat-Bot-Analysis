@@ -14,6 +14,10 @@ def tuple_distance(tuple1, tuple2):
     # Calculate the Euclidean distance between two tuples
     return ((tuple1[0] - tuple2[0]) ** 2 + (tuple1[1] - tuple2[1]) ** 2) ** 0.5
 
+
+def manhattan(a, b):
+    return sum(abs(val1-val2) for val1, val2 in zip(a,b))
+
 def levenshtein_distance(map_idx: int, pred: list):
 
     gt = gt_maps[map_idx]
@@ -36,7 +40,7 @@ def levenshtein_distance(map_idx: int, pred: list):
     for i in range(1, m + 1):
         for j in range(1, n + 1):
             # Calculate the cost of the current edit operation
-            cost = tuple_distance(path1[i - 1], path2[j - 1])
+            cost = manhattan(path1[i - 1], path2[j - 1])
 
             # Calculate the minimum edit distance
             dp[i][j] = min(
@@ -46,7 +50,7 @@ def levenshtein_distance(map_idx: int, pred: list):
             )
 
     # Return the edit distance between the two paths
-    return dp[m][n]
+    return dp[m][n] / len(gt)
 
 # print(levenshtein_distance(0, gt_maps[0]))
 # print(levenshtein_distance(0, []))

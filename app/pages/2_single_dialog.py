@@ -125,6 +125,7 @@ with map_img_col:
     img_width = 500
     if curr_game_data['config']['game_role'] == 'navigator':
         draw_nav_path(image, curr_game_data['user_map_path'], map_idx)
+        # draw_nav_path(image, gt_maps[map_idx], map_idx)
 
     st.image(image, width=img_width, caption=f'Map: {map_idx+1}')
 
@@ -149,7 +150,7 @@ with general_info_col:
     if is_nav:
         dist_score = levenshtein_distance(st.session_state.game_idx,
                                           curr_game_data['user_map_path'])
-        st.text(f"Dist Score: {dist_score} ")
+        st.text(f"Dist Score: {dist_score:.2f} ")
 
 
 with nav_btns_col:
