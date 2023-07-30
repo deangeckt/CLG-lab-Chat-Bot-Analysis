@@ -81,11 +81,8 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
             if game_data['config']['game_role'] == 'navigator':
                 dist_score = levenshtein_distance(game_data['config']['map_index'],
                                                   game_data['user_map_path'])
-            else:
-                dist_score = -1
+                agg_dist_score[experiment].append(dist_score)
 
-
-            agg_dist_score[experiment].append(dist_score)
 
             for qa in game_data['survey']:
                 question = qa['question']
@@ -114,7 +111,9 @@ def get_ex_date(data):
     date_obj = datetime.datetime.fromtimestamp(timestamp / 1000.0)
     return date_obj.strftime("%D")
 
-def get_human_role(data):
+def get_human_role(data, experiment):
+    if 'Alternation' in experiment:
+        return 'Alternations'
     game_data = data['games_data'][0]
     return game_data['config']['game_role']
 
@@ -137,7 +136,7 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
         experiment = experiments_short_names.get(client_version, 'err')
         count[experiment] += 1
         more_data[experiment]['date'] = get_ex_date(data)
-        more_data[experiment]['human_role'] = get_human_role(data)
+        more_data[experiment]['human_role'] = get_human_role(data, experiment)
 
         for qa in data['general_survey']:
             question = qa['question']
