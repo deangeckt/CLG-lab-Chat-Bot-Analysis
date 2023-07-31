@@ -4,7 +4,7 @@ version_details = {'2.1.0_0_p': 'Rule Based navigator Bot - experiment #1',
                    '2.2.2_p': 'GPT based instructor bot - experiment #1. the human had 7 minutes timer',
                    '2.2.3_p': 'GPT based instructor bot - experiment #2. step by step prompt. the human had 7 minutes timer',
                    '2.2.4_p': 'Ins,Nav,Ins,Nav - 4 maps. English new instructions', # +retry mechanism when calling API
-                   '2.2.5_p': 'Ins,Nav,Ins,Nav - 4 maps. Mixed new instructions'
+                   '2.2.5_p': 'Ins,Nav,Ins,Nav - 4 maps. Mixed new instructions - prolific failed to filter correct spanish'
 }
 experiments_short_names = {'2.1.0_0_p': 'RB navigator #1',
                            '2.1.0_p': 'GPT navigator #1',
