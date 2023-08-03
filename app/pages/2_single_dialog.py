@@ -137,15 +137,23 @@ with general_info_col:
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
     client_version = call_data['clinet_version']
 
+    role = curr_game_data['config']['game_role']
+    user_dialog, bot_dialog = analysis_game_chat(role, curr_game_data['chat'])
+
     st.subheader('General info')
-    st.text(f"Human role: {curr_game_data['config']['game_role']} 🧭")
-    st.text(f"Experiment: {version_details.get(client_version, '')}")
+    st.text(f"Human role: {role} 🧭")
+    st.text(f"Experiment - {experiments_short_names[client_version]}: {version_details.get(client_version, '')}")
     st.text(f"Code-switch strategy: {call_data['cs_strategy']} ")
     st.text(f"Date: {call_data['date']} 📅")
+
     st.text(f"Game time: {curr_game_data['game_time']} seconds ⌛")
-    st.text(f"Client version: {client_version} ")
-    st.text(f"Server Version: {call_data['server_version']} ")
-    st.text(f"Prolific id: {call_data['prolific']['prolific_id']} ")
+    for dialog_key in user_dialog:
+        val = f"{user_dialog[dialog_key]:.2f}" if 'mean' in dialog_key else user_dialog[dialog_key]
+        st.text(f"user - {dialog_key}: {val} 💪️")
+    for dialog_key in bot_dialog:
+        val = f"{bot_dialog[dialog_key]:.2f}" if 'mean' in dialog_key else bot_dialog[dialog_key]
+        st.text(f"bot - {dialog_key}: {val} 🦾")
+
 
     is_nav = curr_game_data['config']['game_role'] == 'navigator'
     if is_nav:
@@ -164,6 +172,15 @@ with nav_btns_col:
     with next_col:
         next_call = st.button('Next Participant ⏭️️', on_click=next_call_click)
         next_game = st.button('Next Map ⏭️⏭️️', on_click=next_game_click)
+
+    st.divider()
+    fdata = list(filter(filter_data, data_list))
+    call_data = fdata[st.session_state.file_idx]
+    client_version = call_data['clinet_version']
+
+    st.text(f"Client version: {client_version} ")
+    st.text(f"Server Version: {call_data['server_version']} ")
+    st.text(f"Prolific id: {call_data['prolific']['prolific_id']} ")
 
 def render_chat():
     fdata = list(filter(filter_data, data_list))
