@@ -101,10 +101,18 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             game_time = game_data['game_time']
             agg_meta[experiment]['game_time'].append(game_time)
             max_game_time = time_success_metric(client_version)
-            is_time_success = 1 if game_time < max_game_time else 0
+            is_time_success = 1 if int(game_time) < max_game_time else 0
             agg_meta[experiment]['is_time_success'].append(is_time_success)
 
-            # user_dialog, bot_dialog = analysis_game_chat(game_data['config']['game_role'], game_data['chat'])
+            user_dialog, bot_dialog = analysis_game_chat(game_data['config']['game_role'], game_data['chat'])
+            agg_meta[experiment]['user_num_of_uter'].append(user_dialog['number of utterances'])
+            agg_meta[experiment]['user_mean_uter'].append(user_dialog['mean utterance length'])
+            agg_meta[experiment]['user_total_uter'].append(user_dialog['total amount of tokens'])
+
+            agg_meta[experiment]['bot_num_of_uter'].append(bot_dialog['number of utterances'])
+            agg_meta[experiment]['bot_mean_uter'].append(bot_dialog['mean utterance length'])
+            agg_meta[experiment]['bot_total_uter'].append(bot_dialog['total amount of tokens'])
+
 
             for qa in game_data['survey']:
                 question = qa['question']

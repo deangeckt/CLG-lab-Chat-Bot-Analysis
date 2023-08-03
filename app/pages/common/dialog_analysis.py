@@ -11,6 +11,9 @@ def analysis_role_aux(utterances):
     avg_uter_len = np.mean(tokens_amount)
     sum_tokens = np.sum(tokens_amount)
 
+    if len(tokens_amount) == 0:
+        avg_uter_len = 0
+
     return {
         'number of utterances': len(utterances),
         'mean utterance length': avg_uter_len,
