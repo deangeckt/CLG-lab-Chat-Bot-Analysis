@@ -58,9 +58,12 @@ def agg_dict_data_to_df(agg_data: dict):
     })
 
 def read_games_data() -> tuple[pd.DataFrame, dict]:
-    agg_data = defaultdict(lambda : defaultdict(list))
-    agg_time = defaultdict(list)
-    agg_time_success = defaultdict(list)
+    agg_data = defaultdict(lambda: defaultdict(list))
+    agg_time_nav = defaultdict(list)
+    agg_time_success_nav = defaultdict(list)
+
+    agg_time_ins = defaultdict(list)
+    agg_time_success_ins = defaultdict(list)
 
     agg_dist_score = defaultdict(list)
     for file_name in os.listdir(root_folder):
@@ -71,6 +74,19 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
         experiment = experiments_short_names.get(client_version, 'err')
 
         for game_data in data['games_data']:
+            agg_time = agg_time_ins
+            agg_time_success = agg_time_success_ins
+
+            if game_data['config']['game_role'] == 'navigator':
+                dist_score = levenshtein_distance(game_data['config']['map_index'],
+                                                  game_data['user_map_path'])
+                agg_dist_score[experiment].append(dist_score)
+
+                # write to correct role
+                agg_time = agg_time_nav
+                agg_time_success = agg_time_success_nav
+
+
             game_time = game_data['game_time']
             agg_time[experiment].append(game_time)
 
@@ -78,31 +94,35 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
             is_time_success = 1 if game_time < max_game_time else 0
             agg_time_success[experiment].append(is_time_success)
 
-            # dist score fot navigators
-            if game_data['config']['game_role'] == 'navigator':
-                dist_score = levenshtein_distance(game_data['config']['map_index'],
-                                                  game_data['user_map_path'])
-                agg_dist_score[experiment].append(dist_score)
-
-
             for qa in game_data['survey']:
                 question = qa['question']
                 answer = qa['answer']
                 agg_data[experiment][question].append(answer)
 
-    more_data = defaultdict(lambda : defaultdict(dict))
+    more_data = defaultdict(lambda: defaultdict(dict))
     for exp in agg_data:
-        for question in agg_data[exp]:
-            more_data[exp]['samples'] = len(agg_data[exp][question])
+        print(exp)
 
-        # depends on humann rule
-        more_data[exp]['game_time_mean'] = np.mean(agg_time[exp])
-        more_data[exp]['game_time_median'] = np.median(agg_time[exp])
-        game_time_success_abs = np.count_nonzero(agg_time_success[exp])
-        more_data[exp]['game_time_success_abs'] = game_time_success_abs
-        more_data[exp]['game_time_success_perc'] = round((game_time_success_abs / len(agg_data[exp][question])) * 100, 2)
-        more_data[exp]['navigator_dist_score'] = np.mean(agg_dist_score[exp])
+        ins_samples = len(agg_time_ins[exp])
+        if ins_samples > 0:
+            more_data[exp]['ins_game_time_mean'] = np.mean(agg_time_ins[exp])
+            more_data[exp]['ins_game_time_median'] = np.median(agg_time_ins[exp])
+            game_time_success_abs = np.count_nonzero(agg_time_success_ins[exp])
+            more_data[exp]['ins_game_time_success_abs'] = game_time_success_abs
+            more_data[exp]['ins_game_time_success_perc'] = round((game_time_success_abs / ins_samples) * 100, 2)
+            more_data[exp]['ins_samples'] = ins_samples
 
+        nav_samples = len(agg_time_nav[exp])
+        if nav_samples > 0:
+            more_data[exp]['nav_game_time_mean'] = np.mean(agg_time_nav[exp])
+            more_data[exp]['nav_game_time_median'] = np.median(agg_time_nav[exp])
+            game_time_success_abs = np.count_nonzero(agg_time_success_nav[exp])
+            more_data[exp]['nav_game_time_success_abs'] = game_time_success_abs
+            more_data[exp]['nav_game_time_success_perc'] = round((game_time_success_abs / len(agg_time_nav[exp])) * 100, 2)
+            more_data[exp]['nav_samples'] = nav_samples
+
+            more_data[exp]['navigator_dist_score'] = np.mean(agg_dist_score[exp])
+        more_data[exp]['samples'] = nav_samples + ins_samples
 
     df = agg_dict_data_to_df(agg_data)
     return df, more_data
@@ -197,27 +217,52 @@ st.session_state.selected_ex = st.multiselect('Choose experiment:',  all_experim
 games_data, game_more_data = read_games_data()
 general_data, general_more_data = read_general_data()
 
-ex_details = {}
+
+def build_role_table_aux(name_key, role):
+   if not f'{role}_game_time_mean' in game_more_data[name_key]:
+       return {}
+
+   res = {
+        'number of games': game_more_data[name_key][f'{role}_samples'],
+        'mean game time': game_time_format(game_more_data[name_key][f'{role}_game_time_mean']),
+        'median game time': game_time_format(game_more_data[name_key][f'{role}_game_time_median']),
+        'number of games finished before time is over': game_more_data[name_key][f'{role}_game_time_success_abs'],
+        'percentage of games finished before time is over': f"{game_more_data[name_key][f'{role}_game_time_success_perc']}%"
+   }
+
+   if role == 'nav':
+       res['mean levenshtein distance'] = f"{game_more_data[name_key]['navigator_dist_score']:.2f}"
+   return res
+
+
+general_ex_details = {}
+navigator_ex_details = {}
+instructor_ex_details = {}
 for key in experiments_short_names:
     name_key = experiments_short_names[key]
     if name_key not in st.session_state.selected_ex:
         continue
     if name_key not in general_more_data:
         continue
-    ex_details[name_key] = {'details': version_details[key],
+    general_ex_details[name_key] = {'details': version_details[key],
                             'human role': general_more_data[name_key]['human_role'],
                             'participants': general_more_data[name_key]['participants'],
                             'date': general_more_data[name_key]['date'],
-                            'number of games': game_more_data[name_key]['samples'],
+                            'number of games': game_more_data[name_key]['samples']}
 
-                            'mean game time': game_time_format(game_more_data[name_key]['game_time_mean']),
-                            'median game time': game_time_format(game_more_data[name_key]['game_time_median']),
-                            'number of games finished before time is over': game_more_data[name_key]['game_time_success_abs'],
-                            'percentage of games finished before time is over': f"{game_more_data[name_key]['game_time_success_perc']}%",
-                            'mean navigator levenshtein distance': f"{game_more_data[name_key]['navigator_dist_score']:.2f}"
-                            }
-display_details_table = pd.DataFrame.from_dict(ex_details)
+    navigator_ex_details[name_key] = build_role_table_aux(name_key, 'nav')
+    instructor_ex_details[name_key] = build_role_table_aux(name_key, 'ins')
+
+display_details_table = pd.DataFrame.from_dict(general_ex_details)
 st.table(display_details_table)
+
+st.subheader("Navigator")
+nav_table = pd.DataFrame.from_dict(navigator_ex_details)
+st.table(nav_table)
+st.subheader("Instructor")
+ins_table = pd.DataFrame.from_dict(instructor_ex_details)
+st.table(ins_table)
+
 
 st.subheader("Game Survey")
 plot_chart(games_data, 'Mean', ['Question', 'Mean', 'Experiment', 'Range'])
