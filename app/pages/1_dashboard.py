@@ -61,6 +61,7 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
     agg_data = defaultdict(lambda : defaultdict(list))
     agg_time = defaultdict(list)
     agg_time_success = defaultdict(list)
+
     agg_dist_score = defaultdict(list)
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
@@ -73,7 +74,7 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
             game_time = game_data['game_time']
             agg_time[experiment].append(game_time)
 
-            max_game_time = time_success_metric.get(client_version, 'err')
+            max_game_time = time_success_metric(client_version)
             is_time_success = 1 if game_time < max_game_time else 0
             agg_time_success[experiment].append(is_time_success)
 
@@ -93,6 +94,8 @@ def read_games_data() -> tuple[pd.DataFrame, dict]:
     for exp in agg_data:
         for question in agg_data[exp]:
             more_data[exp]['samples'] = len(agg_data[exp][question])
+
+        # depends on humann rule
         more_data[exp]['game_time_mean'] = np.mean(agg_time[exp])
         more_data[exp]['game_time_median'] = np.median(agg_time[exp])
         game_time_success_abs = np.count_nonzero(agg_time_success[exp])
@@ -178,13 +181,18 @@ st.sidebar.success("Dashboard")
 
 st.subheader("Experiments")
 
-all_experiments = list(experiments_short_names.values())
 
+
+all_experiments = list(experiments_short_names.values())
+selected_started_ex = []
+for short_name in experiments_short_names:
+    if 'Alternation' in experiments_short_names[short_name]:
+        selected_started_ex.append(experiments_short_names[short_name])
 
 if 'selected_ex' not in st.session_state:
-    st.session_state.selected_ex = all_experiments
+    st.session_state.selected_ex = selected_started_ex
 
-st.session_state.selected_ex = st.multiselect('Choose experiment:',  all_experiments, all_experiments)
+st.session_state.selected_ex = st.multiselect('Choose experiment:',  all_experiments, selected_started_ex)
 
 games_data, game_more_data = read_games_data()
 general_data, general_more_data = read_general_data()
@@ -200,9 +208,10 @@ for key in experiments_short_names:
                             'human role': general_more_data[name_key]['human_role'],
                             'participants': general_more_data[name_key]['participants'],
                             'date': general_more_data[name_key]['date'],
+                            'number of games': game_more_data[name_key]['samples'],
+
                             'mean game time': game_time_format(game_more_data[name_key]['game_time_mean']),
                             'median game time': game_time_format(game_more_data[name_key]['game_time_median']),
-                            'number of games': game_more_data[name_key]['samples'],
                             'number of games finished before time is over': game_more_data[name_key]['game_time_success_abs'],
                             'percentage of games finished before time is over': f"{game_more_data[name_key]['game_time_success_perc']}%",
                             'mean navigator levenshtein distance': f"{game_more_data[name_key]['navigator_dist_score']:.2f}"
