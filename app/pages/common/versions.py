@@ -13,9 +13,9 @@ experiments_short_names = {'2.1.0_0_p': 'RB navigator #1',
                            '2.1.1_p': 'GPT navigator #2',
                            '2.2.2_p': 'GPT instructor #1',
                            '2.2.3_p': 'GPT instructor #2',
-                           '2.2.4_p': 'Alternation #1 + ENG new instructions',
-                           '2.2.5_p': 'Alternation #2 + Mixed new instructions',
-                           '2.2.6_p': 'Alternation #3 + Mixed new instructions'
+                           '2.2.4_p': 'Alternation #1',
+                           '2.2.5_p': 'Alternation #2',
+                           '2.2.6_p': 'Alternation #3'
                            }
 
 

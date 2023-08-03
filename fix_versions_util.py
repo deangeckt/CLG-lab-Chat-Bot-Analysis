@@ -15,5 +15,5 @@ def read_games_data():
         with open(f'data/tmp2/{file_name}', 'w') as f:
             json.dump(data, f)
 
-
-read_games_data()
+if __name__ == 'main':
+    read_games_data()
