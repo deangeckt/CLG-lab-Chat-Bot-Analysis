@@ -70,6 +70,7 @@ def avg_role_metadata(agg_metadata: defaultdict):
     game_time_success_abs = np.count_nonzero(agg_metadata['is_time_success'])
     res['number of games finished before time is over'] = game_time_success_abs
     res['percentage of games finished before time is over'] = f'{round((game_time_success_abs / samples) * 100, 2)}%'
+    res['how much did you enjoy in the game? [mean]'] = np.mean(agg_metadata['enjoy_game'])
     if 'dist_score' in agg_metadata:
         res['mean levenshtein distance'] = f"{np.mean(agg_metadata['dist_score']):.2f}"
     return res
@@ -107,17 +108,22 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             user_dialog, bot_dialog = analysis_game_chat(game_data['config']['game_role'], game_data['chat'])
             agg_meta[experiment]['user_num_of_uter'].append(user_dialog['number of utterances'])
             agg_meta[experiment]['user_mean_uter'].append(user_dialog['mean utterance length'])
-            agg_meta[experiment]['user_total_uter'].append(user_dialog['total amount of tokens'])
+            agg_meta[experiment]['user_total_uter'].append(user_dialog['total number of tokens'])
 
             agg_meta[experiment]['bot_num_of_uter'].append(bot_dialog['number of utterances'])
             agg_meta[experiment]['bot_mean_uter'].append(bot_dialog['mean utterance length'])
-            agg_meta[experiment]['bot_total_uter'].append(bot_dialog['total amount of tokens'])
+            agg_meta[experiment]['bot_total_uter'].append(bot_dialog['total number of tokens'])
 
 
             for qa in game_data['survey']:
                 question = qa['question']
                 answer = qa['answer']
                 agg_data[experiment][question].append(answer)
+
+                if question in ['How much did you enjoy the task?']:
+                    agg_meta[experiment]['enjoy_game'].append(answer)
+
+
 
     nav_more_data = defaultdict(lambda: defaultdict(dict))
     ins_more_data = defaultdict(lambda: defaultdict(dict))
@@ -181,6 +187,7 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
         more_data[ex]['participants'] = count[ex]
 
     df = agg_dict_data_to_df(agg_data)
+
     return df, more_data
 
 

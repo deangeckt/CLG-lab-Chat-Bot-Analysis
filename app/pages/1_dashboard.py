@@ -28,6 +28,9 @@ questions_ranges = {
     'Age': ''
 }
 
+question_to_table = ['How much did you enjoy the task?',
+                    "How successful do you think you were at completing the task?"]
+
 def get_question_range_metadata(question: str):
     if question.startswith('Please rate how likely you are to use your'): return rating_likely_range
     if question.startswith('How would you rate your fluency in your '): return knowledge_range
@@ -83,6 +86,9 @@ def avg_role_metadata(agg_metadata: defaultdict):
     res['bot - mean mean utterance length'] = mean_and_format_str(agg_metadata['bot_mean_uter'])
     res['bot - mean total number of tokens'] = mean_and_format_str(agg_metadata['bot_total_uter'])
 
+    for q in question_to_table:
+        res[f"{q} [mean]"] = mean_and_format_str(agg_metadata[q])
+
     if 'dist_score' in agg_metadata:
         res['mean levenshtein distance'] = f"{np.mean(agg_metadata['dist_score']):.2f}"
     return res
@@ -130,6 +136,9 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
                 question = qa['question']
                 answer = qa['answer']
                 agg_data[experiment][question].append(answer)
+
+                if question in question_to_table:
+                    agg_meta[experiment][question].append(answer)
 
     nav_more_data = defaultdict(lambda: defaultdict(dict))
     ins_more_data = defaultdict(lambda: defaultdict(dict))
