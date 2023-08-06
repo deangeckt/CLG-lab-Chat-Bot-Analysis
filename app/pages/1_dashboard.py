@@ -78,10 +78,10 @@ def avg_role_metadata(agg_metadata: defaultdict):
     # dialog
     res['human - mean number of utterances'] = mean_and_format_str(agg_metadata['user_num_of_uter'])
     res['human - mean mean utterance length'] = mean_and_format_str(agg_metadata['user_mean_uter'])
-    res['human - mean total amount of tokens'] = mean_and_format_str(agg_metadata['user_total_uter'])
+    res['human - mean total number of tokens'] = mean_and_format_str(agg_metadata['user_total_uter'])
     res['bot - mean number of utterances'] = mean_and_format_str(agg_metadata['bot_num_of_uter'])
     res['bot - mean mean utterance length'] = mean_and_format_str(agg_metadata['bot_mean_uter'])
-    res['bot - mean total amount of tokens'] = mean_and_format_str(agg_metadata['bot_total_uter'])
+    res['bot - mean total number of tokens'] = mean_and_format_str(agg_metadata['bot_total_uter'])
 
     if 'dist_score' in agg_metadata:
         res['mean levenshtein distance'] = f"{np.mean(agg_metadata['dist_score']):.2f}"
@@ -120,11 +120,11 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             user_dialog, bot_dialog = analysis_game_chat(game_data['config']['game_role'], game_data['chat'])
             agg_meta[experiment]['user_num_of_uter'].append(user_dialog['number of utterances'])
             agg_meta[experiment]['user_mean_uter'].append(user_dialog['mean utterance length'])
-            agg_meta[experiment]['user_total_uter'].append(user_dialog['total amount of tokens'])
+            agg_meta[experiment]['user_total_uter'].append(user_dialog['total number of tokens'])
 
             agg_meta[experiment]['bot_num_of_uter'].append(bot_dialog['number of utterances'])
             agg_meta[experiment]['bot_mean_uter'].append(bot_dialog['mean utterance length'])
-            agg_meta[experiment]['bot_total_uter'].append(bot_dialog['total amount of tokens'])
+            agg_meta[experiment]['bot_total_uter'].append(bot_dialog['total number of tokens'])
 
             for qa in game_data['survey']:
                 question = qa['question']

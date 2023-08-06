@@ -17,7 +17,7 @@ def analysis_role_aux(utterances):
     return {
         'number of utterances': len(utterances),
         'mean utterance length': avg_uter_len,
-        'total amount of tokens': sum_tokens,
+        'total number of tokens': sum_tokens,
     }
 
 
