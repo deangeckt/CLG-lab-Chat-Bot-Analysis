@@ -15,7 +15,8 @@ experiments_short_names = {'2.1.0_0_p': 'RB navigator #1',
                            '2.2.3_p': 'GPT instructor #2',
                            '2.2.4_p': 'Alternation #1',
                            '2.2.5_p': 'Alternation #2',
-                           '2.2.6_p': 'Alternation #3'
+                           '2.2.6_p': 'Alternation #3',
+                           '2.2.7_p': 'Alternation #4',
                            }
 
 
@@ -25,4 +26,4 @@ def time_success_metric(short_name: str) -> int:
     return 420
 
 
-root_folder = r"data/prolific/"
+root_folder = r"data/prolific"
