@@ -7,7 +7,8 @@ version_details = {'2.1.0_0_p': 'Rule Based navigator Bot - experiment #1',
                    '2.2.5_p': 'Ins,Nav,Ins,Nav - 4 maps. Mixed new instructions - prolific failed to filter correct spanish',
                    '2.2.6_p': 'First - Spanish, Fluent - English. Mixed new instructions. (LOC - US)',
                    '2.2.7_p': 'First - English, Fluent - Spanish. Mixed new instructions. (LOC - US)',
-                   '2.3.0_p': 'GPT 4 + informal prompts. Fluent - ES & EN. Mixed new instructions. prolific add in ES only. (LOC - US). new Navigation mechanism.',
+                   '2.3.0_p': 'GPT 4 + informal prompts. Fluent - ES || EN. Mixed new instructions. prolific add in ES only. (LOC - US). new Navigation mechanism.',
+                   '2.3.1_p': 'fix to ES only, in US'
                    }
 experiments_short_names = {'2.1.0_0_p': 'RB navigator #1',
                            '2.1.0_p': 'GPT navigator #1',
@@ -18,7 +19,8 @@ experiments_short_names = {'2.1.0_0_p': 'RB navigator #1',
                            '2.2.5_p': 'Alternation #2',
                            '2.2.6_p': 'Alternation #3',
                            '2.2.7_p': 'Alternation #4',
-                           '2.3.0_p': 'Alternation #5'
+                           '2.3.0_p': 'Alternation #5',
+                           '2.3.1_p': 'Alternation #6',
                            }
 
 
