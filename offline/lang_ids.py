@@ -1,8 +1,10 @@
+import numpy as np
 import pandas as pd
 import json
 import os
 from lingua import Language, LanguageDetectorBuilder
-
+from collections import defaultdict
+import itertools
 
 root_folder = r"../data/prolific/"
 output_folder = r'../data/prolific_lang_ids'
@@ -38,12 +40,45 @@ def run_word_lvl_cls():
         with open(os.path.join(output_folder, file_name), 'w') as f:
             json.dump(data, f)
 
-
 def print_deubg(text: str):
     print(text, pred_lang_token(text))
     for token in text.split(' '):
         print(token, pred_lang_token(token))
     print()
+
+
+def pred_lang_sentence(sentence: str):
+    """
+    still not 100% solution
+    """
+    result = detector.detect_multiple_languages_of(sentence)
+    if len(result) == 1:
+        return 'eng' if result[0].language == Language.ENGLISH else 'es'
+    else:
+        return 'mix'
+
+
+def has_switch(lst):
+    # for key, iter in itertools.groupby(lst):
+    #     print((key, len(list(iter))))
+    is_valid = {1: False, 0: False}
+    for key, iter in itertools.groupby(lst):
+        count = len(list(iter))
+        if count >= 2:
+            is_valid[key] = True
+    return all(list(is_valid.values()))
+
+
+def custom_pred_lang_sentence(sentence: str):
+    """
+    uses word-lvl predication and goes through the sequence
+    """
+    preds = [pred_lang_token(token) for token in sentence.split(' ')]
+    langs = ['eng' if p[1] == Language.ENGLISH else 'es' for p in preds]
+    binary_langs = [1 if l == 'eng' else 0 for l in langs]
+    if has_switch(binary_langs):
+        return 'mix'
+    return max(set(langs), key=langs.count)
 
 
 if __name__ == '__main__':
@@ -54,8 +89,40 @@ if __name__ == '__main__':
     print_deubg('go and make a u-turn')
     # good word-lvl cls example. bad whole sentence clf
     print_deubg('hi there! que comience el juego!!')
+    print_deubg('si debe empezar at the tent')
+    print_deubg('hola, q tal? ready to go?')
+
+    # other solution - sentence lvl
+    sents = [
+        'hi there! que comience el juego!!', # correct
+        'go and make a u-turn',
+        'hey, q tal? empezamos el juego?',
+        'hi there, empezamos?',
+        'hola, q tal? ready to go?', # mistake
+        'si debe empezar at the tent', # mistake here
+        'ok',
+        'si',
+    ]
+    print('sentence-lvl predication using multiple lang util')
+    for sentence in sents:
+        print(sentence, '->', pred_lang_sentence(sentence).upper())
+    print()
 
 
+    # sequence solution
+    print('sentence-lvl predication using Sequence counting')
+    for sentence in sents:
+        print(sentence, '->', custom_pred_lang_sentence(sentence).upper())
+    print()
+
+    # print(has_switch([1, 1, 1, 1, 0, 1, 1]))
+    # print(has_switch([1,1,1,1,1,1,1]))
+    # print(has_switch([1,1,1,0,1,1,1]))
+    # print(has_switch([1,1,1,0,0,1,1]))
+    # print(has_switch([1,1,0,0,0,0,0]))
+    # print(has_switch([1,0,0,0,0,0,0]))
+    # print(has_switch([0,0,0,0,0,1]))
+    # print(has_switch([0,0,0,0,0,1,1,0,0,0]))
 
 
 
