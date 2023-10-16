@@ -1,6 +1,8 @@
 import numpy as np
 import datetime
 
+
+
 def get_tokens(utterances: list[str]):
     return [uter.split(' ') for uter in utterances]
 
@@ -46,6 +48,8 @@ def analysis_game_chat(role: str, chat: list):
 
 if __name__ == '__main__':
     import os, json
+    from app.pages.common.versions import root_folder
+
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)

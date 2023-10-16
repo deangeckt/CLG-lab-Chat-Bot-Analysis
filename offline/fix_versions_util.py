@@ -3,7 +3,7 @@ import json
 import os
 from collections import defaultdict
 import datetime
-root_folder = r"data/tmp/"
+root_folder = r"../data/tmp/"
 
 def read_games_data():
     for file_name in os.listdir(root_folder):
@@ -15,5 +15,5 @@ def read_games_data():
         with open(f'data/tmp2/{file_name}', 'w') as f:
             json.dump(data, f)
 
-if __name__ == 'main':
+if __name__ == '__main__':
     read_games_data()

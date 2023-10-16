@@ -52,6 +52,8 @@ def levenshtein_distance(map_idx: int, pred: list):
     # Return the edit distance between the two paths
     return dp[m][n] / len(gt)
 
-# print(levenshtein_distance(0, gt_maps[0]))
-# print(levenshtein_distance(0, []))
-# print(levenshtein_distance(0, gt_maps[1]))
+
+if __name__ == '__main__':
+    print(levenshtein_distance(0, gt_maps[0]))
+    print(levenshtein_distance(0, []))
+    print(levenshtein_distance(0, gt_maps[1]))
