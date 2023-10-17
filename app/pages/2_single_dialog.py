@@ -142,11 +142,7 @@ with general_info_col:
 
     st.subheader('General info')
     st.text(f"Human role: {role} 🧭")
-    st.text(f"Experiment - {experiments_short_names[client_version]}: {version_details.get(client_version, '')}")
-    st.text(f"Code-switch strategy: {call_data['cs_strategy']} ")
-    st.text(f"Date: {call_data['date']} 📅")
 
-    st.text(f"Game time: {curr_game_data['game_time']} seconds ⌛")
     for dialog_key in user_dialog:
         val = f"{user_dialog[dialog_key]:.2f}" if 'mean' in dialog_key else user_dialog[dialog_key]
         st.text(f"user - {dialog_key}: {val} 💪️")
@@ -173,7 +169,7 @@ with nav_btns_col:
         next_call = st.button('Next Participant ⏭️️', on_click=next_call_click)
         next_game = st.button('Next Map ⏭️⏭️️', on_click=next_game_click)
 
-    st.divider()
+    # st.divider()
     fdata = list(filter(filter_data, data_list))
     call_data = fdata[st.session_state.file_idx]
     client_version = call_data['clinet_version']
@@ -181,6 +177,10 @@ with nav_btns_col:
     st.text(f"Client version: {client_version} ")
     st.text(f"Server Version: {call_data['server_version']} ")
     st.text(f"Prolific id: {call_data['prolific']['prolific_id']} ")
+    st.text(f"Experiment - {experiments_short_names[client_version]}: {version_details.get(client_version, '')}")
+    st.text(f"Date: {call_data['date']} 📅")
+    st.text(f"Code-switch strategy: {call_data['cs_strategy']} ")
+    st.text(f"Game time: {curr_game_data['game_time']} seconds ⌛")
 
 def render_chat():
     fdata = list(filter(filter_data, data_list))
@@ -206,8 +206,9 @@ def render_chat():
                     html.div(
                         html.p(f"{chat_ele['id']}: ", css={'fontWeight':'700'}),
                         html.p(f"{chat_ele['msg']}"),
-                        html.p(f"{chat_ele['time']}", css={'font-size':'14px', 'margin-bottom': '14px'}),
-                        html.p(chat_map_path_idx, css={'font-size': '14px', 'margin-bottom': '14px'}),
+                        html.p(f"{chat_ele['time']}", css={'font-size':'13px', 'margin-bottom': '14px'}),
+                        html.p(f"{chat_ele['lang']}", css={'font-size': '13px', 'margin-bottom': '14px'}),
+                        html.p(chat_map_path_idx, css={'font-size': '13px', 'margin-bottom': '14px'}),
 
                         css={
                             "display": "flex",

@@ -82,9 +82,22 @@ def avg_role_metadata(agg_metadata: defaultdict):
     res['human - mean number of utterances'] = mean_and_format_str(agg_metadata['user_num_of_uter'])
     res['human - mean mean utterance length'] = mean_and_format_str(agg_metadata['user_mean_uter'])
     res['human - mean total number of tokens'] = mean_and_format_str(agg_metadata['user_total_uter'])
+
+    res['human - mean number of eng utterances'] = mean_and_format_str(agg_metadata['user_num_of_en'])
+    res['human - mean number of es utterances'] = mean_and_format_str(agg_metadata['user_num_of_es'])
+    res['human - mean number of mixed utterances'] = mean_and_format_str(agg_metadata['user_num_of_mix'])
+    res['human - mean number of utterances-switch'] = mean_and_format_str(agg_metadata['user_num_of_uter_switch'])
+
     res['bot - mean number of utterances'] = mean_and_format_str(agg_metadata['bot_num_of_uter'])
     res['bot - mean mean utterance length'] = mean_and_format_str(agg_metadata['bot_mean_uter'])
     res['bot - mean total number of tokens'] = mean_and_format_str(agg_metadata['bot_total_uter'])
+
+    res['bot - mean number of eng utterances'] = mean_and_format_str(agg_metadata['bot_num_of_en'])
+    res['bot - mean number of es utterances'] = mean_and_format_str(agg_metadata['bot_num_of_es'])
+    res['bot - mean number of mixed utterances'] = mean_and_format_str(agg_metadata['bot_num_of_mix'])
+    res['bot - mean number of utterances-switch'] = mean_and_format_str(agg_metadata['bot_num_of_uter_switch'])
+
+
 
     for q in question_to_table:
         res[f"{q} [mean]"] = mean_and_format_str(agg_metadata[q])
@@ -128,9 +141,20 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             agg_meta[experiment]['user_mean_uter'].append(user_dialog['mean utterance length'])
             agg_meta[experiment]['user_total_uter'].append(user_dialog['total number of tokens'])
 
+            agg_meta[experiment]['user_num_of_en'].append(user_dialog['number of eng utterances'])
+            agg_meta[experiment]['user_num_of_es'].append(user_dialog['number of es utterances'])
+            agg_meta[experiment]['user_num_of_mix'].append(user_dialog['number of mix utterances'])
+            agg_meta[experiment]['user_num_of_uter_switch'].append(user_dialog['number of utterances-switch'])
+
             agg_meta[experiment]['bot_num_of_uter'].append(bot_dialog['number of utterances'])
             agg_meta[experiment]['bot_mean_uter'].append(bot_dialog['mean utterance length'])
             agg_meta[experiment]['bot_total_uter'].append(bot_dialog['total number of tokens'])
+
+            agg_meta[experiment]['bot_num_of_en'].append(bot_dialog['number of eng utterances'])
+            agg_meta[experiment]['bot_num_of_es'].append(bot_dialog['number of es utterances'])
+            agg_meta[experiment]['bot_num_of_mix'].append(bot_dialog['number of mix utterances'])
+            agg_meta[experiment]['bot_num_of_uter_switch'].append(user_dialog['number of utterances-switch'])
+
 
             for qa in game_data['survey']:
                 question = qa['question']
