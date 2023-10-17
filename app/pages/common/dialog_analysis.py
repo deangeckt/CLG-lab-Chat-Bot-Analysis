@@ -28,6 +28,8 @@ def analysis_role_aux(elements):
     keys = ['eng', 'es', 'mix']
     lang_dict = {k: 0 for k in keys}
     for lang in langs:
+        if lang == 'none':
+            continue
         lang_dict[lang] += 1
 
     lang_dict_format = {f'number of {k} utterances': lang_dict[k] for k in lang_dict}

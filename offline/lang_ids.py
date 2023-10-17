@@ -104,7 +104,7 @@ def custom_pred_lang_sentence(sentence: str):
             if sentence.endswith(end_symbol):
                 sentence = sentence[:len(sentence)-1]
         if sentence in english_words:
-            return 'en'
+            return 'eng'
         if sentence in ['.', 'jirafa', 'ya', ':(']:
             return 'none'
         if len(sentence) == 0:
@@ -112,7 +112,7 @@ def custom_pred_lang_sentence(sentence: str):
 
     if len(tokens) == 2 and tokens[0] == 'a':
         if tokens[1] in english_words:
-            return 'en'
+            return 'eng'
 
 
     preds = [pred_lang_token(token) for token in sentence.split(' ')]
@@ -126,6 +126,10 @@ def custom_pred_lang_sentence(sentence: str):
     if has_switch(binary_langs):
         return 'mix'
 
+    _, counts = np.unique(langs, return_counts=True)
+    if len(counts) > 1 and counts[0] == counts[1]:
+        return pred_lang_sentence(sentence)
+
     return max(set(langs), key=langs.count)
 
 def examples():
@@ -138,6 +142,8 @@ def examples():
     print_deubg('hello')
     # other solution - sentence lvl
     sents = [
+        'go down al la isla con el snake y ya llegastes',
+        'donde empizo',
         'human',
         'car',
         'a car',
@@ -159,7 +165,7 @@ def examples():
 
 
     # sequence solution
-    print('sentence-lvl predication using Sequence counting')
+    print('sentence-lvl predication using Sequence counting and edge cases')
     for sentence in sents:
         print(sentence, '->', custom_pred_lang_sentence(sentence).upper())
     print()
@@ -186,6 +192,6 @@ if __name__ == '__main__':
     detector = LanguageDetectorBuilder.from_languages(*languages).build()
 
 
-    # examples()
-    run_on_dataset()
+    examples()
+    # run_on_dataset()
     print(global_cs_counter)
