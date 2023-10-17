@@ -32,4 +32,4 @@ def time_success_metric(short_name: str) -> int:
     return 420
 
 
-root_folder = r"data/prolific"
+root_folder = r"data/prolific_lang_ids"
