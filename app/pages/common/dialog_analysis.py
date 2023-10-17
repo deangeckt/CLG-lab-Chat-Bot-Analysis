@@ -34,9 +34,10 @@ def analysis_role_aux(elements):
 
     num_of_uter_switch = 0
     if len(langs) > 1:
+        no_switch = ['mix', 'none']
         prev_lang = langs[0]
         for lang in langs[1:]:
-            if lang != prev_lang and lang != 'mix' and prev_lang != 'mix':
+            if lang != prev_lang and lang not in no_switch and prev_lang not in no_switch:
                 num_of_uter_switch += 1
             prev_lang = lang
 

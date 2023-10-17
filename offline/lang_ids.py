@@ -25,9 +25,9 @@ def run_on_dataset():
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
-        if os.path.exists(os.path.join(output_folder, file_name)):
-            print(f'skip: {file_name}')
-            continue
+        # if os.path.exists(os.path.join(output_folder, file_name)):
+        #     print(f'skip: {file_name}')
+        #     continue
 
         data = json.load(json_file)
         for game in data['games_data']:
@@ -48,6 +48,9 @@ def run_on_dataset():
                 chat_ele['lang'] = uter_lng
 
                 # if uter_lng == 'mix':
+                #     print(f'__{uter}__')
+                #     global_cs_counter = global_cs_counter + 1
+                # if uter_lng == 'en' and len(tokens) == 1:
                 #     print(f'__{uter}__')
                 #     global_cs_counter = global_cs_counter + 1
 
@@ -91,6 +94,27 @@ def custom_pred_lang_sentence(sentence: str):
     """
     uses word-lvl predication and goes through the sequence
     """
+
+    sentence = sentence.lower().strip()
+    tokens = sentence.split(' ')
+
+    english_words = ['hello', 'parrot', 'no', 'bomb', 'stones', 'telescope', 'human', 'car', 'tent']
+    if len(tokens) == 1:
+        for end_symbol in ['?', '.', '!', ',']:
+            if sentence.endswith(end_symbol):
+                sentence = sentence[:len(sentence)-1]
+        if sentence in english_words:
+            return 'en'
+        if sentence in ['.', 'jirafa', 'ya', ':(']:
+            return 'none'
+        if len(sentence) == 0:
+            return 'none'
+
+    if len(tokens) == 2 and tokens[0] == 'a':
+        if tokens[1] in english_words:
+            return 'en'
+
+
     preds = [pred_lang_token(token) for token in sentence.split(' ')]
     conf_preds = list(filter(lambda x: x[0] > 0.71, preds))
     if len(conf_preds) == 0:
@@ -111,9 +135,12 @@ def examples():
     print_deubg('hi there! que comience el juego!!')
     print_deubg('si debe empezar at the tent')
     print_deubg('hola, q tal? ready to go?')
-
+    print_deubg('hello')
     # other solution - sentence lvl
     sents = [
+        'human',
+        'car',
+        'a car',
         'hi there! que comience el juego!!', # correct
         'go and make a u-turn',
         'hey, q tal? empezamos el juego?',
@@ -122,6 +149,8 @@ def examples():
         'si debe empezar at the tent', # mistake here
         'ok',
         'si',
+        'parrot',
+        'hello'
     ]
     print('sentence-lvl predication using multiple lang util')
     for sentence in sents:
@@ -146,8 +175,8 @@ def examples():
 
 
 def examples2():
-    sents = ['Okay, I am at the dirt path now. I will look east and I see a campfire. What do I do next?',
-             'passing the crab and the large rock and the smaller rock. i see a shark and a ball. what do i do next?']
+    sents = ['parrot',
+             'hello']
     for sentence in sents:
         print(sentence, '->', custom_pred_lang_sentence(sentence).upper())
     print()
@@ -157,6 +186,6 @@ if __name__ == '__main__':
     detector = LanguageDetectorBuilder.from_languages(*languages).build()
 
 
-    examples2()
+    # examples()
     run_on_dataset()
     print(global_cs_counter)
