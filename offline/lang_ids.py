@@ -6,6 +6,8 @@ from lingua import Language, LanguageDetectorBuilder
 import langid
 from codeswitch.codeswitch import LanguageIdentification
 
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score
+import matplotlib.pyplot as plt
 
 def pred_token_lingua(token: str):
     lang = lingua_detector.detect_language_of(token)
@@ -35,7 +37,13 @@ def pred_sentence_via_token_lvl(sentence: str, pred_token: callable):
 def pred_sentence_bert(sentence: str):
     # https://huggingface.co/sagorsarker/codeswitch-spaeng-lid-lince
     result = lid.identify(sentence)
-    langs = ['eng' if r['entity'] == 'en' else 'es' for r in result]
+    langs = []
+    for r in result:
+        lng = r['entity']
+        if lng == 'en':
+            langs.append('eng')
+        elif lng == 'spa':
+            langs.append('es')
     return cs_clf_heuristic(langs)
 
 
@@ -74,6 +82,8 @@ def clf_map_task_dataset():
 
 def show_examples():
     sents = [
+        'Go around the bottom of teh tiger and travel accross to the island with the parrot and elephant',
+        'debe empezar',
         'go down al la isla con el snake y ya llegastes',
         'donde empizo',
         'human',
@@ -90,7 +100,6 @@ def show_examples():
         'parrot',
         'hello',
         'genial, he llegado a la isla con el tesoro',
-        'debe empezar',
     ]
 
     print('token-lvl predication using lingua')
@@ -115,11 +124,7 @@ def show_examples():
 
 
 def eval_on_custom_dataset():
-    from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-    import matplotlib.pyplot as plt
-    from sklearn.metrics import accuracy_score, precision_score
-
-    def display_(pred, title):
+    def display_and_print(pred, title):
         # cm = confusion_matrix(pred, gt, labels=labels)
         # disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
         # disp.plot()
@@ -134,7 +139,6 @@ def eval_on_custom_dataset():
 
     labels = ['eng', 'es', 'mix']
     df = pd.read_csv('cs_dataset.csv', encoding='utf-8')
-
     gt = list(df['label'])
     sentences = list(df['text'])
 
@@ -143,11 +147,21 @@ def eval_on_custom_dataset():
     lingua_sent_pred = [pred_sentence_lingua(sent) for sent in sentences]
     bert_linsec_pred = [pred_sentence_bert(sent) for sent in sentences]
 
-    display_(lingua_token_pred, 'lingua token-lvl')
-    display_(langid_token_pred, 'langid token-lvl')
-    display_(lingua_sent_pred, 'lingua sentence-lvl')
-    display_(bert_linsec_pred, 'bert-lince sentence-lvl')
+    display_and_print(lingua_token_pred, 'lingua token-lvl')
+    display_and_print(langid_token_pred, 'langid token-lvl')
+    display_and_print(lingua_sent_pred, 'lingua sentence-lvl')
+    display_and_print(bert_linsec_pred, 'bert-lince sentence-lvl')
 
+
+    # explore mistakes
+    for idx, y_pred in enumerate(bert_linsec_pred):
+        y_true = gt[idx]
+        sent = sentences[idx]
+        if y_pred != y_true:
+            print(f'gt: {y_true} pred: {y_pred} sent: {sent}')
+
+            if y_true == 'eng':
+                pred_sentence_bert(sent)
 
 
 if __name__ == '__main__':
@@ -156,7 +170,6 @@ if __name__ == '__main__':
     langid.set_languages(['en', 'es'])
     lid = LanguageIdentification('spa-eng')
 
-    # show_examples()
+    show_examples()
     eval_on_custom_dataset()
-
-    # run_on_dataset()
+    # clf_map_task_dataset()
