@@ -1,5 +1,7 @@
 import json
 import os
+
+import pandas as pd
 from lingua import Language, LanguageDetectorBuilder
 import langid
 from codeswitch.codeswitch import LanguageIdentification
@@ -46,15 +48,17 @@ def pred_sentence_lingua(sentence: str):
 
 
 def clf_map_task_dataset():
+    # TODO: remove *finished* token
+
     root_folder = r"../data/prolific/"
     output_folder = r'../data/prolific_lang_ids'
 
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
-        # if os.path.exists(os.path.join(output_folder, file_name)):
-        #     print(f'skip: {file_name}')
-        #     continue
+        if os.path.exists(os.path.join(output_folder, file_name)):
+            print(f'skip: {file_name}')
+            continue
 
         data = json.load(json_file)
         for game in data['games_data']:
@@ -64,8 +68,8 @@ def clf_map_task_dataset():
                 uter_lng = pred_sentence_bert(uter)
                 chat_ele['lang'] = uter_lng
 
-        # with open(os.path.join(output_folder, file_name), 'w') as f:
-        #     json.dump(data, f)
+        with open(os.path.join(output_folder, file_name), 'w') as f:
+            json.dump(data, f)
 
 
 def show_examples():
@@ -110,14 +114,49 @@ def show_examples():
     print()
 
 
+def eval_on_custom_dataset():
+    from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+    import matplotlib.pyplot as plt
+    from sklearn.metrics import accuracy_score, precision_score
+
+    def display_(pred, title):
+        # cm = confusion_matrix(pred, gt, labels=labels)
+        # disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+        # disp.plot()
+        # plt.title(title)
+        # plt.show()
+
+        print(title)
+        prec = precision_score(gt, y_pred=pred, average='weighted')
+        print(f'accuracy: {accuracy_score(gt, y_pred=pred)}')
+        print(f'precision: {prec}')
+        print()
+
+    labels = ['eng', 'es', 'mix']
+    df = pd.read_csv('cs_dataset.csv', encoding='utf-8')
+
+    gt = list(df['label'])
+    sentences = list(df['text'])
+
+    lingua_token_pred = [pred_sentence_via_token_lvl(sent, pred_token_lingua) for sent in sentences]
+    langid_token_pred = [pred_sentence_via_token_lvl(sent, pred_token_langid) for sent in sentences]
+    lingua_sent_pred = [pred_sentence_lingua(sent) for sent in sentences]
+    bert_linsec_pred = [pred_sentence_bert(sent) for sent in sentences]
+
+    display_(lingua_token_pred, 'lingua token-lvl')
+    display_(langid_token_pred, 'langid token-lvl')
+    display_(lingua_sent_pred, 'lingua sentence-lvl')
+    display_(bert_linsec_pred, 'bert-lince sentence-lvl')
+
+
+
 if __name__ == '__main__':
     languages = [Language.ENGLISH, Language.SPANISH]
     lingua_detector = LanguageDetectorBuilder.from_languages(*languages).build()
-
     langid.set_languages(['en', 'es'])
-
     lid = LanguageIdentification('spa-eng')
 
-    show_examples()
+    # show_examples()
+    eval_on_custom_dataset()
 
     # run_on_dataset()
