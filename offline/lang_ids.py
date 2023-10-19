@@ -102,6 +102,14 @@ def show_examples():
         'genial, he llegado a la isla con el tesoro',
     ]
 
+    sents = [
+        "Great job! Now, veer slightly left and start heading northwest. Remember to cross between the red tent and the larger speaker. Once you've done that, describe what you see next.",
+        "Compra souvenirs en la tienda de regalos",
+        'cruza por el stick hacia el tigre',
+        "despues tienes que cruzar el alligator"
+
+    ]
+
     print('token-lvl predication using lingua')
     for sentence in sents:
         print(sentence, '->', pred_sentence_via_token_lvl(sentence, pred_token_lingua).upper())
@@ -125,11 +133,11 @@ def show_examples():
 
 def eval_on_custom_dataset():
     def display_and_print(pred, title):
-        # cm = confusion_matrix(pred, gt, labels=labels)
-        # disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
-        # disp.plot()
-        # plt.title(title)
-        # plt.show()
+        cm = confusion_matrix(pred, gt, labels=labels)
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+        disp.plot()
+        plt.title(title)
+        plt.show()
 
         print(title)
         prec = precision_score(gt, y_pred=pred, average='weighted')
@@ -170,6 +178,6 @@ if __name__ == '__main__':
     langid.set_languages(['en', 'es'])
     lid = LanguageIdentification('spa-eng')
 
-    show_examples()
-    eval_on_custom_dataset()
-    # clf_map_task_dataset()
+    # show_examples()
+    # eval_on_custom_dataset()
+    clf_map_task_dataset()

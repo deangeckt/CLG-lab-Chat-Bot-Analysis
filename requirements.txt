@@ -1,2 +1,5 @@
 streamlit_elements==0.1.0
-Pillow~=9.2.0
+Pillow
+langid
+lingua-language-detector
+codeswitch
