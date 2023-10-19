@@ -186,7 +186,8 @@ def render_chat():
     fdata = list(filter(filter_data, data_list))
     curr_game_data = fdata[st.session_state.file_idx]['games_data'][st.session_state.game_idx]
     curr_chat = curr_game_data['chat']
-    is_nav = curr_game_data['config']['game_role'] == 'navigator'
+    human_role = curr_game_data['config']['game_role']
+    is_nav = human_role == 'navigator'
 
     with mui.Paper(key="dialog", sx={
                 "display": 'flex',
@@ -194,9 +195,12 @@ def render_chat():
                 "overflowY": 'auto'}):
         with mui.Typography:
             for chat_ele in curr_chat:
-                side = 'flex-end' if chat_ele['id'] == 'navigator' else 'flex-start'
-                textAlign = 'end' if chat_ele['id'] == 'navigator' else 'start'
-                bg_color = 'rgb(72, 70, 68)' if chat_ele['id'] == 'navigator' else 'rgb(63, 81, 181)'
+                is_human = human_role == chat_ele['id']
+
+                side = 'flex-end' if not is_human else 'flex-start'
+                textAlign = 'end' if not is_human else 'start'
+                bg_color = 'rgb(72, 70, 68)' if not is_human else 'rgb(63, 81, 181)'
+
                 chat_map_path_idx = ''
                 if is_nav and chat_ele['id'] == 'navigator':
                     coord = chat_ele['curr_nav_cell']

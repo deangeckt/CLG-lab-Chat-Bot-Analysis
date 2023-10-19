@@ -28,7 +28,7 @@ def analysis_role_aux(elements):
     keys = ['eng', 'es', 'mix']
     lang_dict = {k: 0 for k in keys}
     for lang in langs:
-        if lang == 'none':
+        if lang not in keys:
             continue
         lang_dict[lang] += 1
 
@@ -43,7 +43,7 @@ def analysis_role_aux(elements):
                 num_of_uter_switch += 1
             prev_lang = lang
 
-    lang_dict_format['number of utterances-switch'] = num_of_uter_switch
+    lang_dict_format['number of inter-sentential cs'] = num_of_uter_switch
 
     return {**counts_dict, **lang_dict_format}
 

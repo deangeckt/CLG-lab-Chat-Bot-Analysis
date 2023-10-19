@@ -86,7 +86,7 @@ def avg_role_metadata(agg_metadata: defaultdict):
     res['human - mean number of eng utterances'] = mean_and_format_str(agg_metadata['user_num_of_en'])
     res['human - mean number of es utterances'] = mean_and_format_str(agg_metadata['user_num_of_es'])
     res['human - mean number of mixed utterances'] = mean_and_format_str(agg_metadata['user_num_of_mix'])
-    res['human - mean number of utterances-switch'] = mean_and_format_str(agg_metadata['user_num_of_uter_switch'])
+    res['human - mean number of inter-sentential cs'] = mean_and_format_str(agg_metadata['user_num_of_inter_cs'])
 
     res['bot - mean number of utterances'] = mean_and_format_str(agg_metadata['bot_num_of_uter'])
     res['bot - mean mean utterance length'] = mean_and_format_str(agg_metadata['bot_mean_uter'])
@@ -95,7 +95,7 @@ def avg_role_metadata(agg_metadata: defaultdict):
     res['bot - mean number of eng utterances'] = mean_and_format_str(agg_metadata['bot_num_of_en'])
     res['bot - mean number of es utterances'] = mean_and_format_str(agg_metadata['bot_num_of_es'])
     res['bot - mean number of mixed utterances'] = mean_and_format_str(agg_metadata['bot_num_of_mix'])
-    res['bot - mean number of utterances-switch'] = mean_and_format_str(agg_metadata['bot_num_of_uter_switch'])
+    res['bot - mean number of inter-sentential cs'] = mean_and_format_str(agg_metadata['bot_num_of_inter_cs'])
 
 
 
@@ -144,7 +144,7 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             agg_meta[experiment]['user_num_of_en'].append(user_dialog['number of eng utterances'])
             agg_meta[experiment]['user_num_of_es'].append(user_dialog['number of es utterances'])
             agg_meta[experiment]['user_num_of_mix'].append(user_dialog['number of mix utterances'])
-            agg_meta[experiment]['user_num_of_uter_switch'].append(user_dialog['number of utterances-switch'])
+            agg_meta[experiment]['user_num_of_inter_cs'].append(user_dialog['number of inter-sentential cs'])
 
             agg_meta[experiment]['bot_num_of_uter'].append(bot_dialog['number of utterances'])
             agg_meta[experiment]['bot_mean_uter'].append(bot_dialog['mean utterance length'])
@@ -153,7 +153,7 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             agg_meta[experiment]['bot_num_of_en'].append(bot_dialog['number of eng utterances'])
             agg_meta[experiment]['bot_num_of_es'].append(bot_dialog['number of es utterances'])
             agg_meta[experiment]['bot_num_of_mix'].append(bot_dialog['number of mix utterances'])
-            agg_meta[experiment]['bot_num_of_uter_switch'].append(user_dialog['number of utterances-switch'])
+            agg_meta[experiment]['bot_num_of_inter_cs'].append(user_dialog['number of inter-sentential cs'])
 
 
             for qa in game_data['survey']:
