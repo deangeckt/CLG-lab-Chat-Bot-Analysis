@@ -153,7 +153,7 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             agg_meta[experiment]['bot_num_of_en'].append(bot_dialog['number of eng utterances'])
             agg_meta[experiment]['bot_num_of_es'].append(bot_dialog['number of es utterances'])
             agg_meta[experiment]['bot_num_of_mix'].append(bot_dialog['number of mix utterances'])
-            agg_meta[experiment]['bot_num_of_inter_cs'].append(user_dialog['number of inter-sentential cs'])
+            agg_meta[experiment]['bot_num_of_inter_cs'].append(bot_dialog['number of inter-sentential cs'])
 
 
             for qa in game_data['survey']:

@@ -56,7 +56,7 @@ def pred_sentence_lingua(sentence: str):
 
 
 def clf_map_task_dataset():
-    # TODO: remove *finished* token
+    # TODO: remove *finished* token?
 
     root_folder = r"../data/prolific/"
     output_folder = r'../data/prolific_lang_ids'
@@ -65,8 +65,10 @@ def clf_map_task_dataset():
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
         if os.path.exists(os.path.join(output_folder, file_name)):
-            print(f'skip: {file_name}')
+            # print(f'skip: {file_name}')
             continue
+
+        print(f'do: {file_name}')
 
         data = json.load(json_file)
         for game in data['games_data']:
@@ -155,9 +157,9 @@ def eval_on_custom_dataset():
     lingua_sent_pred = [pred_sentence_lingua(sent) for sent in sentences]
     bert_linsec_pred = [pred_sentence_bert(sent) for sent in sentences]
 
-    display_and_print(lingua_token_pred, 'lingua token-lvl')
-    display_and_print(langid_token_pred, 'langid token-lvl')
-    display_and_print(lingua_sent_pred, 'lingua sentence-lvl')
+    # display_and_print(lingua_token_pred, 'lingua token-lvl')
+    # display_and_print(langid_token_pred, 'langid token-lvl')
+    # display_and_print(lingua_sent_pred, 'lingua sentence-lvl')
     display_and_print(bert_linsec_pred, 'bert-lince sentence-lvl')
 
 
