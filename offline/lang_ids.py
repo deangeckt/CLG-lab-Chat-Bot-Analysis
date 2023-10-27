@@ -9,6 +9,7 @@ from codeswitch.codeswitch import LanguageIdentification
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score
 import matplotlib.pyplot as plt
 
+
 def pred_token_lingua(token: str):
     lang = lingua_detector.detect_language_of(token)
     return 'eng' if lang == Language.ENGLISH else 'es'
@@ -56,7 +57,6 @@ def pred_sentence_lingua(sentence: str):
 
 
 def clf_map_task_dataset():
-
     root_folder = r"../data/prolific/"
     output_folder = r'../data/prolific_lang_ids'
 
@@ -163,7 +163,6 @@ def eval_on_custom_dataset():
     # display_and_print(lingua_sent_pred, 'lingua sentence-lvl')
     display_and_print(bert_linsec_pred, 'bert-lince sentence-lvl')
 
-
     # explore mistakes
     for idx, y_pred in enumerate(bert_linsec_pred):
         y_true = gt[idx]
@@ -181,6 +180,6 @@ if __name__ == '__main__':
     langid.set_languages(['en', 'es'])
     lid = LanguageIdentification('spa-eng')
 
-    # show_examples()
+    show_examples()
     # eval_on_custom_dataset()
-    clf_map_task_dataset()
+    # clf_map_task_dataset()
