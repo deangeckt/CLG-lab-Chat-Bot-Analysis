@@ -23,7 +23,7 @@ experiments_short_names = {
     '2.2.6_p': 'Alternation #3',
     '2.2.7_p': 'Alternation #4',
     '2.3.0_p': 'Alternation #5',
-    '2.3.1_p': 'Alternation #6',
+    '2.3.1_p': 'Alternation #6 - Baseline',
     '2.3.2_p': 'Alternation - Random CS #1'
 }
 

@@ -26,7 +26,7 @@ def cs_clf_heuristic(langs: list):
         return 'eng'
     if 'es' in langs:
         return 'es'
-    return 'both'
+    return 'none'
 
 
 def pred_sentence_via_token_lvl(sentence: str, pred_token: callable):
@@ -56,7 +56,6 @@ def pred_sentence_lingua(sentence: str):
 
 
 def clf_map_task_dataset():
-    # TODO: remove *finished* token?
 
     root_folder = r"../data/prolific/"
     output_folder = r'../data/prolific_lang_ids'
@@ -65,7 +64,6 @@ def clf_map_task_dataset():
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
         if os.path.exists(os.path.join(output_folder, file_name)):
-            # print(f'skip: {file_name}')
             continue
 
         print(f'do: {file_name}')
@@ -75,6 +73,7 @@ def clf_map_task_dataset():
             chat = game['chat']
             for chat_ele in chat:
                 uter = chat_ele['msg']
+                uter = uter.replace('*finished*', '').strip()
                 uter_lng = pred_sentence_bert(uter)
                 chat_ele['lang'] = uter_lng
 
@@ -105,6 +104,7 @@ def show_examples():
     ]
 
     sents = [
+        '*finished* gracias por las instrucciones!',
         "Great job! Now, veer slightly left and start heading northwest. Remember to cross between the red tent and the larger speaker. Once you've done that, describe what you see next.",
         "Compra souvenirs en la tienda de regalos",
         'cruza por el stick hacia el tigre',
@@ -129,7 +129,8 @@ def show_examples():
 
     print('sentence-lvl predication using lince-bert')
     for sentence in sents:
-        print(sentence, '->', pred_sentence_bert(sentence).upper())
+        sent = sentence.replace('*finished*', '').strip()
+        print(sentence, '->', pred_sentence_bert(sent).upper())
     print()
 
 

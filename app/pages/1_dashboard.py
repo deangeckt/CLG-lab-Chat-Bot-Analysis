@@ -64,6 +64,9 @@ def agg_dict_data_to_df(agg_data: dict):
 def mean_and_format_str(arr: list) -> str:
     return f"{np.mean(arr):.2f}"
 
+def format_percentage(num: int) -> str:
+    return f'{round(num * 100, 2)}%'
+
 def avg_role_metadata(agg_metadata: defaultdict):
     samples = len(agg_metadata['game_time'])
     if samples == 0:
@@ -76,27 +79,32 @@ def avg_role_metadata(agg_metadata: defaultdict):
     }
     game_time_success_abs = np.count_nonzero(agg_metadata['is_time_success'])
     res['number of games finished before time is over'] = game_time_success_abs
-    res['percentage of games finished before time is over'] = f'{round((game_time_success_abs / samples) * 100, 2)}%'
+    res['percentage of games finished before time is over'] = format_percentage(game_time_success_abs / samples)
 
     # dialog
-    res['human - mean number of utterances'] = mean_and_format_str(agg_metadata['user_num_of_uter'])
     res['human - mean mean utterance length'] = mean_and_format_str(agg_metadata['user_mean_uter'])
     res['human - mean total number of tokens'] = mean_and_format_str(agg_metadata['user_total_uter'])
-
-    res['human - mean number of eng utterances'] = mean_and_format_str(agg_metadata['user_num_of_en'])
-    res['human - mean number of es utterances'] = mean_and_format_str(agg_metadata['user_num_of_es'])
-    res['human - mean number of mixed utterances'] = mean_and_format_str(agg_metadata['user_num_of_mix'])
+    res['human - mean number of utterances'] = mean_and_format_str(agg_metadata['user_num_of_uter'])
+    human_mean_utters = np.mean(agg_metadata['user_num_of_uter'])
+    human_mean_utters_en = np.mean(agg_metadata['user_num_of_en'])
+    human_mean_utters_es = np.mean(agg_metadata['user_num_of_es'])
+    human_mean_utters_mix = np.mean(agg_metadata['user_num_of_mix'])
+    res['human - mean number of eng utterances (%)'] = format_percentage(human_mean_utters_en / human_mean_utters)
+    res['human - mean number of es utterances (%)'] =format_percentage(human_mean_utters_es / human_mean_utters)
+    res['human - mean number of mixed utterances (%)'] = format_percentage(human_mean_utters_mix / human_mean_utters)
     res['human - mean number of inter-sentential cs'] = mean_and_format_str(agg_metadata['user_num_of_inter_cs'])
 
-    res['bot - mean number of utterances'] = mean_and_format_str(agg_metadata['bot_num_of_uter'])
     res['bot - mean mean utterance length'] = mean_and_format_str(agg_metadata['bot_mean_uter'])
     res['bot - mean total number of tokens'] = mean_and_format_str(agg_metadata['bot_total_uter'])
-
-    res['bot - mean number of eng utterances'] = mean_and_format_str(agg_metadata['bot_num_of_en'])
-    res['bot - mean number of es utterances'] = mean_and_format_str(agg_metadata['bot_num_of_es'])
-    res['bot - mean number of mixed utterances'] = mean_and_format_str(agg_metadata['bot_num_of_mix'])
+    res['bot - mean number of utterances'] = mean_and_format_str(agg_metadata['bot_num_of_uter'])
+    bot_mean_utters = np.mean(agg_metadata['bot_num_of_uter'])
+    bot_mean_utters_en = np.mean(agg_metadata['bot_num_of_en'])
+    bot_mean_utters_es = np.mean(agg_metadata['bot_num_of_es'])
+    bot_mean_utters_mix = np.mean(agg_metadata['bot_num_of_mix'])
+    res['bot - mean number of eng utterances (%)'] = format_percentage(bot_mean_utters_en / bot_mean_utters)
+    res['bot - mean number of es utterances (%)'] =format_percentage(bot_mean_utters_es / bot_mean_utters)
+    res['bot - mean number of mixed utterances (%)'] = format_percentage(bot_mean_utters_mix / bot_mean_utters)
     res['bot - mean number of inter-sentential cs'] = mean_and_format_str(agg_metadata['bot_num_of_inter_cs'])
-
 
 
     for q in question_to_table:
@@ -251,10 +259,10 @@ st.subheader("Experiments")
 
 
 all_experiments = list(experiments_short_names.values())
-selected_started_ex = []
-for short_name in experiments_short_names:
-    if 'Alternation' in experiments_short_names[short_name]:
-        selected_started_ex.append(experiments_short_names[short_name])
+selected_started_ex = ['Alternation #6 - Baseline', 'Alternation - Random CS #1']
+# for short_name in experiments_short_names:
+#     if 'Alternation' in experiments_short_names[short_name]:
+#         selected_started_ex.append(experiments_short_names[short_name])
 
 if 'selected_ex' not in st.session_state:
     st.session_state.selected_ex = selected_started_ex
