@@ -3,3 +3,7 @@ Pillow
 langid
 lingua-language-detector
 codeswitch
+transformers
+torch
+scikit-learn
+matplotlib
