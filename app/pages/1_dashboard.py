@@ -89,10 +89,14 @@ def avg_role_metadata(agg_metadata: defaultdict):
     human_mean_utters_en = np.mean(agg_metadata['user_num_of_en'])
     human_mean_utters_es = np.mean(agg_metadata['user_num_of_es'])
     human_mean_utters_mix = np.mean(agg_metadata['user_num_of_mix'])
+    human_mean_inter_cs = np.mean(agg_metadata['user_num_of_inter_cs'])
+
     res['human - mean number of eng utterances (%)'] = format_percentage(human_mean_utters_en / human_mean_utters)
-    res['human - mean number of es utterances (%)'] =format_percentage(human_mean_utters_es / human_mean_utters)
+    res['human - mean number of es utterances (%)'] = format_percentage(human_mean_utters_es / human_mean_utters)
     res['human - mean number of mixed utterances (%)'] = format_percentage(human_mean_utters_mix / human_mean_utters)
-    res['human - mean number of inter-sentential cs'] = mean_and_format_str(agg_metadata['user_num_of_inter_cs'])
+    res['human - mean number of inter-sentential cs (%)'] = format_percentage(human_mean_inter_cs / (human_mean_utters - 1))
+    res['human - mean % entrainment - all dialog'] = format_percentage(np.mean(agg_metadata['% entrainment - all dialog']))
+    res['human - mean % entrainment - on bot inter-sentential cs'] = format_percentage(np.mean(agg_metadata['% entrainment - on bot inter-sentential cs']))
 
     res['bot - mean mean utterance length'] = mean_and_format_str(agg_metadata['bot_mean_uter'])
     res['bot - mean total number of tokens'] = mean_and_format_str(agg_metadata['bot_total_uter'])
@@ -101,10 +105,11 @@ def avg_role_metadata(agg_metadata: defaultdict):
     bot_mean_utters_en = np.mean(agg_metadata['bot_num_of_en'])
     bot_mean_utters_es = np.mean(agg_metadata['bot_num_of_es'])
     bot_mean_utters_mix = np.mean(agg_metadata['bot_num_of_mix'])
+    bot_mean_inter_cs = np.mean(agg_metadata['bot_num_of_inter_cs'])
     res['bot - mean number of eng utterances (%)'] = format_percentage(bot_mean_utters_en / bot_mean_utters)
     res['bot - mean number of es utterances (%)'] =format_percentage(bot_mean_utters_es / bot_mean_utters)
     res['bot - mean number of mixed utterances (%)'] = format_percentage(bot_mean_utters_mix / bot_mean_utters)
-    res['bot - mean number of inter-sentential cs'] = mean_and_format_str(agg_metadata['bot_num_of_inter_cs'])
+    res['bot - mean number of inter-sentential cs (%)'] = format_percentage(bot_mean_inter_cs / (bot_mean_utters - 1))
 
 
     for q in question_to_table:
@@ -153,6 +158,8 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             agg_meta[experiment]['user_num_of_es'].append(user_dialog['number of es utterances'])
             agg_meta[experiment]['user_num_of_mix'].append(user_dialog['number of mix utterances'])
             agg_meta[experiment]['user_num_of_inter_cs'].append(user_dialog['number of inter-sentential cs'])
+            agg_meta[experiment]['% entrainment - all dialog'].append(user_dialog['% entrainment - all dialog'])
+            agg_meta[experiment]['% entrainment - on bot inter-sentential cs'].append(user_dialog['% entrainment - on bot inter-sentential cs'])
 
             agg_meta[experiment]['bot_num_of_uter'].append(bot_dialog['number of utterances'])
             agg_meta[experiment]['bot_mean_uter'].append(bot_dialog['mean utterance length'])
@@ -189,8 +196,8 @@ def get_ex_date(data):
     date_obj = datetime.datetime.fromtimestamp(timestamp / 1000.0)
     return date_obj.strftime("%D")
 
-def get_human_role(data, experiment):
-    if 'Alternation' in experiment:
+def get_human_role(data, experiment_version):
+    if experiment_version >= '2.2.4_p':
         return 'Alternations'
     game_data = data['games_data'][0]
     return game_data['config']['game_role']
@@ -214,7 +221,7 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
         experiment = experiments_short_names.get(client_version, 'err')
         count[experiment] += 1
         more_data[experiment]['date'] = get_ex_date(data)
-        more_data[experiment]['human_role'] = get_human_role(data, experiment)
+        more_data[experiment]['human_role'] = get_human_role(data, client_version)
 
         for qa in data['general_survey']:
             question = qa['question']
@@ -259,10 +266,7 @@ st.subheader("Experiments")
 
 
 all_experiments = list(experiments_short_names.values())
-selected_started_ex = ['Alternation #6 - Baseline', 'Alternation - Random CS #1']
-# for short_name in experiments_short_names:
-#     if 'Alternation' in experiments_short_names[short_name]:
-#         selected_started_ex.append(experiments_short_names[short_name])
+selected_started_ex = ['Baseline', 'Random CS #1']
 
 if 'selected_ex' not in st.session_state:
     st.session_state.selected_ex = selected_started_ex

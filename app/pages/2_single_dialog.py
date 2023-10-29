@@ -144,12 +144,16 @@ with general_info_col:
     st.text(f"Human role: {role} 🧭")
 
     for dialog_key in user_dialog:
-        val = f"{user_dialog[dialog_key]:.2f}" if 'mean' in dialog_key else user_dialog[dialog_key]
+        if 'mean' in dialog_key:
+            val = f"{user_dialog[dialog_key]:.2f}"
+        elif '%' in dialog_key:
+            val = f'{round(user_dialog[dialog_key] * 100, 2)}%'
+        else:
+            val = user_dialog[dialog_key]
         st.text(f"user - {dialog_key}: {val} 💪️")
     for dialog_key in bot_dialog:
         val = f"{bot_dialog[dialog_key]:.2f}" if 'mean' in dialog_key else bot_dialog[dialog_key]
         st.text(f"bot - {dialog_key}: {val} 🦾")
-
 
     is_nav = curr_game_data['config']['game_role'] == 'navigator'
     if is_nav:

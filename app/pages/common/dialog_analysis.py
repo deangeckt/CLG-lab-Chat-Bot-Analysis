@@ -48,7 +48,75 @@ def analysis_role_aux(elements):
     return {**counts_dict, **lang_dict_format}
 
 
+def squash_bot_chat(role: str, chat: list):
+    """
+    since some turns of the bot includes 2 utterances, we remove duplicat langauge uters for later easier analysis:
+    e.g: bot: 'en', 'en' -> 'en'
+    """
+    same_lng_turn_bot_indices = []
+    for i in range(len(chat) - 1):
+        curr_ele = chat[i]
+        if curr_ele['id'] == role:
+            continue
+        next_ele = chat[i+1]
+        if next_ele['id'] != role and next_ele['lang'] == curr_ele['lang']:
+            same_lng_turn_bot_indices.append(i)
+
+    for del_idx in sorted(same_lng_turn_bot_indices, reverse=True):
+        del chat[del_idx]
+    return chat
+
+
+def analysis_entrainment(role: str, chat: list):
+    """
+    Counts the number of times a human utterance is the same language as the prev bot language OR
+    does it only when the Bot switched language.
+
+    return percentage already
+    """
+    chat = [{'id': ele['id'], 'lang': ele['lang']} for ele in chat]
+    chat = squash_bot_chat(role, chat)
+
+    human_uters = len(list(filter(lambda e: e['id'] == role, chat)))
+
+    last_bot_lng = chat[0]['lang']
+    curr_bot_lng = None
+    no_switch = ['mix', 'none']
+    bot_just_switch = False
+
+    same_as_last_bot_counter = 0
+    same_as_last_bot_on_inter_sentential = 0
+    bot_inter_sentential_count = 0
+
+    for ele in chat[1:]:
+        if ele['id'] != role:
+            curr_bot_lng = ele['lang']
+            if curr_bot_lng != last_bot_lng and curr_bot_lng not in no_switch and last_bot_lng not in no_switch:
+                bot_just_switch = True
+                bot_inter_sentential_count += 1
+            else:
+                bot_just_switch = False
+            last_bot_lng = curr_bot_lng
+        else:
+            curr_human_lng = ele['lang']
+            if last_bot_lng == 'mix' or curr_human_lng == 'mix' or curr_human_lng == last_bot_lng:
+                same_as_last_bot_counter += 1
+                if bot_just_switch:
+                    same_as_last_bot_on_inter_sentential += 1
+
+
+    entr_on_bot_is_cs = same_as_last_bot_on_inter_sentential / bot_inter_sentential_count if bot_inter_sentential_count > 0 else 0
+    entr_all_dialog = same_as_last_bot_counter / human_uters if human_uters > 0 else 0
+    return {
+        '% entrainment - all dialog': entr_all_dialog,
+        '% entrainment - on bot inter-sentential cs': entr_on_bot_is_cs
+    }
+
+
 def analysis_game_chat(role: str, chat: list):
+    """
+    :param role: role of the human in the given chat
+    """
     last_bot_timestamp = None
     user_utterances = []
     bot_utterances = []
@@ -65,7 +133,9 @@ def analysis_game_chat(role: str, chat: list):
 
     user_res = analysis_role_aux(user_utterances)
     bot_res = analysis_role_aux(bot_utterances)
+    user_entrainment = analysis_entrainment(role, chat)
 
+    user_res = {**user_res, **user_entrainment}
     # date_obj = datetime.fromtimestamp(timestamp / 1000.0)
 
     return user_res, bot_res
@@ -76,6 +146,8 @@ if __name__ == '__main__':
     from app.pages.common.versions import root_folder
 
     for file_name in os.listdir(root_folder):
+        if file_name != '5c6709ab926a5b0001eb29c1.json':
+            continue
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
         chat = data['games_data'][0]['chat']
