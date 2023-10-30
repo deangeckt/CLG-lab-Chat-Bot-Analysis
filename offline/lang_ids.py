@@ -180,6 +180,6 @@ if __name__ == '__main__':
     langid.set_languages(['en', 'es'])
     lid = LanguageIdentification('spa-eng')
 
-    show_examples()
+    # show_examples()
     # eval_on_custom_dataset()
-    # clf_map_task_dataset()
+    clf_map_task_dataset()
