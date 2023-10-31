@@ -33,8 +33,8 @@ experiments_short_names = {
 }
 
 
-def time_success_metric(short_name: str) -> int:
-    if short_name == '2.1.0_0_p' or short_name == '2.1.0_p':
+def time_success_metric(version: str) -> int:
+    if version == '2.1.0_0_p' or version == '2.1.0_p':
         return 300
     return 420
 

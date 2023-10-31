@@ -145,7 +145,7 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
 
             game_time = game_data['game_time']
             agg_meta[experiment]['game_time'].append(game_time)
-            max_game_time = time_success_metric(client_version)
+            max_game_time = time_success_metric(version=client_version)
             is_time_success = 1 if int(game_time) < max_game_time else 0
             agg_meta[experiment]['is_time_success'].append(is_time_success)
 
@@ -217,11 +217,11 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
 
-        client_version = data['clinet_version']
-        experiment = experiments_short_names.get(client_version, 'err')
+        version = data['server_version']
+        experiment = experiments_short_names.get(version, 'err')
         count[experiment] += 1
         more_data[experiment]['date'] = get_ex_date(data)
-        more_data[experiment]['human_role'] = get_human_role(data, client_version)
+        more_data[experiment]['human_role'] = get_human_role(data, version)
 
         for qa in data['general_survey']:
             question = qa['question']

@@ -135,7 +135,7 @@ with general_info_col:
     fdata = list(filter(filter_data, data_list))
     call_data = fdata[st.session_state.file_idx]
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
-    client_version = call_data['clinet_version']
+    version = call_data['clinet_version']
 
     role = curr_game_data['config']['game_role']
     user_dialog, bot_dialog = analysis_game_chat(role, curr_game_data['chat'])
@@ -176,12 +176,11 @@ with nav_btns_col:
     # st.divider()
     fdata = list(filter(filter_data, data_list))
     call_data = fdata[st.session_state.file_idx]
-    client_version = call_data['clinet_version']
+    version = call_data['server_version']
 
-    st.text(f"Client version: {client_version} ")
-    st.text(f"Server Version: {call_data['server_version']} ")
+    st.text(f"Version: {version} ")
     st.text(f"Prolific id: {call_data['prolific']['prolific_id']} ")
-    st.text(f"Experiment - {experiments_short_names[client_version]}: {version_details.get(client_version, '')}")
+    st.text(f"Experiment - {experiments_short_names[version]}: {version_details.get(version, '')}")
     st.text(f"Date: {call_data['date']} 📅")
     st.text(f"Code-switch strategy: {call_data['cs_strategy']} ")
     st.text(f"Game time: {curr_game_data['game_time']} seconds ⌛")
