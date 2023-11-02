@@ -1,3 +1,9 @@
+"""
+This is the server version. client version doesn't affect anymore.
+This enables us to toggle between CS strategies i.e. experiments, and deploy the server only.
+"""
+
+
 version_details = {
     '2.1.0_0_p': 'Rule Based navigator Bot - experiment #1',
     '2.1.0_p': 'GPT based navigator bot - experiment #1. the human had 5 minutes timer',

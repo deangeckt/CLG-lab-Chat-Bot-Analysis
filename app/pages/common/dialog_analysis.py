@@ -88,12 +88,13 @@ def analysis_entrainment(role: str, chat: list):
     same_as_last_bot_on_inter_sentential = 0
     bot_inter_sentential_count = 0
 
-    for ele in chat[1:]:
+    for ele_idx, ele in enumerate(chat[1:]):
         if ele['id'] != role:
             curr_bot_lng = ele['lang']
             if curr_bot_lng != last_bot_lng and curr_bot_lng not in no_switch and last_bot_lng not in no_switch:
                 bot_just_switch = True
-                bot_inter_sentential_count += 1
+                if ele_idx < len(chat[1:])-1:
+                    bot_inter_sentential_count += 1
             else:
                 bot_just_switch = False
             last_bot_lng = curr_bot_lng
