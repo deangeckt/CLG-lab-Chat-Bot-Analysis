@@ -1,14 +1,16 @@
+import streamlit as st
 import pandas as pd
 import numpy as np
 import json
 import os
+import altair as alt
 from collections import defaultdict
 import datetime
 import math
 
 from app.pages.common.dialog_analysis import analysis_game_chat
 from app.pages.common.gt_path import levenshtein_distance
-from app.pages.common.versions import root_folder, experiments_short_names, time_success_metric, version_details
+from app.pages.common.versions import experiments_short_names, version_details, time_success_metric, root_folder
 
 default_rating_range = 'not at all: 0 -> extremely: 100'
 rating_likely_range = 'not at all likely: 0 -> extremely likely: 100'
@@ -21,17 +23,18 @@ questions_ranges = {
     'How likely do you think it was that you were talking to a chatbot rather than a human?': rating_likely_range,
     'How likely is your partner to be a fluent speaker of Spanish?': rating_likely_range,
     'How likely do you think it is that your partner is bilingual?': rating_likely_range,
-    'Do you enjoy mixing languages in conversation?': enjoy_range,
+    'Do you enjoy mixing languages in conversation?':enjoy_range,
     'Age': ''
 }
 
+question_to_table = ['How much did you enjoy the task?',
+                    "How successful do you think you were at completing the task?"]
 
 def get_question_range_metadata(question: str):
     if question.startswith('Please rate how likely you are to use your'): return rating_likely_range
     if question.startswith('How would you rate your fluency in your '): return knowledge_range
     if question.startswith('When you switch languages'): return time_range
     return questions_ranges.get(question, default_rating_range)
-
 
 def agg_dict_data_to_df(agg_data: dict):
     flat_exp = []
@@ -57,20 +60,60 @@ def agg_dict_data_to_df(agg_data: dict):
         "Median": flat_median_ans
     })
 
+def mean_and_format_str(arr: list) -> str:
+    return f"{np.mean(arr):.2f}"
+
+def format_percentage(num: int) -> str:
+    return f'{round(num * 100, 2)}%'
+
 def avg_role_metadata(agg_metadata: defaultdict):
     samples = len(agg_metadata['game_time'])
     if samples == 0:
-        return {}
+        return None
 
     res = {
         'number of games': samples,
-        'mean game time': np.mean(agg_metadata['game_time']),
-        'median game time': np.median(agg_metadata['game_time'])
+        'mean game time': game_time_format(np.mean(agg_metadata['game_time'])),
+        'median game time': game_time_format(np.median(agg_metadata['game_time']))
     }
     game_time_success_abs = np.count_nonzero(agg_metadata['is_time_success'])
     res['number of games finished before time is over'] = game_time_success_abs
-    res['percentage of games finished before time is over'] = f'{round((game_time_success_abs / samples) * 100, 2)}%'
-    res['how much did you enjoy in the game? [mean]'] = np.mean(agg_metadata['enjoy_game'])
+    res['percentage of games finished before time is over'] = format_percentage(game_time_success_abs / samples)
+
+    # dialog
+    res['human - mean mean utterance length'] = mean_and_format_str(agg_metadata['user_mean_uter'])
+    res['human - mean total number of tokens'] = mean_and_format_str(agg_metadata['user_total_uter'])
+    res['human - mean number of utterances'] = mean_and_format_str(agg_metadata['user_num_of_uter'])
+    human_mean_utters = np.mean(agg_metadata['user_num_of_uter'])
+    human_mean_utters_en = np.mean(agg_metadata['user_num_of_en'])
+    human_mean_utters_es = np.mean(agg_metadata['user_num_of_es'])
+    human_mean_utters_mix = np.mean(agg_metadata['user_num_of_mix'])
+    human_mean_inter_cs = np.mean(agg_metadata['user_num_of_inter_cs'])
+
+    res['human - mean number of eng utterances (%)'] = format_percentage(human_mean_utters_en / human_mean_utters)
+    res['human - mean number of es utterances (%)'] = format_percentage(human_mean_utters_es / human_mean_utters)
+    res['human - mean number of mixed utterances (%)'] = format_percentage(human_mean_utters_mix / human_mean_utters)
+    res['human - mean number of inter-sentential cs (%)'] = format_percentage(human_mean_inter_cs / (human_mean_utters - 1))
+    res['human - mean % entrainment - all dialog'] = format_percentage(np.mean(agg_metadata['% entrainment - all dialog']))
+    res['human - mean % entrainment - on bot inter-sentential cs'] = format_percentage(np.mean(agg_metadata['% entrainment - on bot inter-sentential cs']))
+
+    res['bot - mean mean utterance length'] = mean_and_format_str(agg_metadata['bot_mean_uter'])
+    res['bot - mean total number of tokens'] = mean_and_format_str(agg_metadata['bot_total_uter'])
+    res['bot - mean number of utterances'] = mean_and_format_str(agg_metadata['bot_num_of_uter'])
+    bot_mean_utters = np.mean(agg_metadata['bot_num_of_uter'])
+    bot_mean_utters_en = np.mean(agg_metadata['bot_num_of_en'])
+    bot_mean_utters_es = np.mean(agg_metadata['bot_num_of_es'])
+    bot_mean_utters_mix = np.mean(agg_metadata['bot_num_of_mix'])
+    bot_mean_inter_cs = np.mean(agg_metadata['bot_num_of_inter_cs'])
+    res['bot - mean number of eng utterances (%)'] = format_percentage(bot_mean_utters_en / bot_mean_utters)
+    res['bot - mean number of es utterances (%)'] =format_percentage(bot_mean_utters_es / bot_mean_utters)
+    res['bot - mean number of mixed utterances (%)'] = format_percentage(bot_mean_utters_mix / bot_mean_utters)
+    res['bot - mean number of inter-sentential cs (%)'] = format_percentage(bot_mean_inter_cs / (bot_mean_utters - 1))
+
+
+    for q in question_to_table:
+        res[f"{q} [mean]"] = mean_and_format_str(agg_metadata[q])
+
     if 'dist_score' in agg_metadata:
         res['mean levenshtein distance'] = f"{np.mean(agg_metadata['dist_score']):.2f}"
     return res
@@ -101,7 +144,7 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
 
             game_time = game_data['game_time']
             agg_meta[experiment]['game_time'].append(game_time)
-            max_game_time = time_success_metric(client_version)
+            max_game_time = time_success_metric(version=client_version)
             is_time_success = 1 if int(game_time) < max_game_time else 0
             agg_meta[experiment]['is_time_success'].append(is_time_success)
 
@@ -110,9 +153,21 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             agg_meta[experiment]['user_mean_uter'].append(user_dialog['mean utterance length'])
             agg_meta[experiment]['user_total_uter'].append(user_dialog['total number of tokens'])
 
+            agg_meta[experiment]['user_num_of_en'].append(user_dialog['number of eng utterances'])
+            agg_meta[experiment]['user_num_of_es'].append(user_dialog['number of es utterances'])
+            agg_meta[experiment]['user_num_of_mix'].append(user_dialog['number of mix utterances'])
+            agg_meta[experiment]['user_num_of_inter_cs'].append(user_dialog['number of inter-sentential cs'])
+            agg_meta[experiment]['% entrainment - all dialog'].append(user_dialog['% entrainment - all dialog'])
+            agg_meta[experiment]['% entrainment - on bot inter-sentential cs'].append(user_dialog['% entrainment - on bot inter-sentential cs'])
+
             agg_meta[experiment]['bot_num_of_uter'].append(bot_dialog['number of utterances'])
             agg_meta[experiment]['bot_mean_uter'].append(bot_dialog['mean utterance length'])
             agg_meta[experiment]['bot_total_uter'].append(bot_dialog['total number of tokens'])
+
+            agg_meta[experiment]['bot_num_of_en'].append(bot_dialog['number of eng utterances'])
+            agg_meta[experiment]['bot_num_of_es'].append(bot_dialog['number of es utterances'])
+            agg_meta[experiment]['bot_num_of_mix'].append(bot_dialog['number of mix utterances'])
+            agg_meta[experiment]['bot_num_of_inter_cs'].append(bot_dialog['number of inter-sentential cs'])
 
 
             for qa in game_data['survey']:
@@ -120,10 +175,8 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
                 answer = qa['answer']
                 agg_data[experiment][question].append(answer)
 
-                if question in ['How much did you enjoy the task?']:
-                    agg_meta[experiment]['enjoy_game'].append(answer)
-
-
+                if question in question_to_table:
+                    agg_meta[experiment][question].append(answer)
 
     nav_more_data = defaultdict(lambda: defaultdict(dict))
     ins_more_data = defaultdict(lambda: defaultdict(dict))
@@ -132,11 +185,8 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
         nav_more_data[exp] = avg_role_metadata(agg_metadata_nav[exp])
         ins_more_data[exp] = avg_role_metadata(agg_metadata_ins[exp])
 
-        # more_data[exp]['samples'] = nav_samples + ins_samples
-
     df = agg_dict_data_to_df(agg_data)
     return df, nav_more_data, ins_more_data
-
 
 def get_ex_date(data):
     game_data = data['games_data'][0]
@@ -145,13 +195,11 @@ def get_ex_date(data):
     date_obj = datetime.datetime.fromtimestamp(timestamp / 1000.0)
     return date_obj.strftime("%D")
 
-
-def get_human_role(data, experiment):
-    if 'Alternation' in experiment:
+def get_human_role(data, experiment_version):
+    if experiment_version >= '2.2.4_p':
         return 'Alternations'
     game_data = data['games_data'][0]
     return game_data['config']['game_role']
-
 
 def game_time_format(t: int):
     mins = math.floor(t / 60)
@@ -159,21 +207,20 @@ def game_time_format(t: int):
     sec = f'{sec}' if sec >= 10 else f'0{sec}'
     return f'{mins}:{sec}'
 
-
 def read_general_data() -> tuple[pd.DataFrame, dict]:
-    agg_data = defaultdict(lambda: defaultdict(list))
+    agg_data = defaultdict(lambda : defaultdict(list))
     count = defaultdict(int)
-    more_data = defaultdict(lambda: defaultdict(dict))
+    more_data = defaultdict(lambda : defaultdict(dict))
 
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
 
-        client_version = data['clinet_version']
-        experiment = experiments_short_names.get(client_version, 'err')
+        version = data['server_version']
+        experiment = experiments_short_names.get(version, 'err')
         count[experiment] += 1
         more_data[experiment]['date'] = get_ex_date(data)
-        more_data[experiment]['human_role'] = get_human_role(data, experiment)
+        more_data[experiment]['human_role'] = get_human_role(data, version)
 
         for qa in data['general_survey']:
             question = qa['question']
@@ -186,28 +233,65 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
     for ex in more_data:
         more_data[ex]['participants'] = count[ex]
 
-    df = agg_dict_data_to_df(agg_data)
 
+    df = agg_dict_data_to_df(agg_data)
     return df, more_data
 
+def plot_chart(data, title, cols):
+    selected_dfs = []
+    for selected_ex in st.session_state.selected_ex:
+        selected_dfs.append(data.loc[data['Experiment'] == selected_ex])
+    if len(selected_dfs) == 0:
+        return
+    data = pd.concat(selected_dfs)
 
+    sub_data = data[cols]
+    chart = alt.Chart(sub_data, title=title).mark_bar().encode(
+        x="Question:N",
+        y=f"{title}:Q",
+        xOffset="Experiment:N",
+        color="Experiment:N",
+        tooltip=cols
+
+    )
+    st.altair_chart(chart, use_container_width=True)
+
+
+st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
+st.sidebar.success("Dashboard")
+
+st.subheader("Experiments")
+
+
+
+all_experiments = list(experiments_short_names.values())
+selected_started_ex = ['Baseline', 'Random CS', 'Short-context CS', 'Switch Last User CS', 'Align Last User CS']
+
+if 'selected_ex' not in st.session_state:
+    st.session_state.selected_ex = selected_started_ex
+
+st.session_state.selected_ex = st.multiselect('Choose experiment:',  all_experiments, selected_started_ex)
 
 games_data, navigator_ex_details, instructor_ex_details = read_games_data()
 general_data, general_more_data = read_general_data()
 
 
 general_ex_details = {}
-
+navigator_det_copy = {} # refresh on selected experiments
+instructor_det_copy = {}
 for key in experiments_short_names:
     name_key = experiments_short_names[key]
+    if name_key not in st.session_state.selected_ex:
+        continue
     if name_key not in general_more_data:
         continue
-    general_ex_details[name_key] = {'details': version_details[key],
+    general_ex_details[name_key] = {
+                            'details': version_details[key],
                             'human role': general_more_data[name_key]['human_role'],
                             'participants': general_more_data[name_key]['participants'],
-                            'date': general_more_data[name_key]['date']}
+                            'date': general_more_data[name_key]['date']
+    }
+    navigator_det_copy[name_key] = navigator_ex_details[name_key]
+    instructor_det_copy[name_key] = instructor_ex_details[name_key]
 
-
-
-
-print(general_ex_details)
+print(3)

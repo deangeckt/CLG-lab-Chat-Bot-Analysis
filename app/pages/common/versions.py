@@ -18,7 +18,8 @@ version_details = {
     '2.3.1_p': 'BASELINE (Alternation #6 - fix to ES only, in US)',
     '2.3.2_p': 'Random Code-switch alternation strategy - switch on the turn level',
     '2.3.3_p': 'Short-context based Code-switch alternation strategy - switch on the utterance level',
-    '2.3.4_p': 'Switch Last User based Code-switch alternation strategy - switch on the turn level'
+    '2.3.4_p': 'Switch Last User based Code-switch alternation strategy - switch on the turn level',
+    '2.3.5_p': 'Align Last User based Code-switch alternation strategy - switch on the turn level',
 }
 
 experiments_short_names = {
@@ -33,9 +34,10 @@ experiments_short_names = {
     '2.2.7_p': 'Alternation #4',
     '2.3.0_p': 'Alternation #5',
     '2.3.1_p': 'Baseline',
-    '2.3.2_p': 'Random CS #1',
-    '2.3.3_p': 'Short-context CS #1',
-    '2.3.4_p': 'Switch Last User CS #1',
+    '2.3.2_p': 'Random CS',
+    '2.3.3_p': 'Short-context CS',
+    '2.3.4_p': 'Switch Last User CS',
+    '2.3.5_p': 'Align Last User CS',
 }
 
 

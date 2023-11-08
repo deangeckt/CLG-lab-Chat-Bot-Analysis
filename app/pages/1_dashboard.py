@@ -130,8 +130,8 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
 
-        client_version = data['clinet_version']
-        experiment = experiments_short_names.get(client_version, 'err')
+        version = data['server_version']
+        experiment = experiments_short_names.get(version, 'err')
 
         for game_data in data['games_data']:
             agg_meta = agg_metadata_ins
@@ -145,7 +145,7 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
 
             game_time = game_data['game_time']
             agg_meta[experiment]['game_time'].append(game_time)
-            max_game_time = time_success_metric(version=client_version)
+            max_game_time = time_success_metric(version=version)
             is_time_success = 1 if int(game_time) < max_game_time else 0
             agg_meta[experiment]['is_time_success'].append(is_time_success)
 
@@ -266,7 +266,7 @@ st.subheader("Experiments")
 
 
 all_experiments = list(experiments_short_names.values())
-selected_started_ex = ['Baseline', 'Random CS #1', 'Short-context CS #1', 'Switch Last User CS #1']
+selected_started_ex = ['Baseline', 'Random CS', 'Short-context CS', 'Switch Last User CS', 'Align Last User CS']
 
 if 'selected_ex' not in st.session_state:
     st.session_state.selected_ex = selected_started_ex

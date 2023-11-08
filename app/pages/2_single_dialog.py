@@ -44,7 +44,7 @@ def filter_data(data_ele):
     curr_ex = st.session_state.selected_ex
     if curr_ex == 'all':
         return True
-    short_name = experiments_short_names[data_ele['clinet_version']]
+    short_name = experiments_short_names[data_ele['server_version']]
     return short_name == curr_ex
 
 
@@ -135,7 +135,7 @@ with general_info_col:
     fdata = list(filter(filter_data, data_list))
     call_data = fdata[st.session_state.file_idx]
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
-    version = call_data['clinet_version']
+    version = call_data['server_version']
 
     role = curr_game_data['config']['game_role']
     user_dialog, bot_dialog = analysis_game_chat(role, curr_game_data['chat'])
