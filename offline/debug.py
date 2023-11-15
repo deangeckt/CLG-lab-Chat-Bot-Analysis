@@ -211,6 +211,7 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
     agg_data = defaultdict(lambda : defaultdict(list))
     count = defaultdict(int)
     more_data = defaultdict(lambda : defaultdict(dict))
+    dates_data = defaultdict(lambda : set())
 
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
@@ -219,7 +220,7 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
         version = data['server_version']
         experiment = experiments_short_names.get(version, 'err')
         count[experiment] += 1
-        more_data[experiment]['date'] = get_ex_date(data)
+        dates_data[experiment].add(get_ex_date(data))
         more_data[experiment]['human_role'] = get_human_role(data, version)
 
         for qa in data['general_survey']:
@@ -232,7 +233,7 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
 
     for ex in more_data:
         more_data[ex]['participants'] = count[ex]
-
+        more_data[ex]['date'] = list(dates_data[ex])
 
     df = agg_dict_data_to_df(agg_data)
     return df, more_data
@@ -272,7 +273,7 @@ if 'selected_ex' not in st.session_state:
 
 st.session_state.selected_ex = st.multiselect('Choose experiment:',  all_experiments, selected_started_ex)
 
-games_data, navigator_ex_details, instructor_ex_details = read_games_data()
+# games_data, navigator_ex_details, instructor_ex_details = read_games_data()
 general_data, general_more_data = read_general_data()
 
 
