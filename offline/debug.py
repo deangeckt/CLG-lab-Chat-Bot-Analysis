@@ -273,7 +273,7 @@ if 'selected_ex' not in st.session_state:
 
 st.session_state.selected_ex = st.multiselect('Choose experiment:',  all_experiments, selected_started_ex)
 
-# games_data, navigator_ex_details, instructor_ex_details = read_games_data()
+games_data, navigator_ex_details, instructor_ex_details = read_games_data()
 general_data, general_more_data = read_general_data()
 
 
