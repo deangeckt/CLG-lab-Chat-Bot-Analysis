@@ -57,8 +57,8 @@ def pred_sentence_lingua(sentence: str):
 
 
 def clf_map_task_dataset():
-    root_folder = r"../data/prolific/"
-    output_folder = r'../data/prolific_lang_ids'
+    root_folder = r"data/prolific/"
+    output_folder = r'data/prolific_lang_ids'
 
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
@@ -149,7 +149,7 @@ def eval_on_custom_dataset():
         print()
 
     labels = ['eng', 'es', 'mix']
-    df = pd.read_csv('cs_dataset.csv', encoding='utf-8')
+    df = pd.read_csv(r'offline/language/cs_dataset.csv', encoding='utf-8')
     gt = list(df['label'])
     sentences = list(df['text'])
 
@@ -175,6 +175,9 @@ def eval_on_custom_dataset():
 
 
 if __name__ == '__main__':
+    """
+    run from root repo
+    """
     languages = [Language.ENGLISH, Language.SPANISH]
     lingua_detector = LanguageDetectorBuilder.from_languages(*languages).build()
     langid.set_languages(['en', 'es'])

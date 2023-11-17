@@ -143,14 +143,15 @@ with general_info_col:
     st.subheader('General info')
     st.text(f"Human role: {role} 🧭")
 
-    for dialog_key in user_dialog:
-        if 'mean' in dialog_key:
-            val = f"{user_dialog[dialog_key]:.2f}"
-        elif '%' in dialog_key:
-            val = f'{round(user_dialog[dialog_key] * 100, 2)}%'
-        else:
-            val = user_dialog[dialog_key]
-        st.text(f"user - {dialog_key}: {val} 💪️")
+    if user_dialog is not None:
+        for dialog_key in user_dialog:
+            if 'mean' in dialog_key:
+                val = f"{user_dialog[dialog_key]:.2f}"
+            elif '%' in dialog_key:
+                val = f'{round(user_dialog[dialog_key] * 100, 2)}%'
+            else:
+                val = user_dialog[dialog_key]
+            st.text(f"user - {dialog_key}: {val} 💪️")
     for dialog_key in bot_dialog:
         val = f"{bot_dialog[dialog_key]:.2f}" if 'mean' in dialog_key else bot_dialog[dialog_key]
         st.text(f"bot - {dialog_key}: {val} 🦾")

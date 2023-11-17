@@ -150,16 +150,17 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             agg_meta[experiment]['is_time_success'].append(is_time_success)
 
             user_dialog, bot_dialog = analysis_game_chat(game_data['config']['game_role'], game_data['chat'])
-            agg_meta[experiment]['user_num_of_uter'].append(user_dialog['number of utterances'])
-            agg_meta[experiment]['user_mean_uter'].append(user_dialog['mean utterance length'])
-            agg_meta[experiment]['user_total_uter'].append(user_dialog['total number of tokens'])
+            if user_dialog is not None:
+                agg_meta[experiment]['user_num_of_uter'].append(user_dialog['number of utterances'])
+                agg_meta[experiment]['user_mean_uter'].append(user_dialog['mean utterance length'])
+                agg_meta[experiment]['user_total_uter'].append(user_dialog['total number of tokens'])
 
-            agg_meta[experiment]['user_num_of_en'].append(user_dialog['number of eng utterances'])
-            agg_meta[experiment]['user_num_of_es'].append(user_dialog['number of es utterances'])
-            agg_meta[experiment]['user_num_of_mix'].append(user_dialog['number of mix utterances'])
-            agg_meta[experiment]['user_num_of_inter_cs'].append(user_dialog['number of inter-sentential cs'])
-            agg_meta[experiment]['% entrainment - all dialog'].append(user_dialog['% entrainment - all dialog'])
-            agg_meta[experiment]['% entrainment - on bot inter-sentential cs'].append(user_dialog['% entrainment - on bot inter-sentential cs'])
+                agg_meta[experiment]['user_num_of_en'].append(user_dialog['number of eng utterances'])
+                agg_meta[experiment]['user_num_of_es'].append(user_dialog['number of es utterances'])
+                agg_meta[experiment]['user_num_of_mix'].append(user_dialog['number of mix utterances'])
+                agg_meta[experiment]['user_num_of_inter_cs'].append(user_dialog['number of inter-sentential cs'])
+                agg_meta[experiment]['% entrainment - all dialog'].append(user_dialog['% entrainment - all dialog'])
+                agg_meta[experiment]['% entrainment - on bot inter-sentential cs'].append(user_dialog['% entrainment - on bot inter-sentential cs'])
 
             agg_meta[experiment]['bot_num_of_uter'].append(bot_dialog['number of utterances'])
             agg_meta[experiment]['bot_mean_uter'].append(bot_dialog['mean utterance length'])

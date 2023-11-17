@@ -132,12 +132,14 @@ def analysis_game_chat(role: str, chat: list):
         if last_bot_timestamp is not None:
             user_time_diff.append(datetime.datetime.fromtimestamp(ele['timestamp']/1000) - last_bot_timestamp)
 
-    # TODO: if user_uter is empty return something else. maybe flag so it won't kill the analysis means...
-    user_res = analysis_role_aux(user_utterances)
-    bot_res = analysis_role_aux(bot_utterances)
-    user_entrainment = analysis_entrainment(role, chat)
+    user_res = None
+    if user_utterances:
+        user_res = analysis_role_aux(user_utterances)
+        user_entrainment = analysis_entrainment(role, chat)
+        user_res = {**user_res, **user_entrainment}
 
-    user_res = {**user_res, **user_entrainment}
+    bot_res = analysis_role_aux(bot_utterances)
+
     # date_obj = datetime.fromtimestamp(timestamp / 1000.0)
 
     return user_res, bot_res

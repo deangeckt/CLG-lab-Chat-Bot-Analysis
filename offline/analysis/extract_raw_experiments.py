@@ -23,25 +23,19 @@ def read_games_data():
     df = pd.DataFrame()
 
     for file_name in os.listdir(root_folder):
-
-        # if file_name != '5d1e5ece2e9ac30016b522c5.json':
-        #     continue
-
-        print(file_name)
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
 
         version = data['server_version']
         experiment = experiments_short_names.get(version, 'err')
 
-        game_data_dict = {}
         for idx, game_data in enumerate(data['games_data']):
             game_role = game_data['config']['game_role']
 
-            game_data_dict['experiment'] = experiment
-            game_data_dict['human_role'] = game_role
-            game_data_dict['map'] = idx
-            game_data_dict['pid'] = file_name.split('.')[0]
+            game_data_dict = {'experiment': experiment,
+                              'human_role': game_role,
+                              'map': idx,
+                              'pid': file_name.split('.')[0]}
 
             if game_role == 'navigator':
                 dist_score = levenshtein_distance(game_data['config']['map_index'], game_data['user_map_path'])
@@ -55,6 +49,10 @@ def read_games_data():
             game_data_dict['is_time_success'] = is_time_success
 
             user_dialog, bot_dialog = analysis_game_chat(game_data['config']['game_role'], game_data['chat'])
+            if user_dialog is None:
+                print(f'empty user data: {experiment} - {file_name} - map: {idx}')
+                continue
+
             game_data_dict['user_num_of_uter'] = user_dialog['number of utterances']
             game_data_dict['user_mean_uter'] = user_dialog['mean utterance length']
             game_data_dict['user_total_uter'] = user_dialog['total number of tokens']
@@ -75,7 +73,6 @@ def read_games_data():
             game_data_dict['bot_num_of_mix'] = bot_dialog['number of mix utterances']
             game_data_dict['bot_num_of_inter_cs'] = bot_dialog['number of inter-sentential cs']
 
-
             for qa in game_data['survey']:
                 question = qa['question']
                 answer = qa['answer']
@@ -86,6 +83,10 @@ def read_games_data():
             df = pd.concat([df, pd.DataFrame.from_dict(game_data_dict, orient='index').T], ignore_index=True)
 
 
-    df.to_csv('raw_data.csv')
+    df.to_csv(r'offline/analysis/raw_data.csv')
 
-read_games_data()
+if __name__ == '__main__':
+    """
+    run from root repo
+    """
+    read_games_data()
