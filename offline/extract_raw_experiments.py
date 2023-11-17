@@ -19,10 +19,15 @@ from app.pages.common.versions import experiments_short_names, root_folder, time
 question_to_table = ['How much did you enjoy the task?',
                     "How successful do you think you were at completing the task?"]
 
-def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
+def read_games_data():
     df = pd.DataFrame()
 
     for file_name in os.listdir(root_folder):
+
+        # if file_name != '5d1e5ece2e9ac30016b522c5.json':
+        #     continue
+
+        print(file_name)
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
 
@@ -30,12 +35,13 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
         experiment = experiments_short_names.get(version, 'err')
 
         game_data_dict = {}
-
-        for game_data in data['games_data']:
+        for idx, game_data in enumerate(data['games_data']):
             game_role = game_data['config']['game_role']
 
             game_data_dict['experiment'] = experiment
             game_data_dict['human_role'] = game_role
+            game_data_dict['map'] = idx
+            game_data_dict['pid'] = file_name.split('.')[0]
 
             if game_role == 'navigator':
                 dist_score = levenshtein_distance(game_data['config']['map_index'], game_data['user_map_path'])
@@ -77,7 +83,9 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
                 if question in question_to_table:
                     game_data_dict[question] = answer
 
-        df = pd.concat([df, pd.DataFrame.from_dict(game_data_dict, orient='index')], ignore_index=True)
+            df = pd.concat([df, pd.DataFrame.from_dict(game_data_dict, orient='index').T], ignore_index=True)
 
+
+    df.to_csv('raw_data.csv')
 
 read_games_data()
