@@ -5,13 +5,8 @@ Each column is a "feature" e.g.: game_time, number of utterance
 Extra columns: experiment name, human/bot and game role (navigator/instructor)
 """
 import pandas as pd
-import numpy as np
 import json
 import os
-import datetime
-import math
-from collections import defaultdict
-
 from app.pages.common.dialog_analysis import analysis_game_chat
 from app.pages.common.gt_path import levenshtein_distance
 from app.pages.common.versions import experiments_short_names, root_folder, time_success_metric
