@@ -78,7 +78,7 @@ def read_games_data():
             df = pd.concat([df, pd.DataFrame.from_dict(game_data_dict, orient='index').T], ignore_index=True)
 
 
-    df.to_csv(r'offline/analysis/raw_data.csv')
+    df.to_csv(r'offline/analysis/raw_experiments.csv')
 
 if __name__ == '__main__':
     """
