@@ -268,7 +268,7 @@ st.subheader("Experiments")
 
 
 all_experiments = list(experiments_short_names.values())
-selected_started_ex = ['Baseline', 'Random CS', 'Short-context CS', 'Switch Last User CS', 'Align Last User CS']
+selected_started_ex = ['Baseline', 'Random CS', 'Short-context CS', 'Adversarial CS', 'Alignment CS']
 
 if 'selected_ex' not in st.session_state:
     st.session_state.selected_ex = selected_started_ex

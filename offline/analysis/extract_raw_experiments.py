@@ -69,11 +69,10 @@ def read_games_data():
             game_data_dict['bot_num_of_inter_cs'] = bot_dialog['number of inter-sentential cs']
 
             for qa in game_data['survey']:
-                question = qa['question']
-                answer = qa['answer']
+                game_data_dict[qa['question']] = qa['answer']
 
-                if question in question_to_table:
-                    game_data_dict[question] = answer
+            for qa in data['general_survey']:
+                game_data_dict[qa['question']] = qa['answer']
 
             df = pd.concat([df, pd.DataFrame.from_dict(game_data_dict, orient='index').T], ignore_index=True)
 
