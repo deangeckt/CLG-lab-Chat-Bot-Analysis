@@ -19,6 +19,7 @@ def manhattan(a, b):
     return sum(abs(val1-val2) for val1, val2 in zip(a,b))
 
 def levenshtein_distance(map_idx: int, pred: list):
+    # TODO: i dislike this!
 
     gt = gt_maps[map_idx]
     path1 = [(g['r'], g['c']) for g in gt]
