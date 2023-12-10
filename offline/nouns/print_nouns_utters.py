@@ -1,5 +1,4 @@
 import pandas as pd
-from collections import defaultdict
 import json
 import os
 import numpy as np
@@ -69,10 +68,11 @@ def read_games_data():
                 if uter['lang'] == 'none':
                     continue
                 elif uter['lang'] == 'mix':
-                    en_amount, en_cg_amount = is_in_nouns(nouns_names, map_idx, uter['msg'], 'eng')
-                    es_amount, es_cg_amount = is_in_nouns(nouns_names, map_idx, uter['msg'], 'es')
-                    amount = en_amount + es_amount
-                    cg_amount = en_cg_amount + es_cg_amount
+                    continue
+                    # en_amount, en_cg_amount = is_in_nouns(nouns_names, map_idx, uter['msg'], 'eng')
+                    # es_amount, es_cg_amount = is_in_nouns(nouns_names, map_idx, uter['msg'], 'es')
+                    # amount = en_amount + es_amount
+                    # cg_amount = en_cg_amount + es_cg_amount
                 else:
                     amount, cg_amount = is_in_nouns(nouns_names, map_idx, uter['msg'], uter['lang'])
 
