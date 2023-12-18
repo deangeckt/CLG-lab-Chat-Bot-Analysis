@@ -3,6 +3,7 @@ import json
 import os
 import numpy as np
 from app.pages.common.versions import experiments_short_names, root_folder
+import codecs
 
 experiments = ['Baseline', 'Random CS', 'Short-context CS', 'Adversarial CS', 'Alignment CS']
 
@@ -96,8 +97,30 @@ def read_games_data():
     print('num_of_sentences_with_cognates_nouns:', num_of_sentences_with_cg_nouns)
 
 
+def create_server_noun_simple_set():
+
+    all_nouns_list = []
+    nouns_names = {}
+    for i in range(1, 5):
+        df = pd.read_csv(f'offline/nouns/map_{i}_names.csv', encoding='utf-8')
+        cognates_list = list(df['is_cognate']) if 'is_cognate' in df else []
+        nouns_names[i] = {'eng': list(df['eng']), 'es': list(df['es']), 'cg': cognates_list}
+
+        all_nouns_list.extend(list(df['eng']))
+        all_nouns_list.extend(list(df['es']))
+
+    all_nouns_list = list(set(all_nouns_list))
+
+    f = codecs.open("nouns_set.txt", "w", "utf-8")
+    for noun in all_nouns_list:
+        f.write(noun)
+        f.write('\n')
+    f.close()
+
+
 if __name__ == '__main__':
     """
     run from root repo
     """
     read_games_data()
+    # create_server_noun_simple_set()
