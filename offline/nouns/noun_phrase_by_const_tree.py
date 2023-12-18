@@ -2,90 +2,106 @@ import os
 import json
 import stanza
 import nltk
-from app.pages.common.versions import experiments_short_names, root_folder
-import numpy as np
+from tqdm import tqdm
 
-debug_print = False
+from app.pages.common.versions import experiments_short_names, root_folder
+import pandas as pd
+
 experiments = ['Baseline', 'Random CS', 'Short-context CS', 'Adversarial CS', 'Alignment CS']
 
-def is_eng_valid_np(root):
+def __is_eng_noun_exist(root):
     if type(root) != nltk.tree.Tree:
         return False
-    if root.label() != 'NP':
-        return False
-    if root.height() != 3:
-        return False
-    for token in root:
-        if token.label() == 'NN':
+    if root.label() in ['NN', 'NNS', 'NNP']:
+        return True
+    for idx, child in enumerate(root):
+        if __is_eng_noun_exist(child):
             return True
     return False
 
 
-def is_es_noun_exist(root):
+def __is_eng_valid_np(root):
+    if type(root) != nltk.tree.Tree:
+        return False
+    if root.label() != 'NP':
+        return False
+    return __is_eng_noun_exist(root)
+
+
+def extract_english_noun_phrases_aux(root, nouns):
+    if type(root) != nltk.tree.Tree:
+        return []
+    for child in root:
+        if __is_eng_valid_np(child):
+            nouns.append(' '.join(child.leaves()))
+        else:
+            extract_english_noun_phrases_aux(child, nouns)
+
+
+def extract_english_noun_phrases(root) -> list[str]:
+    str_root = str(root)
+    if 'NP' not in str_root:
+        return []
+
+    nouns = []
+    extract_english_noun_phrases_aux(root, nouns)
+    return nouns
+
+
+def __is_es_noun_exist(root):
     if type(root) != nltk.tree.Tree:
         return False
     if root.label() == 'NOUN':
         return True
     for child in root:
-        if is_es_noun_exist(child):
+        if __is_es_noun_exist(child):
             return True
     return False
 
-def is_es_valid_np(root):
+
+def __is_es_valid_np(root):
     if type(root) != nltk.tree.Tree:
         return False
     if root.label() != 'sn':
         return False
+    return __is_es_noun_exist(root)
 
-    return is_es_noun_exist(root)
 
-
-def extract_english_noun_phrases(root, nouns, depth):
+def extract_spanish_noun_phrases_aux(root, nouns):
     if type(root) != nltk.tree.Tree:
-        return
+        return []
     for child in root:
-        tab_str = depth * '\t'
-        if is_eng_valid_np(child):
-            if debug_print:
-                print(f'{tab_str}{child}')
+        if __is_es_valid_np(child):
             nouns.append(' '.join(child.leaves()))
-        extract_english_noun_phrases(child, nouns, depth + 1)
+        else:
+            extract_spanish_noun_phrases_aux(child, nouns)
 
 
-def extract_spanish_noun_phrases(root, nouns, depth):
-    if type(root) != nltk.tree.Tree:
-        return
-    for child in root:
-        tab_str = depth * '\t'
-        if is_es_valid_np(child):
-            if debug_print:
-                print(f'{tab_str}{child}')
-            nouns.append(' '.join(child.leaves()))
-        extract_spanish_noun_phrases(child, nouns, depth + 1)
+def extract_spanish_noun_phrases(root) -> list[str]:
+    str_root = str(root)
+    if 'sn' not in  str_root:
+        return []
+
+    nouns = []
+    extract_spanish_noun_phrases_aux(root, nouns)
+    return nouns
 
 
-def extract_noun_phrase(text, lang):
-    # TODO: run time improvement - check if 'NP' and 'NN' in str(root), if not - no need to recur
-    if lang == 'eng':
-        return 0
+def extract_noun_phrase(text, lang) -> list[str]:
     nlp = en_nlp if lang == 'eng' else es_nlp
     foo = extract_english_noun_phrases if lang == 'eng' else extract_spanish_noun_phrases
 
     doc = nlp(text)
     sentence = doc.sentences[0]
     root = nltk.tree.Tree.fromstring(str(sentence.constituency))
-    nouns = []
-    foo(root, nouns, 0)
-    if nouns:
-        print(f'{text} ({lang}) - {nouns}')
-    return len(nouns)
+    if debug_print:
+        root.pprint()
+    return foo(root)
 
 
 def read_games_data():
-    amounts_of_tokens_in = []
-    num_of_sentences_without_nouns = 0
-
-    for file_name in os.listdir(root_folder):
+    df = pd.DataFrame(columns=['map', 'lang', 'speaker', 'text', 'nouns'])
+    for file_name in tqdm(os.listdir(root_folder)):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
 
@@ -96,38 +112,22 @@ def read_games_data():
 
         for idx, game_data in enumerate(data['games_data']):
             map_idx = idx + 1
-            # control map here
-            if map_idx != 1:
-                continue
-
             role = game_data['config']['game_role']
-
-            # control human / bot here
-            human_uters = list(filter(lambda e: e['id'] != role, game_data['chat']))
-
-            for uter in human_uters:
+            for uter in game_data['chat']:
+                speaker = 'human' if uter['id'] == role else 'bot'
                 if uter['lang'] == 'none':
                     continue
                 elif uter['lang'] == 'mix':
                     continue
-                    # en_amount = extract_noun_phrase(uter['msg'], 'eng')
-                    # es_amount = extract_noun_phrase(uter['msg'], 'es')
-                    # amount = en_amount + es_amount
-                else:
-                    amount = extract_noun_phrase(uter['msg'], uter['lang'])
 
-                if amount > 0:
-                    amounts_of_tokens_in.append(amount)
-                else:
-                    num_of_sentences_without_nouns += 1
+                text = uter['msg']
+                lang = uter['lang']
+                nouns = extract_noun_phrase(text, lang)
+                if len(nouns):
+                    row = {'map': map_idx, 'lang': lang, 'speaker': speaker, 'text': text, 'nouns': nouns}
+                    df = pd.concat([df, pd.DataFrame(row)], ignore_index=True)
 
-    num_of_sentences_with_nouns = len(amounts_of_tokens_in)
-    mean_num_of_nouns_per_sent = np.mean(amounts_of_tokens_in)
-
-    print()
-    print('num_of_sentences_with_nouns:', num_of_sentences_with_nouns)
-    print('num_of_sentences_without_nouns:', num_of_sentences_without_nouns)
-    print('mean_num_of_nouns_per_sent:', mean_num_of_nouns_per_sent)
+    df.to_csv('all_noun_phrase.csv')
 
 
 if __name__ == '__main__':
@@ -139,14 +139,17 @@ if __name__ == '__main__':
 
     # read_games_data()
 
-    ## mistakes
-    es_text = ['bien, me dirigo a la roca cerca del tigre y avanzo al palito',
-               '¿cuál es el siguiente paso después del amigo sapo?',
-               "genial, ahora estoy en la isla con el loro y el elefante"]
-    # en_text = [
-    #            "i'm on it, mate",
-    #            ]
-    # for text in en_text:
-    #     extract_noun_phrase(text, 'eng')
+    # debug
+    debug_print = False
+    en_text = [
+        # "ok walk forward to the middle of the island and then pass the frog and circle back toward the rocks that are past the frog and then cross those to get to the next island",
+
+        "circle back toward the rocks that are past the frog and then cross those to get to the next island",
+        "the big black dog walked to the park",
+        "cross over the snake and there is a small path that will lead you to the other island where the girraffe is"
+    ]
+    es_text = ['¿cuál es el siguiente paso después los amigos sapos?']
+    for text in en_text:
+        print(extract_noun_phrase(text, 'eng'))
     for text in es_text:
-        extract_noun_phrase(text, 'es')
+        print(extract_noun_phrase(text, 'es'))
