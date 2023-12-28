@@ -102,6 +102,7 @@ def create_server_noun_simple_set():
     all_nouns_list = []
     nouns_names = {}
     for i in range(1, 5):
+
         df = pd.read_csv(f'offline/nouns/map_{i}_names.csv', encoding='utf-8')
         cognates_list = list(df['is_cognate']) if 'is_cognate' in df else []
         nouns_names[i] = {'eng': list(df['eng']), 'es': list(df['es']), 'cg': cognates_list}
@@ -118,9 +119,28 @@ def create_server_noun_simple_set():
     f.close()
 
 
+def create_server_spanish_dict():
+    """
+    for congruent CS strategy
+    """
+    for i in range(1, 5):
+        if i != 1:
+            break
+        df = pd.read_csv(f'offline/nouns/map_{i}_names.csv', encoding='utf-8')
+        f = codecs.open(f"offline/nouns/map_{i}_nouns_set.txt", "w", "utf-8")
+
+        # spanish nouns should be unique (no duplications) as this is a dict / set in the server
+        print(len(list(df['es'])))
+        print(len(set(list(df['es']))))
+
+        for eng, es, in zip(list(df['eng']), list(df['es'])):
+            f.write(f'{es.lower()}_{eng.lower()}')
+            f.write('\n')
+        f.close()
+
 if __name__ == '__main__':
     """
     run from root repo
     """
-    read_games_data()
-    # create_server_noun_simple_set()
+    # read_games_data()
+    create_server_spanish_dict()
