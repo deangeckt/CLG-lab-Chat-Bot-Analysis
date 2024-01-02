@@ -123,20 +123,30 @@ def create_server_spanish_dict():
     """
     for congruent CS strategy
     """
+    spa_to_eng_set = {}
     for i in range(1, 5):
-        if i != 1:
-            break
         df = pd.read_csv(f'offline/nouns/map_{i}_names.csv', encoding='utf-8')
-        f = codecs.open(f"offline/nouns/map_{i}_nouns_set.txt", "w", "utf-8")
 
         # spanish nouns should be unique (no duplications) as this is a dict / set in the server
         print(len(list(df['es'])))
         print(len(set(list(df['es']))))
 
+        # a = list(df['es'])
+        # print({x: a.count(x) for x in a})
+
         for eng, es, in zip(list(df['eng']), list(df['es'])):
-            f.write(f'{es.lower()}_{eng.lower()}')
-            f.write('\n')
-        f.close()
+            if es.lower in spa_to_eng_set:
+                print(es)
+
+            spa_to_eng_set[es.lower()] = eng.lower()
+
+    print(len(spa_to_eng_set))
+    f = codecs.open(f"offline/nouns/spanish_nouns_set.txt", "w", "utf-8")
+    for es in spa_to_eng_set:
+        eng = spa_to_eng_set[es]
+        f.write(f'{es.lower()}_{eng}')
+        f.write('\n')
+    f.close()
 
 if __name__ == '__main__':
     """
