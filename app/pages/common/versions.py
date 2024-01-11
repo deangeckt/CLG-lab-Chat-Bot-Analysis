@@ -38,6 +38,7 @@ experiments_short_names = {
     '2.3.3_p': 'Short-context CS',
     '2.3.4_p': 'Adversarial CS',
     '2.3.5_p': 'Alignment CS',
+    '2.4.0_p': 'Insertional Spanish Congruent'
 }
 
 
