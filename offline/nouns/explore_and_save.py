@@ -138,7 +138,7 @@ def create_server_spanish_dict():
             if es.lower in spa_to_eng_set:
                 print(es)
 
-            spa_to_eng_set[es.lower()] = eng.lower()
+            spa_to_eng_set[es.lower().strip()] = eng.lower().strip()
 
     print(len(spa_to_eng_set))
     f = codecs.open(f"offline/nouns/spanish_nouns_set.txt", "w", "utf-8")
