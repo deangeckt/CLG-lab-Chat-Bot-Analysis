@@ -1,8 +1,9 @@
 ﻿eng,es
 tent,carpa
 dog,perro
+barbecue,barbacoa
 barbecue,parilla
-fire,fogata
+campfire,fogata
 fire,fuego
 campfire,hoguera
 car,coche
@@ -14,6 +15,7 @@ puppy,perrita
 puppy,perrito
 bushes,arbustos
 bush,arbusto
+mushroom,seta
 mushroom,hongo
 mushrooms,hongos
 wood,madera
@@ -23,3 +25,4 @@ cabin,cabaÃ±a
 cabin,cabina
 grass,hierba
 grass,césped
+grass,grama

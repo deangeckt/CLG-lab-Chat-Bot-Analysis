@@ -144,7 +144,7 @@ def create_server_spanish_dict():
     f = codecs.open(f"offline/nouns/spanish_nouns_set.txt", "w", "utf-8")
     for es in spa_to_eng_set:
         eng = spa_to_eng_set[es]
-        f.write(f'{es.lower()}_{eng}')
+        f.write(f'{es}_{eng}')
         f.write('\n')
     f.close()
 
