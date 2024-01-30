@@ -20,6 +20,7 @@ version_details = {
     '2.3.3_p': 'Short-context based Code-switch alternation strategy - switch on the utterance level; no-dep on human utter',
     '2.3.4_p': 'Switch Last User based Code-switch alternation strategy - switch on the turn level; dep on last human utter',
     '2.3.5_p': 'Align Last User based Code-switch alternation strategy - switch on the turn level; dep on last human utter',
+    '2.4.0_p': 'Insertional Spanish Congruent'
 }
 
 experiments_short_names = {

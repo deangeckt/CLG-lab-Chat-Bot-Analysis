@@ -240,11 +240,19 @@ def render_chat():
 def render_survey(dash_key: str):
     fdata = list(filter(filter_data, data_list))
     call_data = fdata[st.session_state.file_idx]
-    curr_game_data = call_data['games_data'][st.session_state.game_idx]
-    map_idx = st.session_state.game_idx
 
-    survey_header = 'General survey:' if dash_key == 'general_survey' else f'Game survey - map: {map_idx+1}'
-    survey_data = call_data['general_survey'] if dash_key == 'general_survey' else curr_game_data['survey']
+    if call_data['clinet_version'] >= '2.3.9_p':
+        map_survey_data = call_data['map_survey']
+        map_survey_header = 'Map survey'
+    else:
+        curr_game_data = call_data['games_data'][st.session_state.game_idx]
+        map_idx = st.session_state.game_idx
+        map_survey_data = curr_game_data['survey']
+        map_survey_header = f'Game survey - map: {map_idx+1}'
+
+
+    survey_header = 'General survey:' if dash_key == 'general_survey' else map_survey_header
+    survey_data = call_data['general_survey'] if dash_key == 'general_survey' else map_survey_data
 
     with mui.Paper(key=dash_key, sx={
                 "display": 'flex',

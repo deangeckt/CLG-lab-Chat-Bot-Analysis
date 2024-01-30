@@ -172,7 +172,8 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             agg_meta[experiment]['bot_num_of_inter_cs'].append(bot_dialog['number of inter-sentential cs'])
 
 
-            for qa in game_data['survey']:
+            survey_data = data['map_survey'] if data['clinet_version'] >= '2.3.9_p' else game_data['survey']
+            for qa in survey_data:
                 question = qa['question']
                 answer = qa['answer']
                 agg_data[experiment][question].append(answer)
@@ -308,7 +309,7 @@ ins_table = pd.DataFrame.from_dict(instructor_det_copy)
 st.table(ins_table)
 
 
-st.subheader("Game Survey")
+st.subheader("Map Survey")
 plot_chart(games_data, 'Mean', ['Question', 'Mean', 'Experiment', 'Range'])
 plot_chart(games_data, 'Median', ['Question', 'Median', 'Experiment', 'Range'])
 
