@@ -18,6 +18,7 @@ rating_likely_range = 'not at all likely: 0 -> extremely likely: 100'
 knowledge_range = 'no knowledge at all: 0 -> perfect, like a native speaker: 100'
 time_range = 'never: 0 -> always: 100'
 enjoy_range = 'not at all: 0 -> yes very much: 100'
+natural_range = 'very unnatural :0 -> very natural: 100'
 
 questions_ranges = {
     'How likely is your partner to be a fluent speaker of English?': rating_likely_range,
@@ -25,6 +26,7 @@ questions_ranges = {
     'How likely is your partner to be a fluent speaker of Spanish?': rating_likely_range,
     'How likely do you think it is that your partner is bilingual?': rating_likely_range,
     'Do you enjoy mixing languages in conversation?':enjoy_range,
+    "How natural was your conversational partner’s language switching?": natural_range,
     'Age': ''
 }
 
@@ -269,7 +271,7 @@ st.subheader("Experiments")
 
 
 all_experiments = list(experiments_short_names.values())
-selected_started_ex = ['Baseline', 'Random CS', 'Short-context CS', 'Adversarial CS', 'Alignment CS']
+selected_started_ex = ['Baseline', 'Random CS', 'Short-context CS', 'Adversarial CS', 'Alignment CS', 'Insertional Spanish Congruent']
 
 if 'selected_ex' not in st.session_state:
     st.session_state.selected_ex = selected_started_ex
