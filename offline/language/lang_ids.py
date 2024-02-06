@@ -104,6 +104,7 @@ def show_examples():
     ]
 
     sents = [
+        "ok aqui llegue con el perro",
         '*finished* gracias por las instrucciones!',
         "Great job! Now, veer slightly left and start heading northwest. Remember to cross between the red tent and the larger speaker. Once you've done that, describe what you see next.",
         "Compra souvenirs en la tienda de regalos",
@@ -183,6 +184,6 @@ if __name__ == '__main__':
     langid.set_languages(['en', 'es'])
     lid = LanguageIdentification('spa-eng')
 
-    # show_examples()
+    show_examples()
     # eval_on_custom_dataset()
     clf_map_task_dataset()
