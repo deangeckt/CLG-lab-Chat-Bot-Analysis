@@ -2,7 +2,6 @@ import numpy as np
 import datetime
 
 
-
 def get_tokens(utterances: list[str]):
     return [uter.split(' ') for uter in utterances]
 
@@ -25,7 +24,7 @@ def analysis_role_aux(elements):
 
     # languages
     langs = [ele['lang'] for ele in elements]
-    keys = ['eng', 'es', 'mix']
+    keys = ['eng', 'es', 'mix', 'none']
     lang_dict = {k: 0 for k in keys}
     for lang in langs:
         if lang not in keys:
@@ -34,6 +33,7 @@ def analysis_role_aux(elements):
 
     lang_dict_format = {f'number of {k} utterances': lang_dict[k] for k in lang_dict}
 
+    # inter-sentential cs
     num_of_uter_switch = 0
     if len(langs) > 1:
         no_switch = ['mix', 'none']
@@ -45,7 +45,28 @@ def analysis_role_aux(elements):
 
     lang_dict_format['number of inter-sentential cs'] = num_of_uter_switch
 
-    return {**counts_dict, **lang_dict_format}
+    # Congruent cs
+    uter_switch_amount = 0
+    switch_amount = 0
+    switch_amount_noun = 0
+    switch_amount_noun_det = 0
+
+    for uter_ele in elements:
+        uter_switches = uter_ele['cong_cs']
+        if not uter_switches:  # empty list
+            continue
+        uter_switch_amount += 1
+        switch_amount += len(uter_switches)
+        switch_amount_noun += len([noun for noun in uter_switches if noun == 'noun'])
+        switch_amount_noun_det += len([noun for noun in uter_switches if noun == 'noun_det'])
+
+    cong_dict_format = {'number of utterances with some congruent switch': uter_switch_amount,
+                        'number of total congruent switches': switch_amount,
+                        'number of noun switches': switch_amount_noun,
+                        'number of noun-det switches': switch_amount_noun_det,
+                        }
+
+    return {**counts_dict, **lang_dict_format, **cong_dict_format}
 
 
 def squash_bot_chat(role: str, chat: list):
@@ -58,7 +79,7 @@ def squash_bot_chat(role: str, chat: list):
         curr_ele = chat[i]
         if curr_ele['id'] == role:
             continue
-        next_ele = chat[i+1]
+        next_ele = chat[i + 1]
         if next_ele['id'] != role and next_ele['lang'] == curr_ele['lang']:
             same_lng_turn_bot_indices.append(i)
 
@@ -93,7 +114,7 @@ def analysis_entrainment(role: str, chat: list):
             curr_bot_lng = ele['lang']
             if curr_bot_lng != last_bot_lng and curr_bot_lng not in no_switch and last_bot_lng not in no_switch:
                 bot_just_switch = True
-                if ele_idx < len(chat[1:])-1:
+                if ele_idx < len(chat[1:]) - 1:
                     bot_inter_sentential_count += 1
             else:
                 bot_just_switch = False
@@ -104,7 +125,6 @@ def analysis_entrainment(role: str, chat: list):
                 same_as_last_bot_counter += 1
                 if bot_just_switch:
                     same_as_last_bot_on_inter_sentential += 1
-
 
     entr_on_bot_is_cs = same_as_last_bot_on_inter_sentential / bot_inter_sentential_count if bot_inter_sentential_count > 0 else 0
     entr_all_dialog = same_as_last_bot_counter / human_uters if human_uters > 0 else 0
@@ -125,12 +145,12 @@ def analysis_game_chat(role: str, chat: list):
 
     for ele in chat:
         if ele['id'] != role:
-            last_bot_timestamp = datetime.datetime.fromtimestamp(ele['timestamp']/1000)
+            last_bot_timestamp = datetime.datetime.fromtimestamp(ele['timestamp'] / 1000)
             bot_utterances.append(ele)
             continue
         user_utterances.append(ele)
         if last_bot_timestamp is not None:
-            user_time_diff.append(datetime.datetime.fromtimestamp(ele['timestamp']/1000) - last_bot_timestamp)
+            user_time_diff.append(datetime.datetime.fromtimestamp(ele['timestamp'] / 1000) - last_bot_timestamp)
 
     user_res = None
     if user_utterances:
@@ -150,7 +170,7 @@ if __name__ == '__main__':
     from app.pages.common.versions import root_folder
 
     for file_name in os.listdir(root_folder):
-        if file_name != '5c6709ab926a5b0001eb29c1.json':
+        if file_name != '60cffac73993c4347f897f1a.json':
             continue
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)

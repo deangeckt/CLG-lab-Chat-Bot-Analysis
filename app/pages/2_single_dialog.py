@@ -130,6 +130,17 @@ with map_img_col:
 
     st.image(image, width=img_width, caption=f'Map: {map_idx+1}')
 
+    fdata = list(filter(filter_data, data_list))
+    call_data = fdata[st.session_state.file_idx]
+    version = call_data['server_version']
+
+    st.text(f"Version: {version} ")
+    st.text(f"Prolific id: {call_data['prolific']['prolific_id']} ")
+    st.text(f"Experiment - {experiments_short_names[version]}: {version_details.get(version, '')}")
+    st.text(f"Date: {call_data['date']} 📅")
+    st.text(f"Code-switch strategy: {call_data['cs_strategy']} ")
+    st.text(f"Game time: {curr_game_data['game_time']} seconds ⌛")
+
 
 with general_info_col:
     fdata = list(filter(filter_data, data_list))
@@ -152,9 +163,6 @@ with general_info_col:
             else:
                 val = user_dialog[dialog_key]
             st.text(f"user - {dialog_key}: {val} 💪️")
-    for dialog_key in bot_dialog:
-        val = f"{bot_dialog[dialog_key]:.2f}" if 'mean' in dialog_key else bot_dialog[dialog_key]
-        st.text(f"bot - {dialog_key}: {val} 🦾")
 
     is_nav = curr_game_data['config']['game_role'] == 'navigator'
     if is_nav:
@@ -175,16 +183,11 @@ with nav_btns_col:
         next_game = st.button('Next Map ⏭️⏭️️', on_click=next_game_click)
 
     # st.divider()
-    fdata = list(filter(filter_data, data_list))
-    call_data = fdata[st.session_state.file_idx]
-    version = call_data['server_version']
 
-    st.text(f"Version: {version} ")
-    st.text(f"Prolific id: {call_data['prolific']['prolific_id']} ")
-    st.text(f"Experiment - {experiments_short_names[version]}: {version_details.get(version, '')}")
-    st.text(f"Date: {call_data['date']} 📅")
-    st.text(f"Code-switch strategy: {call_data['cs_strategy']} ")
-    st.text(f"Game time: {curr_game_data['game_time']} seconds ⌛")
+    for dialog_key in bot_dialog:
+        val = f"{bot_dialog[dialog_key]:.2f}" if 'mean' in dialog_key else bot_dialog[dialog_key]
+        st.text(f"bot - {dialog_key}: {val} 🦾")
+
 
 def render_chat():
     fdata = list(filter(filter_data, data_list))

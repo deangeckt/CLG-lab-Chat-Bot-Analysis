@@ -10,13 +10,14 @@ import math
 
 from app.pages.common.dialog_analysis import analysis_game_chat
 from app.pages.common.gt_path import levenshtein_distance
-from app.pages.common.versions import experiments_short_names, version_details, time_success_metric, root_folder
+from app.pages.common.versions import experiments_short_names, version_details, root_folder, time_success_metric
 
 default_rating_range = 'not at all: 0 -> extremely: 100'
 rating_likely_range = 'not at all likely: 0 -> extremely likely: 100'
 knowledge_range = 'no knowledge at all: 0 -> perfect, like a native speaker: 100'
 time_range = 'never: 0 -> always: 100'
 enjoy_range = 'not at all: 0 -> yes very much: 100'
+natural_range = 'very unnatural :0 -> very natural: 100'
 
 questions_ranges = {
     'How likely is your partner to be a fluent speaker of English?': rating_likely_range,
@@ -24,6 +25,7 @@ questions_ranges = {
     'How likely is your partner to be a fluent speaker of Spanish?': rating_likely_range,
     'How likely do you think it is that your partner is bilingual?': rating_likely_range,
     'Do you enjoy mixing languages in conversation?':enjoy_range,
+    "How natural was your conversational partner’s language switching?": natural_range,
     'Age': ''
 }
 
@@ -88,11 +90,21 @@ def avg_role_metadata(agg_metadata: defaultdict):
     human_mean_utters_en = np.mean(agg_metadata['user_num_of_en'])
     human_mean_utters_es = np.mean(agg_metadata['user_num_of_es'])
     human_mean_utters_mix = np.mean(agg_metadata['user_num_of_mix'])
+    human_mean_utters_none = np.mean(agg_metadata['user_num_of_none'])
     human_mean_inter_cs = np.mean(agg_metadata['user_num_of_inter_cs'])
 
     res['human - mean number of eng utterances (%)'] = format_percentage(human_mean_utters_en / human_mean_utters)
     res['human - mean number of es utterances (%)'] = format_percentage(human_mean_utters_es / human_mean_utters)
     res['human - mean number of mixed utterances (%)'] = format_percentage(human_mean_utters_mix / human_mean_utters)
+    res['human - mean number of none lng utterances (%)'] = format_percentage(human_mean_utters_none / human_mean_utters)
+
+    # cong cs
+    human_mean_num_uter_w_cong_cs = np.mean(agg_metadata['user_num_uter_with_cong_cs'])
+    res['human - mean number of utterances with some congruent switch'] = format_percentage(human_mean_num_uter_w_cong_cs / human_mean_utters)
+    res['human - mean number of total congruent switches'] = mean_and_format_str(agg_metadata['user_num_of_total_cong_cs'])
+    res['human - mean number of noun switches'] = mean_and_format_str(agg_metadata['user_num_of_noun_cong_cs'])
+    res['human - mean number of noun-det switches'] = mean_and_format_str(agg_metadata['user_num_of_noun_det_cong_cs'])
+
     res['human - mean number of inter-sentential cs (%)'] = format_percentage(human_mean_inter_cs / (human_mean_utters - 1))
     res['human - mean % entrainment - all dialog'] = format_percentage(np.mean(agg_metadata['% entrainment - all dialog']))
     res['human - mean % entrainment - on bot inter-sentential cs'] = format_percentage(np.mean(agg_metadata['% entrainment - on bot inter-sentential cs']))
@@ -104,11 +116,19 @@ def avg_role_metadata(agg_metadata: defaultdict):
     bot_mean_utters_en = np.mean(agg_metadata['bot_num_of_en'])
     bot_mean_utters_es = np.mean(agg_metadata['bot_num_of_es'])
     bot_mean_utters_mix = np.mean(agg_metadata['bot_num_of_mix'])
+    bot_mean_utters_none = np.mean(agg_metadata['bot_num_of_none'])
     bot_mean_inter_cs = np.mean(agg_metadata['bot_num_of_inter_cs'])
     res['bot - mean number of eng utterances (%)'] = format_percentage(bot_mean_utters_en / bot_mean_utters)
     res['bot - mean number of es utterances (%)'] =format_percentage(bot_mean_utters_es / bot_mean_utters)
     res['bot - mean number of mixed utterances (%)'] = format_percentage(bot_mean_utters_mix / bot_mean_utters)
+    res['bot - mean number of none lng utterances (%)'] = format_percentage(bot_mean_utters_none / bot_mean_utters)
     res['bot - mean number of inter-sentential cs (%)'] = format_percentage(bot_mean_inter_cs / (bot_mean_utters - 1))
+
+    bot_mean_num_uter_w_cong_cs = np.mean(agg_metadata['bot_num_uter_with_cong_cs'])
+    res['bot - mean number of utterances with some congruent switch'] = format_percentage(bot_mean_num_uter_w_cong_cs / bot_mean_utters)
+    res['bot - mean number of total congruent switches'] = mean_and_format_str(agg_metadata['bot_num_of_total_cong_cs'])
+    res['bot - mean number of noun switches'] = mean_and_format_str(agg_metadata['bot_num_of_noun_cong_cs'])
+    res['bot - mean number of noun-det switches'] = mean_and_format_str(agg_metadata['bot_num_of_noun_det_cong_cs'])
 
 
     for q in question_to_table:
@@ -129,8 +149,8 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
 
-        client_version = data['clinet_version']
-        experiment = experiments_short_names.get(client_version, 'err')
+        version = data['server_version']
+        experiment = experiments_short_names.get(version, 'err')
 
         for game_data in data['games_data']:
             agg_meta = agg_metadata_ins
@@ -144,21 +164,29 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
 
             game_time = game_data['game_time']
             agg_meta[experiment]['game_time'].append(game_time)
-            max_game_time = time_success_metric(version=client_version)
+            max_game_time = time_success_metric(version=version)
             is_time_success = 1 if int(game_time) < max_game_time else 0
             agg_meta[experiment]['is_time_success'].append(is_time_success)
 
             user_dialog, bot_dialog = analysis_game_chat(game_data['config']['game_role'], game_data['chat'])
-            agg_meta[experiment]['user_num_of_uter'].append(user_dialog['number of utterances'])
-            agg_meta[experiment]['user_mean_uter'].append(user_dialog['mean utterance length'])
-            agg_meta[experiment]['user_total_uter'].append(user_dialog['total number of tokens'])
+            if user_dialog is not None:
+                agg_meta[experiment]['user_num_of_uter'].append(user_dialog['number of utterances'])
+                agg_meta[experiment]['user_mean_uter'].append(user_dialog['mean utterance length'])
+                agg_meta[experiment]['user_total_uter'].append(user_dialog['total number of tokens'])
 
-            agg_meta[experiment]['user_num_of_en'].append(user_dialog['number of eng utterances'])
-            agg_meta[experiment]['user_num_of_es'].append(user_dialog['number of es utterances'])
-            agg_meta[experiment]['user_num_of_mix'].append(user_dialog['number of mix utterances'])
-            agg_meta[experiment]['user_num_of_inter_cs'].append(user_dialog['number of inter-sentential cs'])
-            agg_meta[experiment]['% entrainment - all dialog'].append(user_dialog['% entrainment - all dialog'])
-            agg_meta[experiment]['% entrainment - on bot inter-sentential cs'].append(user_dialog['% entrainment - on bot inter-sentential cs'])
+                agg_meta[experiment]['user_num_of_en'].append(user_dialog['number of eng utterances'])
+                agg_meta[experiment]['user_num_of_es'].append(user_dialog['number of es utterances'])
+                agg_meta[experiment]['user_num_of_mix'].append(user_dialog['number of mix utterances'])
+                agg_meta[experiment]['user_num_of_none'].append(user_dialog['number of none utterances'])
+                agg_meta[experiment]['user_num_of_inter_cs'].append(user_dialog['number of inter-sentential cs'])
+
+                agg_meta[experiment]['user_num_uter_with_cong_cs'].append(user_dialog['number of utterances with some congruent switch'])
+                agg_meta[experiment]['user_num_of_total_cong_cs'].append(user_dialog['number of total congruent switches'])
+                agg_meta[experiment]['user_num_of_noun_cong_cs'].append(user_dialog['number of noun switches'])
+                agg_meta[experiment]['user_num_of_noun_det_cong_cs'].append(user_dialog['number of noun-det switches'])
+
+                agg_meta[experiment]['% entrainment - all dialog'].append(user_dialog['% entrainment - all dialog'])
+                agg_meta[experiment]['% entrainment - on bot inter-sentential cs'].append(user_dialog['% entrainment - on bot inter-sentential cs'])
 
             agg_meta[experiment]['bot_num_of_uter'].append(bot_dialog['number of utterances'])
             agg_meta[experiment]['bot_mean_uter'].append(bot_dialog['mean utterance length'])
@@ -167,10 +195,17 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             agg_meta[experiment]['bot_num_of_en'].append(bot_dialog['number of eng utterances'])
             agg_meta[experiment]['bot_num_of_es'].append(bot_dialog['number of es utterances'])
             agg_meta[experiment]['bot_num_of_mix'].append(bot_dialog['number of mix utterances'])
+            agg_meta[experiment]['bot_num_of_none'].append(bot_dialog['number of none utterances'])
             agg_meta[experiment]['bot_num_of_inter_cs'].append(bot_dialog['number of inter-sentential cs'])
 
+            agg_meta[experiment]['bot_num_uter_with_cong_cs'].append(bot_dialog['number of utterances with some congruent switch'])
+            agg_meta[experiment]['bot_num_of_total_cong_cs'].append(bot_dialog['number of total congruent switches'])
+            agg_meta[experiment]['bot_num_of_noun_cong_cs'].append(bot_dialog['number of noun switches'])
+            agg_meta[experiment]['bot_num_of_noun_det_cong_cs'].append(bot_dialog['number of noun-det switches'])
 
-            for qa in game_data['survey']:
+
+            survey_data = data['map_survey'] if data['clinet_version'] >= '2.3.9_p' else game_data['survey']
+            for qa in survey_data:
                 question = qa['question']
                 answer = qa['answer']
                 agg_data[experiment][question].append(answer)
@@ -233,7 +268,7 @@ def read_general_data() -> tuple[pd.DataFrame, dict]:
 
     for ex in more_data:
         more_data[ex]['participants'] = count[ex]
-        more_data[ex]['date'] = list(dates_data[ex])
+        more_data[ex]['date'] = ', '.join(list(dates_data[ex]))
 
     df = agg_dict_data_to_df(agg_data)
     return df, more_data
@@ -266,7 +301,7 @@ st.subheader("Experiments")
 
 
 all_experiments = list(experiments_short_names.values())
-selected_started_ex = ['Baseline', 'Random CS', 'Short-context CS', 'Switch Last User CS', 'Align Last User CS']
+selected_started_ex = ['Baseline', 'Random CS', 'Short-context CS', 'Adversarial CS', 'Alignment CS', 'Insertional Spanish Congruent']
 
 if 'selected_ex' not in st.session_state:
     st.session_state.selected_ex = selected_started_ex

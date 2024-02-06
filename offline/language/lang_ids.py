@@ -1,10 +1,12 @@
 import json
 import os
-
+import re
 import pandas as pd
 from lingua import Language, LanguageDetectorBuilder
 import langid
 from codeswitch.codeswitch import LanguageIdentification
+from collections import Counter
+import codecs
 
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score
 import matplotlib.pyplot as plt
@@ -47,7 +49,6 @@ def pred_sentence_bert(sentence: str):
             langs.append('es')
     return cs_clf_heuristic(langs)
 
-
 def pred_sentence_lingua(sentence: str):
     result = lingua_detector.detect_multiple_languages_of(sentence)
     if len(result) == 1:
@@ -56,6 +57,41 @@ def pred_sentence_lingua(sentence: str):
         return 'mix'
 
 
+def __clf_map_task_dataset_uter_sent(uter: str):
+    uter = uter.replace('*finished*', '').strip()
+    uter = re.sub("(Ok,|OK,|ok,|Ok|OK|ok)", '', uter).strip()
+    return pred_sentence_bert(uter)
+
+
+def __clf_map_task_dataset_uter_cong_switch(uter: str) -> list[str]:
+    """
+    :return: list of switched per sentences: type of switch are either 'noun' or 'noun_det'
+    'noun' for an english token switched w/o its previous determiner. i.e: 'el dog'
+    'noun_det' with the determiner. i.e: 'the dog'
+    """
+    lng_tokens = lid.identify(uter)
+    counts = Counter([ele['entity'] for ele in lng_tokens])
+    if counts['spa'] < counts['en']:
+        return []
+
+    switches = []
+    eng_tokens = [(ele['word'], idx) for idx, ele in enumerate(lng_tokens) if ele['entity'] == 'en']
+    for eng_token, idx in eng_tokens:
+        if eng_token not in eng_nouns:
+            continue
+
+        if idx == 0:
+            switches.append('noun')
+            continue
+
+        prev_token = lng_tokens[idx-1]
+        if prev_token['word'] == 'the':
+            switches.append('noun_det')
+        else:
+            switches.append('noun')
+
+    return switches
+
 def clf_map_task_dataset():
     root_folder = r"data/prolific/"
     output_folder = r'data/prolific_lang_ids'
@@ -63,8 +99,8 @@ def clf_map_task_dataset():
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
-        if os.path.exists(os.path.join(output_folder, file_name)):
-            continue
+        # if os.path.exists(os.path.join(output_folder, file_name)):
+        #     continue
 
         print(f'do: {file_name}')
 
@@ -72,10 +108,8 @@ def clf_map_task_dataset():
         for game in data['games_data']:
             chat = game['chat']
             for chat_ele in chat:
-                uter = chat_ele['msg']
-                uter = uter.replace('*finished*', '').strip()
-                uter_lng = pred_sentence_bert(uter)
-                chat_ele['lang'] = uter_lng
+                chat_ele['lang'] = __clf_map_task_dataset_uter_sent(chat_ele['msg'])
+                chat_ele['cong_cs'] = __clf_map_task_dataset_uter_cong_switch(chat_ele['msg'])
 
         with open(os.path.join(output_folder, file_name), 'w') as f:
             json.dump(data, f)
@@ -104,13 +138,19 @@ def show_examples():
     ]
 
     sents = [
+        "Ve con el tiger",
         "ok aqui llegue con el perro",
+        "OK ¿y ahora qué?",
+        "Ok ¿y ahora qué?",
+        "ok, aqui llegue con el perro",
+        "OK, ¿y ahora qué?",
+        "Ok, ¿y ahora qué?",
+        "Ok , ¿y ahora qué?",
         '*finished* gracias por las instrucciones!',
         "Great job! Now, veer slightly left and start heading northwest. Remember to cross between the red tent and the larger speaker. Once you've done that, describe what you see next.",
         "Compra souvenirs en la tienda de regalos",
         'cruza por el stick hacia el tigre',
         "despues tienes que cruzar el alligator"
-
     ]
 
     print('token-lvl predication using lingua')
@@ -131,6 +171,7 @@ def show_examples():
     print('sentence-lvl predication using lince-bert')
     for sentence in sents:
         sent = sentence.replace('*finished*', '').strip()
+        sent = re.sub("(Ok,|OK,|ok,|Ok|OK|ok)", '', sent).strip()
         print(sentence, '->', pred_sentence_bert(sent).upper())
     print()
 
@@ -184,6 +225,10 @@ if __name__ == '__main__':
     langid.set_languages(['en', 'es'])
     lid = LanguageIdentification('spa-eng')
 
+    nouns_file = codecs.open('offline/nouns/spanish_nouns_set.txt', "r", "utf-8")
+    es_to_eng_nouns = {n.strip().split('_')[0]: n.strip().split('_')[1] for n in nouns_file.readlines()}
+    eng_nouns = set(list(es_to_eng_nouns.values()))
+
     show_examples()
     # eval_on_custom_dataset()
-    clf_map_task_dataset()
+    # clf_map_task_dataset()
