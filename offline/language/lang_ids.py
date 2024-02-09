@@ -99,8 +99,8 @@ def clf_map_task_dataset():
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
-        # if os.path.exists(os.path.join(output_folder, file_name)):
-        #     continue
+        if os.path.exists(os.path.join(output_folder, file_name)):
+            continue
 
         print(f'do: {file_name}')
 
@@ -229,6 +229,6 @@ if __name__ == '__main__':
     es_to_eng_nouns = {n.strip().split('_')[0]: n.strip().split('_')[1] for n in nouns_file.readlines()}
     eng_nouns = set(list(es_to_eng_nouns.values()))
 
-    show_examples()
+    # show_examples()
     # eval_on_custom_dataset()
-    # clf_map_task_dataset()
+    clf_map_task_dataset()
