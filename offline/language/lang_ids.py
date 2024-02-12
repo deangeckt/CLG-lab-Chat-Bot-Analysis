@@ -12,6 +12,12 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_s
 import matplotlib.pyplot as plt
 
 
+def clean_endings(token: str):
+    if token.endswith(('!', '.', '?', '¿', ',')):
+        return token[:len(token) - 1]
+    return token
+
+
 def pred_token_lingua(token: str):
     lang = lingua_detector.detect_language_of(token)
     return 'eng' if lang == Language.ENGLISH else 'es'
@@ -49,6 +55,7 @@ def pred_sentence_bert(sentence: str):
             langs.append('es')
     return cs_clf_heuristic(langs)
 
+
 def pred_sentence_lingua(sentence: str):
     result = lingua_detector.detect_multiple_languages_of(sentence)
     if len(result) == 1:
@@ -57,10 +64,141 @@ def pred_sentence_lingua(sentence: str):
         return 'mix'
 
 
-def __clf_map_task_dataset_uter_sent(uter: str):
+def __clf_map_task_dataset_uter_lng(uter: str):
     uter = uter.replace('*finished*', '').strip()
     uter = re.sub("(Ok,|OK,|ok,|Ok|OK|ok)", '', uter).strip()
     return pred_sentence_bert(uter)
+
+
+def __clf_map_task_dataset_uter_cong_switch_per_token(eng_token: str, idx: int, sentence: list[str]):
+    if eng_token not in eng_nouns:
+        return None
+
+    if idx == 0:
+        print(f'{eng_token} in IDX 0')
+        return None
+
+    masc_femi_determiners_dict = {
+        'el': 'la',  # the singular
+        'los': 'las',  # the plural
+        'ese': 'esa',  # that
+        'este': 'esta',  # this
+        'esos': 'esas',  # those
+        'estos': 'estas',  # those
+        'un': 'una',  # a singular
+        'unos': 'unas',  # a plural
+        'nuestro': 'nuestra',  # my
+        'nuestros': 'nuestras',  # ours
+        'vuestro': 'vuestra',  # your
+        'vuestros': 'vuestras',  # theirs
+        #### ADP
+        'del': 'de la',  # to the
+        'al': 'a la',  # of / to the (al = a + el shortcut)
+    }
+
+    eng_determiners = [
+        "the",
+        "a",
+        "an",
+        "this",
+        "that",
+        "these",
+        "those",
+        "my",
+        "your",
+        "his",
+        "her",
+        "its",
+        "our",
+        "their",
+        "mine",
+        "yours",
+        "hers",
+        "ours",
+        "theirs",
+        "all",
+        "every",
+        "each",
+        "any",
+        "some",
+        "several",
+        "many",
+        "few",
+        "numerous",
+        "one",
+        "two",
+        "three",
+        "half",
+        "a third",
+        "three-quarters",
+        "enough",
+        "lots of",
+        "plenty of",
+        "most",
+        "more",
+        "less",
+        "little",
+        "much",
+        "none",
+        "no",
+        "another",
+        "other",
+        "both",
+        "either",
+        "neither",
+        "which",
+        "what",
+        "whose",
+        "either",
+        "neither",
+        "both",
+        "all",
+        "both",
+        "half",
+        "twice",
+        "double",
+        "such",
+        "what",
+        "rather",
+        "quite",
+        "one",
+        "two",
+        "three",
+        "first",
+        "second",
+        "third",
+        "single",
+        "double",
+        "triple",
+        "half",
+        "third",
+        "quarter"
+    ]
+
+    prev_token = sentence[idx - 1]
+    if prev_token in eng_determiners:
+        return 'NP'
+
+    if prev_token in masc_femi_determiners_dict:
+        det_gender = 'masc'
+    elif prev_token in set(masc_femi_determiners_dict.values()):
+        det_gender = 'fem'
+    else:
+        print(f'UNK det gender: {prev_token}')
+        return None
+
+    noun_gender = eng_nouns[eng_token]
+    if noun_gender == 'amb':
+        return f'amb_{det_gender}'
+
+    if noun_gender == 'masc' and det_gender == 'masc':
+        return 'cong'
+    if noun_gender == 'fem' and det_gender == 'fem':
+        return 'cong'
+    if noun_gender == 'masc' and det_gender == 'fem':
+        return 'incong1'
+
+    return 'incong2'
 
 
 def __clf_map_task_dataset_uter_cong_switch(uter: str) -> list[str]:
@@ -69,28 +207,37 @@ def __clf_map_task_dataset_uter_cong_switch(uter: str) -> list[str]:
     'noun' for an english token switched w/o its previous determiner. i.e: 'el dog'
     'noun_det' with the determiner. i.e: 'the dog'
     """
+    switches = []
+
     lng_tokens = lid.identify(uter)
     counts = Counter([ele['entity'] for ele in lng_tokens])
     if counts['spa'] < counts['en']:
         return []
 
-    switches = []
+    found_by_clf = set()
     eng_tokens = [(ele['word'], idx) for idx, ele in enumerate(lng_tokens) if ele['entity'] == 'en']
+    sentence_by_clf = [ele['word'] for ele in lng_tokens]
     for eng_token, idx in eng_tokens:
-        if eng_token not in eng_nouns:
-            continue
+        label = __clf_map_task_dataset_uter_cong_switch_per_token(eng_token, idx, sentence_by_clf)
+        if label is not None:
+            switches.append(label)
+            # print('clf', eng_token, label)
+            found_by_clf.add(eng_token)
 
-        if idx == 0:
-            switches.append('noun')
+    # fallback: when clf is missing
+    sentence_by_split = uter.split(' ')
+    sentence_by_split = [clean_endings(token) for token in sentence_by_split]
+    eng_tokens = [(token, idx) for idx, token in enumerate(sentence_by_split) if token in eng_nouns]
+    for eng_token, idx in eng_tokens:
+        if eng_token in found_by_clf:
             continue
-
-        prev_token = lng_tokens[idx-1]
-        if prev_token['word'] == 'the':
-            switches.append('noun_det')
-        else:
-            switches.append('noun')
+        label = __clf_map_task_dataset_uter_cong_switch_per_token(eng_token, idx, sentence_by_split)
+        if label is not None:
+            switches.append(label)
+            # print('basic', eng_token, label)
 
     return switches
+
 
 def clf_map_task_dataset():
     root_folder = r"data/prolific/"
@@ -108,7 +255,7 @@ def clf_map_task_dataset():
         for game in data['games_data']:
             chat = game['chat']
             for chat_ele in chat:
-                chat_ele['lang'] = __clf_map_task_dataset_uter_sent(chat_ele['msg'])
+                chat_ele['lang'] = __clf_map_task_dataset_uter_lng(chat_ele['msg'])
                 chat_ele['cong_cs'] = __clf_map_task_dataset_uter_cong_switch(chat_ele['msg'])
 
         with open(os.path.join(output_folder, file_name), 'w') as f:
@@ -220,15 +367,26 @@ if __name__ == '__main__':
     """
     run from root repo
     """
-    languages = [Language.ENGLISH, Language.SPANISH]
-    lingua_detector = LanguageDetectorBuilder.from_languages(*languages).build()
-    langid.set_languages(['en', 'es'])
+    # languages = [Language.ENGLISH, Language.SPANISH]
+    # lingua_detector = LanguageDetectorBuilder.from_languages(*languages).build()
+    # langid.set_languages(['en', 'es'])
     lid = LanguageIdentification('spa-eng')
 
-    nouns_file = codecs.open('offline/nouns/spanish_nouns_set.txt', "r", "utf-8")
-    es_to_eng_nouns = {n.strip().split('_')[0]: n.strip().split('_')[1] for n in nouns_file.readlines()}
-    eng_nouns = set(list(es_to_eng_nouns.values()))
+    nouns_file = codecs.open('offline/nouns/english_nouns_gender_set.txt', "r", "utf-8")
+    eng_nouns = {n.strip().split('_')[0]: n.strip().split('_')[1] for n in nouns_file.readlines()}
 
     # show_examples()
     # eval_on_custom_dataset()
     clf_map_task_dataset()
+
+    # print(__clf_map_task_dataset_uter_cong_switch('perfecto, acabo cruzar al pequeño islote con la tiger'))
+    # print(__clf_map_task_dataset_uter_cong_switch('pasas por el area verde debajo de la roca negra, y cruces por el palo hacia el parrot'))
+    # print(__clf_map_task_dataset_uter_cong_switch('pases encima del parrot y caminas entre el parrot y el elefante. De alli, debajo del parrot y hacia las rocks para cruzar el rio'))
+
+    # print(__clf_map_task_dataset_uter_cong_switch('pases debajo del frog pero cuando pases el frog, darle la U y giras hacia la crocodile'))
+    # print(__clf_map_task_dataset_uter_cong_switch('pasaste por el crocodile?'))
+
+    # print(__clf_map_task_dataset_uter_cong_switch('cruzas el twig para llegar a la pequena isla con la tigre en ella'))
+    # print(__clf_map_task_dataset_uter_cong_switch('okay regresse adonde empenze mi viaje y estoy al lado del perro y el twig. ahora que hago?'))
+    # print(__clf_map_task_dataset_uter_cong_switch('pase el picnic y ahora estoy al frente de un twig que cruzas por donde esta el puente que no pude pasar ahora. quieres que lo cruse? o cruzo el otro twig que estas mas para el sur y tiene una cierva?'))
+    # print(__clf_map_task_dataset_uter_lng('le di la vuelta al bush, ahora que?'))

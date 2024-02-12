@@ -170,11 +170,11 @@ if __name__ == '__main__':
     from app.pages.common.versions import root_folder
 
     for file_name in os.listdir(root_folder):
-        if file_name != '60cffac73993c4347f897f1a.json':
+        if file_name != '65c1158c42ae46b4f170955f.json':
             continue
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
-        chat = data['games_data'][0]['chat']
-        role = 'instructor'
+        chat = data['games_data'][1]['chat']
+        role = 'navigator'
 
         analysis_game_chat(role, chat)
