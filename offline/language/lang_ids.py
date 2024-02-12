@@ -184,8 +184,7 @@ def __clf_map_task_dataset_uter_cong_switch_per_token(eng_token: str, idx: int, 
     elif prev_token in set(masc_femi_determiners_dict.values()):
         det_gender = 'fem'
     else:
-        print(f'UNK det gender: {prev_token}')
-        return None
+        return 'cong'
 
     noun_gender = eng_nouns[eng_token]
     if noun_gender == 'amb':
