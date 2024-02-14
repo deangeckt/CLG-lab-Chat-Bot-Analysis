@@ -21,7 +21,8 @@ version_details = {
     '2.3.4_p': 'Switch Last User based Code-switch alternation strategy - switch on the turn level; dep on last human utter',
     '2.3.5_p': 'Align Last User based Code-switch alternation strategy - switch on the turn level; dep on last human utter',
     '2.4.0_p': 'Insertional Spanish Congruent',
-    '2.4.1_p': 'Insertional Spanish InCongruent1'
+    '2.4.1_p': 'Insertional Spanish InCongruent1',
+    '2.4.2_p': 'Insertional Spanish InCongruent2'
 }
 
 experiments_short_names = {
@@ -41,7 +42,8 @@ experiments_short_names = {
     '2.3.4_p': 'Adversarial CS',
     '2.3.5_p': 'Alignment CS',
     '2.4.0_p': 'Insertional Spanish Congruent',
-    '2.4.1_p': 'Insertional Spanish InCongruent1'
+    '2.4.1_p': 'Insertional Spanish InCongruent1',
+    '2.4.2_p': 'Insertional Spanish InCongruent2'
 }
 
 
