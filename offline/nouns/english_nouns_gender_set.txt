@@ -65,7 +65,6 @@ prize_masc
 palm tree_fem
 elderly people_amb
 island_fem
-water_fem
 twig_fem
 bench_masc
 road_masc

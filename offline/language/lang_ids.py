@@ -377,15 +377,3 @@ if __name__ == '__main__':
     # show_examples()
     # eval_on_custom_dataset()
     clf_map_task_dataset()
-
-    # print(__clf_map_task_dataset_uter_cong_switch('perfecto, acabo cruzar al pequeño islote con la tiger'))
-    # print(__clf_map_task_dataset_uter_cong_switch('pasas por el area verde debajo de la roca negra, y cruces por el palo hacia el parrot'))
-    # print(__clf_map_task_dataset_uter_cong_switch('pases encima del parrot y caminas entre el parrot y el elefante. De alli, debajo del parrot y hacia las rocks para cruzar el rio'))
-
-    # print(__clf_map_task_dataset_uter_cong_switch('pases debajo del frog pero cuando pases el frog, darle la U y giras hacia la crocodile'))
-    # print(__clf_map_task_dataset_uter_cong_switch('pasaste por el crocodile?'))
-
-    # print(__clf_map_task_dataset_uter_cong_switch('cruzas el twig para llegar a la pequena isla con la tigre en ella'))
-    # print(__clf_map_task_dataset_uter_cong_switch('okay regresse adonde empenze mi viaje y estoy al lado del perro y el twig. ahora que hago?'))
-    # print(__clf_map_task_dataset_uter_cong_switch('pase el picnic y ahora estoy al frente de un twig que cruzas por donde esta el puente que no pude pasar ahora. quieres que lo cruse? o cruzo el otro twig que estas mas para el sur y tiene una cierva?'))
-    # print(__clf_map_task_dataset_uter_lng('le di la vuelta al bush, ahora que?'))

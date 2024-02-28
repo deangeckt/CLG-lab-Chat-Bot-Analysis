@@ -319,7 +319,7 @@ st.subheader("Experiments")
 
 all_experiments = list(experiments_short_names.values())
 #'Baseline', 'Random CS', 'Short-context CS', 'Adversarial CS', 'Alignment CS'
-selected_started_ex = ['Baseline', 'Insertional Spanish Congruent',
+selected_started_ex = ['Insertional Spanish Baseline', 'Insertional Spanish Congruent',
                        'Insertional Spanish InCongruent1',
                        'Insertional Spanish InCongruent2']
 
