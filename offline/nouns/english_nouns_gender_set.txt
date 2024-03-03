@@ -69,7 +69,6 @@ twig_fem
 bench_masc
 road_masc
 palm_fem
-picnic_masc
 pond_masc
 grandparents_amb
 sea_masc
