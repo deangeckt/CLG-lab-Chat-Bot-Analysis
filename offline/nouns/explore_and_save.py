@@ -7,10 +7,12 @@ import codecs
 
 experiments = ['Baseline', 'Random CS', 'Short-context CS', 'Adversarial CS', 'Alignment CS']
 
+
 def clean_endings(token: str):
     if token.endswith(('!', '.', '?', '¿')):
-        return token[:len(token)-1]
+        return token[:len(token) - 1]
     return token
+
 
 def is_in_nouns(nouns_names, map_idx, uter_text, lang):
     nouns = nouns_names[map_idx][lang]
@@ -33,6 +35,7 @@ def is_in_nouns(nouns_names, map_idx, uter_text, lang):
         amount_of_cognates_in = -1
     print(f'map: {map_idx} - {uter_text} ({lang}) - {amount_of_tokens_in} - {actual_tokens_in}')
     return amount_of_tokens_in, amount_of_cognates_in
+
 
 def read_games_data():
     nouns_names = {}
@@ -85,7 +88,6 @@ def read_games_data():
                 if cg_amount > 0:
                     amounts_of_cg_tokens_in.append(cg_amount)
 
-
     num_of_sentences_with_nouns = len(amounts_of_tokens_in)
     num_of_sentences_with_cg_nouns = len(amounts_of_cg_tokens_in)
     mean_num_of_nouns_per_sent = np.mean(amounts_of_tokens_in)
@@ -98,11 +100,9 @@ def read_games_data():
 
 
 def create_server_noun_simple_set():
-
     all_nouns_list = []
     nouns_names = {}
     for i in range(1, 5):
-
         df = pd.read_csv(f'offline/nouns/map_{i}_names.csv', encoding='utf-8')
         cognates_list = list(df['is_cognate']) if 'is_cognate' in df else []
         nouns_names[i] = {'eng': list(df['eng']), 'es': list(df['es']), 'cg': cognates_list}
@@ -147,6 +147,7 @@ def create_server_spanish_dict():
         f.write(f'{es}_{eng}')
         f.write('\n')
     f.close()
+
 
 if __name__ == '__main__':
     """

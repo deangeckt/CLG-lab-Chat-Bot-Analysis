@@ -11,8 +11,6 @@ from app.pages.common.dialog_analysis import analysis_game_chat
 from app.pages.common.gt_path import levenshtein_distance
 from app.pages.common.versions import experiments_short_names, root_folder, time_success_metric
 
-question_to_table = ['How much did you enjoy the task?',
-                    "How successful do you think you were at completing the task?"]
 
 def read_games_data():
     df = pd.DataFrame()
@@ -36,7 +34,6 @@ def read_games_data():
                 dist_score = levenshtein_distance(game_data['config']['map_index'], game_data['user_map_path'])
                 game_data_dict['dist_score'] = dist_score
 
-
             game_time = game_data['game_time']
             max_game_time = time_success_metric(version=version)
             is_time_success = 1 if int(game_time) < max_game_time else 0
@@ -48,27 +45,14 @@ def read_games_data():
                 print(f'empty user data: {experiment} - {file_name} - map: {idx}')
                 continue
 
-            game_data_dict['user_num_of_uter'] = user_dialog['number of utterances']
-            game_data_dict['user_mean_uter'] = user_dialog['mean utterance length']
-            game_data_dict['user_total_uter'] = user_dialog['total number of tokens']
+            for k in user_dialog:
+                game_data_dict[f'user {k}'] = user_dialog[k]
 
-            game_data_dict['user_num_of_en'] = user_dialog['number of eng utterances']
-            game_data_dict['user_num_of_es']= user_dialog['number of es utterances']
-            game_data_dict['user_num_of_mix'] = user_dialog['number of mix utterances']
-            game_data_dict['user_num_of_inter_cs'] = user_dialog['number of inter-sentential cs']
-            game_data_dict['% entrainment - all dialog'] = user_dialog['% entrainment - all dialog']
-            game_data_dict['% entrainment - on bot inter-sentential cs'] = user_dialog['% entrainment - on bot inter-sentential cs']
+            for k in bot_dialog:
+                game_data_dict[f'bot {k}'] = user_dialog[k]
 
-            game_data_dict['bot_num_of_uter'] = bot_dialog['number of utterances']
-            game_data_dict['bot_mean_uter'] = bot_dialog['mean utterance length']
-            game_data_dict['bot_total_uter'] = bot_dialog['total number of tokens']
-
-            game_data_dict['bot_num_of_en'] = bot_dialog['number of eng utterances']
-            game_data_dict['bot_num_of_es'] = bot_dialog['number of es utterances']
-            game_data_dict['bot_num_of_mix'] = bot_dialog['number of mix utterances']
-            game_data_dict['bot_num_of_inter_cs'] = bot_dialog['number of inter-sentential cs']
-
-            for qa in game_data['survey']:
+            survey_data = data['map_survey'] if data['clinet_version'] >= '2.3.9_p' else game_data['survey']
+            for qa in survey_data:
                 game_data_dict[qa['question']] = qa['answer']
 
             for qa in data['general_survey']:
@@ -76,8 +60,8 @@ def read_games_data():
 
             df = pd.concat([df, pd.DataFrame.from_dict(game_data_dict, orient='index').T], ignore_index=True)
 
-
     df.to_csv(r'offline/analysis/raw_experiments.csv')
+
 
 if __name__ == '__main__':
     """
