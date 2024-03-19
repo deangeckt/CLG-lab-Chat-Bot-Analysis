@@ -49,8 +49,11 @@ def analysis_role_aux(elements):
     uter_switch_amount = 0
     switch_amount = 0
 
-    cong_cs_labels = ['cong', 'incong1', 'incong2', 'NP', 'amb_masc', 'amb_fem']
+    cong_cs_labels = ['cong_masc', 'cong_fem', 'incong_masc', 'incong_fem', 'NP', 'amb_masc', 'amb_fem']
+    det_labels = ['masc', 'fem']
+
     cong_cs_labels_dict = {k: 0 for k in cong_cs_labels}
+    det_cs_dict = {k: 0 for k in det_labels}
 
     for uter_ele in elements:
         uter_switches = uter_ele['cong_cs']
@@ -61,11 +64,15 @@ def analysis_role_aux(elements):
         for cong_cs_label in uter_switches:
             cong_cs_labels_dict[cong_cs_label] += 1
 
+        for det in uter_ele['det_cs']:
+            det_cs_dict[det] += 1
+
     cong_cs_labels_dict_format = {f'number of {k} switches': cong_cs_labels_dict[k] for k in cong_cs_labels_dict}
+    det_cs_dict_format = {f'number of {k} switches': det_cs_dict[k] for k in det_cs_dict}
 
     cong_dict_format = {'number of utterances with some congruent switch': uter_switch_amount,
                         'number of total congruent switches': switch_amount}
-    cong_dict_format = {**cong_dict_format, **cong_cs_labels_dict_format}
+    cong_dict_format = {**cong_dict_format, **cong_cs_labels_dict_format,  **det_cs_dict_format}
 
     return {**counts_dict, **lang_dict_format, **cong_dict_format}
 
@@ -171,7 +178,7 @@ if __name__ == '__main__':
     from app.pages.common.versions import root_folder
 
     for file_name in os.listdir(root_folder):
-        if file_name != '65b7ba948f5c3052140c24f8.json':
+        if file_name != '60fd64fd34ee5940500d499f.json':
             continue
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)

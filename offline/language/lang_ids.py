@@ -70,6 +70,104 @@ def __clf_map_task_dataset_uter_lng(uter: str):
     return pred_sentence_bert(uter)
 
 
+masc_femi_determiners_dict = {
+    'el': 'la',  # the singular
+    'los': 'las',  # the plural
+    'ese': 'esa',  # that
+    'este': 'esta',  # this
+    'esos': 'esas',  # those
+    'estos': 'estas',  # those
+    'un': 'una',  # a singular
+    'unos': 'unas',  # a plural
+    'nuestro': 'nuestra',  # my
+    'nuestros': 'nuestras',  # ours
+    'vuestro': 'vuestra',  # your
+    'vuestros': 'vuestras',  # theirs
+    #### ADP
+    'del': 'de la',  # to the
+    'al': 'a la',  # of / to the (al = a + el shortcut)
+}
+
+eng_determiners = [
+    "the",
+    "a",
+    "an",
+    "this",
+    "that",
+    "these",
+    "those",
+    "my",
+    "your",
+    "his",
+    "her",
+    "its",
+    "our",
+    "their",
+    "mine",
+    "yours",
+    "hers",
+    "ours",
+    "theirs",
+    "all",
+    "every",
+    "each",
+    "any",
+    "some",
+    "several",
+    "many",
+    "few",
+    "numerous",
+    "one",
+    "two",
+    "three",
+    "half",
+    "a third",
+    "three-quarters",
+    "enough",
+    "lots of",
+    "plenty of",
+    "most",
+    "more",
+    "less",
+    "little",
+    "much",
+    "none",
+    "no",
+    "another",
+    "other",
+    "both",
+    "either",
+    "neither",
+    "which",
+    "what",
+    "whose",
+    "either",
+    "neither",
+    "both",
+    "all",
+    "both",
+    "half",
+    "twice",
+    "double",
+    "such",
+    "what",
+    "rather",
+    "quite",
+    "one",
+    "two",
+    "three",
+    "first",
+    "second",
+    "third",
+    "single",
+    "double",
+    "triple",
+    "half",
+    "third",
+    "quarter"
+]
+
+
 def __clf_map_task_dataset_uter_cong_switch_per_token(eng_token: str, idx: int, sentence: list[str]):
     if eng_token not in eng_nouns:
         return None
@@ -77,103 +175,6 @@ def __clf_map_task_dataset_uter_cong_switch_per_token(eng_token: str, idx: int, 
     if idx == 0:
         print(f'{eng_token} in IDX 0')
         return None
-
-    masc_femi_determiners_dict = {
-        'el': 'la',  # the singular
-        'los': 'las',  # the plural
-        'ese': 'esa',  # that
-        'este': 'esta',  # this
-        'esos': 'esas',  # those
-        'estos': 'estas',  # those
-        'un': 'una',  # a singular
-        'unos': 'unas',  # a plural
-        'nuestro': 'nuestra',  # my
-        'nuestros': 'nuestras',  # ours
-        'vuestro': 'vuestra',  # your
-        'vuestros': 'vuestras',  # theirs
-        #### ADP
-        'del': 'de la',  # to the
-        'al': 'a la',  # of / to the (al = a + el shortcut)
-    }
-
-    eng_determiners = [
-        "the",
-        "a",
-        "an",
-        "this",
-        "that",
-        "these",
-        "those",
-        "my",
-        "your",
-        "his",
-        "her",
-        "its",
-        "our",
-        "their",
-        "mine",
-        "yours",
-        "hers",
-        "ours",
-        "theirs",
-        "all",
-        "every",
-        "each",
-        "any",
-        "some",
-        "several",
-        "many",
-        "few",
-        "numerous",
-        "one",
-        "two",
-        "three",
-        "half",
-        "a third",
-        "three-quarters",
-        "enough",
-        "lots of",
-        "plenty of",
-        "most",
-        "more",
-        "less",
-        "little",
-        "much",
-        "none",
-        "no",
-        "another",
-        "other",
-        "both",
-        "either",
-        "neither",
-        "which",
-        "what",
-        "whose",
-        "either",
-        "neither",
-        "both",
-        "all",
-        "both",
-        "half",
-        "twice",
-        "double",
-        "such",
-        "what",
-        "rather",
-        "quite",
-        "one",
-        "two",
-        "three",
-        "first",
-        "second",
-        "third",
-        "single",
-        "double",
-        "triple",
-        "half",
-        "third",
-        "quarter"
-    ]
 
     prev_token = sentence[idx - 1]
     if prev_token in eng_determiners:
@@ -184,28 +185,51 @@ def __clf_map_task_dataset_uter_cong_switch_per_token(eng_token: str, idx: int, 
     elif prev_token in set(masc_femi_determiners_dict.values()):
         det_gender = 'fem'
     else:
-        return 'cong'
+        return None
 
     noun_gender = eng_nouns[eng_token]
     if noun_gender == 'amb':
         return f'amb_{det_gender}'
 
     if noun_gender == 'masc' and det_gender == 'masc':
-        return 'cong'
+        return 'cong_masc'
     if noun_gender == 'fem' and det_gender == 'fem':
-        return 'cong'
+        return 'cong_fem'
     if noun_gender == 'masc' and det_gender == 'fem':
-        return 'incong1'
+        return 'incong_masc'  # incong 1
 
-    return 'incong2'
+    return 'incong_fem'  # incong 2
 
 
-def __clf_map_task_dataset_uter_cong_switch(uter: str) -> list[str]:
+def __clf_map_task_dataset_uter_cong_switch_per_det(eng_token: str, idx: int, sentence: list[str]):
+    if eng_token not in eng_nouns:
+        return None
+
+    if idx == 0:
+        print(f'{eng_token} in IDX 0')
+        return None
+
+    prev_token = sentence[idx - 1]
+    if prev_token in eng_determiners:
+        return None
+
+    if prev_token in masc_femi_determiners_dict:
+        det_gender = 'masc'
+    elif prev_token in set(masc_femi_determiners_dict.values()):
+        det_gender = 'fem'
+    else:
+        print(f'det w/o gender: {prev_token}_{eng_token}')
+        return None
+
+    return det_gender
+
+
+def __clf_map_task_dataset_uter_cong_switch(uter: str, labels='all') -> list[str]:
     """
-    :return: list of switched per sentences: type of switch are either 'noun' or 'noun_det'
-    'noun' for an english token switched w/o its previous determiner. i.e: 'el dog'
-    'noun_det' with the determiner. i.e: 'the dog'
+    :return: list of switches per sentences
     """
+    __clf_per_token_foo = __clf_map_task_dataset_uter_cong_switch_per_token if labels == 'all' else __clf_map_task_dataset_uter_cong_switch_per_det
+
     switches = []
 
     lng_tokens = lid.identify(uter)
@@ -217,7 +241,7 @@ def __clf_map_task_dataset_uter_cong_switch(uter: str) -> list[str]:
     eng_tokens = [(ele['word'], idx) for idx, ele in enumerate(lng_tokens) if ele['entity'] == 'en']
     sentence_by_clf = [ele['word'] for ele in lng_tokens]
     for eng_token, idx in eng_tokens:
-        label = __clf_map_task_dataset_uter_cong_switch_per_token(eng_token, idx, sentence_by_clf)
+        label = __clf_per_token_foo(eng_token, idx, sentence_by_clf)
         if label is not None:
             switches.append(label)
             # print('clf', eng_token, label)
@@ -230,7 +254,7 @@ def __clf_map_task_dataset_uter_cong_switch(uter: str) -> list[str]:
     for eng_token, idx in eng_tokens:
         if eng_token in found_by_clf:
             continue
-        label = __clf_map_task_dataset_uter_cong_switch_per_token(eng_token, idx, sentence_by_split)
+        label = __clf_per_token_foo(eng_token, idx, sentence_by_split)
         if label is not None:
             switches.append(label)
             # print('basic', eng_token, label)
@@ -245,8 +269,8 @@ def clf_map_task_dataset():
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
-        if os.path.exists(os.path.join(output_folder, file_name)):
-            continue
+        # if os.path.exists(os.path.join(output_folder, file_name)):
+        #     continue
 
         print(f'do: {file_name}')
 
@@ -255,7 +279,8 @@ def clf_map_task_dataset():
             chat = game['chat']
             for chat_ele in chat:
                 chat_ele['lang'] = __clf_map_task_dataset_uter_lng(chat_ele['msg'])
-                chat_ele['cong_cs'] = __clf_map_task_dataset_uter_cong_switch(chat_ele['msg'])
+                chat_ele['cong_cs'] = __clf_map_task_dataset_uter_cong_switch(chat_ele['msg'], labels='all')
+                chat_ele['det_cs'] = __clf_map_task_dataset_uter_cong_switch(chat_ele['msg'], labels='det')
 
         with open(os.path.join(output_folder, file_name), 'w') as f:
             json.dump(data, f)

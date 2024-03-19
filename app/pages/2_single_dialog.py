@@ -8,6 +8,7 @@ from pages.common.versions import *
 from pages.common.gt_path import *
 from pages.common.dialog_analysis import *
 
+
 def read_raw_data():
     data_list = []
     for file_name in os.listdir(root_folder):
@@ -32,13 +33,13 @@ data_list = read_raw_data()
 st.set_page_config(page_title="singleDialog", page_icon="📈", layout="wide")
 st.sidebar.success("Single Dialog")
 
-
 if 'file_idx' not in st.session_state:
     st.session_state.file_idx = 0
 if 'game_idx' not in st.session_state:
     st.session_state.game_idx = 0
 if 'selected_ex' not in st.session_state:
     st.session_state.selected_ex = 'all'
+
 
 def filter_data(data_ele):
     curr_ex = st.session_state.selected_ex
@@ -55,11 +56,13 @@ def next_call_click():
     st.session_state.file_idx += 1
     st.session_state.game_idx = 0
 
+
 def last_call_click():
     if st.session_state.file_idx == 0:
         return
     st.session_state.file_idx -= 1
     st.session_state.game_idx = 0
+
 
 def next_game_click():
     fdata = list(filter(filter_data, data_list))
@@ -68,25 +71,29 @@ def next_game_click():
         return
     st.session_state.game_idx += 1
 
+
 def last_game_click():
     if st.session_state.game_idx == 0:
         return
     st.session_state.game_idx -= 1
 
+
 def reset():
     st.session_state.file_idx = 0
     st.session_state.game_idx = 0
+
 
 all_experiments = list(experiments_short_names.values())
 all_experiments.insert(0, 'all')
 
 # keep in first render
-st.session_state.selected_ex = st.selectbox('Choose experiment:',  tuple(all_experiments), on_change=reset)
+st.session_state.selected_ex = st.selectbox('Choose experiment:', tuple(all_experiments), on_change=reset)
 
 fdata = list(filter(filter_data, data_list))
-st.header(f"Participant: {st.session_state.file_idx+1}/{len(fdata)}")
+st.header(f"Participant: {st.session_state.file_idx + 1}/{len(fdata)}")
 
-map_img_col, general_info_col, nav_btns_col = st.columns([0.4,0.4,0.4])
+map_img_col, general_info_col, nav_btns_col = st.columns([0.4, 0.4, 0.4])
+
 
 def draw_nav_path(im, user_path: list, map_idx: int):
     font_size = 50 if map_idx == 2 else 100
@@ -107,18 +114,19 @@ def draw_nav_path(im, user_path: list, map_idx: int):
         elif idx % 4 == 2:
             color = 'cyan'
         else:
-            color = (124,252,0)
+            color = (124, 252, 0)
 
         row = user_coord['r']
         col = user_coord['c']
-        text = f'{idx+1}'
+        text = f'{idx + 1}'
         x = col_size * col
         y = row_size * row
         draw.text((x, y), text, font=fnt, fill=color)
 
+
 with map_img_col:
     map_idx = st.session_state.game_idx
-    image = Image.open(f"maps/map{map_idx+1}_1.jpg")
+    image = Image.open(f"maps/map{map_idx + 1}_1.jpg")
 
     # fdata = list(filter(filter_data, data_list))
     call_data = fdata[st.session_state.file_idx]
@@ -128,7 +136,7 @@ with map_img_col:
         draw_nav_path(image, curr_game_data['user_map_path'], map_idx)
         # draw_nav_path(image, gt_maps[map_idx], map_idx)
 
-    st.image(image, width=img_width, caption=f'Map: {map_idx+1}')
+    st.image(image, width=img_width, caption=f'Map: {map_idx + 1}')
 
     fdata = list(filter(filter_data, data_list))
     call_data = fdata[st.session_state.file_idx]
@@ -140,7 +148,6 @@ with map_img_col:
     st.text(f"Date: {call_data['date']} 📅")
     st.text(f"Code-switch strategy: {call_data['cs_strategy']} ")
     st.text(f"Game time: {curr_game_data['game_time']} seconds ⌛")
-
 
 with general_info_col:
     fdata = list(filter(filter_data, data_list))
@@ -170,7 +177,6 @@ with general_info_col:
                                           curr_game_data['user_map_path'])
         st.text(f"Dist Score: {dist_score:.2f} ")
 
-
 with nav_btns_col:
     st.subheader('Navigate')
 
@@ -197,9 +203,9 @@ def render_chat():
     is_nav = human_role == 'navigator'
 
     with mui.Paper(key="dialog", sx={
-                "display": 'flex',
-                "flexDirection": 'column',
-                "overflowY": 'auto'}):
+        "display": 'flex',
+        "flexDirection": 'column',
+        "overflowY": 'auto'}):
         with mui.Typography:
             for chat_ele in curr_chat:
                 is_human = human_role == chat_ele['id']
@@ -215,9 +221,9 @@ def render_chat():
                     chat_map_path_idx = f"path idx: {chat_map_path_idx}"
                 html.div(
                     html.div(
-                        html.p(f"{chat_ele['id']}: ", css={'fontWeight':'700'}),
+                        html.p(f"{chat_ele['id']}: ", css={'fontWeight': '700'}),
                         html.p(f"{chat_ele['msg']}"),
-                        html.p(f"{chat_ele['time']}", css={'font-size':'13px', 'margin-bottom': '14px'}),
+                        html.p(f"{chat_ele['time']}", css={'font-size': '13px', 'margin-bottom': '14px'}),
                         html.p(f"{chat_ele['lang']}", css={'font-size': '13px', 'margin-bottom': '14px'}),
                         html.p(chat_map_path_idx, css={'font-size': '13px', 'margin-bottom': '14px'}),
 
@@ -240,6 +246,7 @@ def render_chat():
                     }
                 )
 
+
 def render_survey(dash_key: str):
     fdata = list(filter(filter_data, data_list))
     call_data = fdata[st.session_state.file_idx]
@@ -251,17 +258,16 @@ def render_survey(dash_key: str):
         curr_game_data = call_data['games_data'][st.session_state.game_idx]
         map_idx = st.session_state.game_idx
         map_survey_data = curr_game_data['survey']
-        map_survey_header = f'Game survey - map: {map_idx+1}'
-
+        map_survey_header = f'Game survey - map: {map_idx + 1}'
 
     survey_header = 'General survey:' if dash_key == 'general_survey' else map_survey_header
     survey_data = call_data['general_survey'] if dash_key == 'general_survey' else map_survey_data
 
     with mui.Paper(key=dash_key, sx={
-                "display": 'flex',
-                "flexDirection": 'column',
-                "overflowY": 'auto'}):
-        html.p(f'{survey_header}', css={'font-size':'18px', 'fontWeight':'700'})
+        "display": 'flex',
+        "flexDirection": 'column',
+        "overflowY": 'auto'}):
+        html.p(f'{survey_header}', css={'font-size': '18px', 'fontWeight': '700'})
         for qa in survey_data:
             html.div(
                 html.p(f"Q: {qa['question']}", css={'margin': '0.5em'}),
@@ -274,6 +280,7 @@ def render_survey(dash_key: str):
                     'margin': '0.5em'
                 },
             )
+
 
 with elements("dashboard"):
     layout = [

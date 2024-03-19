@@ -110,18 +110,26 @@ def avg_role_metadata(agg_metadata: defaultdict):
     res['human - mean number of utterances with some congruent switch (%)'] = format_percentage(
         human_mean_num_uter_w_cong_cs / human_mean_utters)
     res['human - mean number of total congruent switches'] = mean_and_format_str(human_mean_num_of_total_cong_cs)
-    res['human - mean number of cong switches (%)'] = format_percentage(
-        np.mean(agg_metadata['user_num_of_cong_cs']) / human_mean_num_of_total_cong_cs)
-    res['human - mean number of incong1 switches (%)'] = format_percentage(
-        np.mean(agg_metadata['user_num_of_incong1_cs']) / human_mean_num_of_total_cong_cs)
-    res['human - mean number of incong2 switches (%)'] = format_percentage(
-        np.mean(agg_metadata['user_num_of_incong2_cs']) / human_mean_num_of_total_cong_cs)
+    res['human - mean number of cong masc switches (%)'] = format_percentage(
+        np.mean(agg_metadata['user_num_of_cong_masc_cs']) / human_mean_num_of_total_cong_cs)
+    res['human - mean number of cong fem switches (%)'] = format_percentage(
+        np.mean(agg_metadata['user_num_of_cong_fem_cs']) / human_mean_num_of_total_cong_cs)
+    res['human - mean number of incong masc (1) switches (%)'] = format_percentage(
+        np.mean(agg_metadata['user_num_of_incong_masc_cs']) / human_mean_num_of_total_cong_cs)
+    res['human - mean number of incong fem (2) switches (%)'] = format_percentage(
+        np.mean(agg_metadata['user_num_of_incong_fem_cs']) / human_mean_num_of_total_cong_cs)
     res['human - mean number of NP switches (%)'] = format_percentage(
         np.mean(agg_metadata['user_num_of_np_cs']) / human_mean_num_of_total_cong_cs)
     res['human - mean number of ambiguous masc switches (%)'] = format_percentage(
         np.mean(agg_metadata['user_num_of_amb_masc_cs']) / human_mean_num_of_total_cong_cs)
     res['human - mean number of ambiguous fem switches (%)'] = format_percentage(
         np.mean(agg_metadata['user_num_of_amb_fem_cs']) / human_mean_num_of_total_cong_cs)
+
+    human_total_det_cs = np.sum(agg_metadata['user_num_of_det_masc_cs'] + agg_metadata['user_num_of_det_fem_cs'])
+    res['human - masc determiner cs (%) '] = format_percentage(
+        np.sum(agg_metadata['user_num_of_det_masc_cs']) / human_total_det_cs)
+    res['human - fem determiner cs (%) '] = format_percentage(
+        np.sum(agg_metadata['user_num_of_det_fem_cs']) / human_total_det_cs)
 
     res['human - mean number of inter-sentential cs (%)'] = format_percentage(
         human_mean_inter_cs / (human_mean_utters - 1))
@@ -150,18 +158,26 @@ def avg_role_metadata(agg_metadata: defaultdict):
     res['bot - mean number of utterances with some congruent switch (%)'] = format_percentage(
         bot_mean_num_uter_w_cong_cs / bot_mean_utters)
     res['bot - mean number of total congruent switches'] = mean_and_format_str(bot_mean_num_of_total_cong_cs)
-    res['bot - mean number of cong switches (%)'] = format_percentage(
-        np.mean(agg_metadata['bot_num_of_cong_cs']) / bot_mean_num_of_total_cong_cs)
-    res['bot - mean number of incong1 switches (%)'] = format_percentage(
-        np.mean(agg_metadata['bot_num_of_incong1_cs']) / bot_mean_num_of_total_cong_cs)
-    res['bot - mean number of incong2 switches (%)'] = format_percentage(
-        np.mean(agg_metadata['bot_num_of_incong2_cs']) / bot_mean_num_of_total_cong_cs)
+    res['bot - mean number of cong masc switches (%)'] = format_percentage(
+        np.mean(agg_metadata['bot_num_of_cong_masc_cs']) / bot_mean_num_of_total_cong_cs)
+    res['bot - mean number of cong fem switches (%)'] = format_percentage(
+        np.mean(agg_metadata['bot_num_of_cong_fem_cs']) / bot_mean_num_of_total_cong_cs)
+    res['bot - mean number of incong masc (1) switches (%)'] = format_percentage(
+        np.mean(agg_metadata['bot_num_of_incong_masc_cs']) / bot_mean_num_of_total_cong_cs)
+    res['bot - mean number of incong fem (2) switches (%)'] = format_percentage(
+        np.mean(agg_metadata['bot_num_of_incong_fem_cs']) / bot_mean_num_of_total_cong_cs)
     res['bot - mean number of NP switches (%)'] = format_percentage(
         np.mean(agg_metadata['bot_num_of_np_cs']) / bot_mean_num_of_total_cong_cs)
     res['bot - mean number of ambiguous masc switches (%)'] = format_percentage(
         np.mean(agg_metadata['bot_num_of_amb_masc_cs']) / bot_mean_num_of_total_cong_cs)
     res['bot - mean number of ambiguous fem switches (%)'] = format_percentage(
         np.mean(agg_metadata['bot_num_of_amb_fem_cs']) / bot_mean_num_of_total_cong_cs)
+
+    bot_total_det_cs = np.sum(agg_metadata['bot_num_of_det_masc_cs'] + agg_metadata['bot_num_of_det_fem_cs'])
+    res['bot - masc determiner cs (%) '] = format_percentage(
+        np.sum(agg_metadata['bot_num_of_det_masc_cs']) / bot_total_det_cs)
+    res['bot - fem determiner cs (%) '] = format_percentage(
+        np.sum(agg_metadata['bot_num_of_det_fem_cs']) / bot_total_det_cs)
 
     for q in question_to_table:
         res[f"{q} [mean]"] = mean_and_format_str(agg_metadata[q])
@@ -217,12 +233,16 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
                     user_dialog['number of utterances with some congruent switch'])
                 agg_meta[experiment]['user_num_of_total_cong_cs'].append(
                     user_dialog['number of total congruent switches'])
-                agg_meta[experiment]['user_num_of_cong_cs'].append(user_dialog['number of cong switches'])
+                agg_meta[experiment]['user_num_of_cong_masc_cs'].append(user_dialog['number of cong_masc switches'])
+                agg_meta[experiment]['user_num_of_cong_fem_cs'].append(user_dialog['number of cong_fem switches'])
                 agg_meta[experiment]['user_num_of_np_cs'].append(user_dialog['number of NP switches'])
-                agg_meta[experiment]['user_num_of_incong1_cs'].append(user_dialog['number of incong1 switches'])
-                agg_meta[experiment]['user_num_of_incong2_cs'].append(user_dialog['number of incong2 switches'])
+                agg_meta[experiment]['user_num_of_incong_masc_cs'].append(user_dialog['number of incong_masc switches'])
+                agg_meta[experiment]['user_num_of_incong_fem_cs'].append(user_dialog['number of incong_fem switches'])
                 agg_meta[experiment]['user_num_of_amb_masc_cs'].append(user_dialog['number of amb_masc switches'])
                 agg_meta[experiment]['user_num_of_amb_fem_cs'].append(user_dialog['number of amb_fem switches'])
+
+                agg_meta[experiment]['user_num_of_det_masc_cs'].append(user_dialog['number of masc switches'])
+                agg_meta[experiment]['user_num_of_det_fem_cs'].append(user_dialog['number of fem switches'])
 
                 agg_meta[experiment]['% entrainment - all dialog'].append(user_dialog['% entrainment - all dialog'])
                 agg_meta[experiment]['% entrainment - on bot inter-sentential cs'].append(
@@ -241,12 +261,16 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
             agg_meta[experiment]['bot_num_uter_with_cong_cs'].append(
                 bot_dialog['number of utterances with some congruent switch'])
             agg_meta[experiment]['bot_num_of_total_cong_cs'].append(bot_dialog['number of total congruent switches'])
-            agg_meta[experiment]['bot_num_of_cong_cs'].append(bot_dialog['number of cong switches'])
+            agg_meta[experiment]['bot_num_of_cong_masc_cs'].append(bot_dialog['number of cong_masc switches'])
+            agg_meta[experiment]['bot_num_of_cong_fem_cs'].append(bot_dialog['number of cong_fem switches'])
             agg_meta[experiment]['bot_num_of_np_cs'].append(bot_dialog['number of NP switches'])
-            agg_meta[experiment]['bot_num_of_incong1_cs'].append(bot_dialog['number of incong1 switches'])
-            agg_meta[experiment]['bot_num_of_incong2_cs'].append(bot_dialog['number of incong2 switches'])
+            agg_meta[experiment]['bot_num_of_incong_masc_cs'].append(bot_dialog['number of incong_masc switches'])
+            agg_meta[experiment]['bot_num_of_incong_fem_cs'].append(bot_dialog['number of incong_fem switches'])
             agg_meta[experiment]['bot_num_of_amb_masc_cs'].append(bot_dialog['number of amb_masc switches'])
             agg_meta[experiment]['bot_num_of_amb_fem_cs'].append(bot_dialog['number of amb_fem switches'])
+
+            agg_meta[experiment]['bot_num_of_det_masc_cs'].append(bot_dialog['number of masc switches'])
+            agg_meta[experiment]['bot_num_of_det_fem_cs'].append(bot_dialog['number of fem switches'])
 
             survey_data = data['map_survey'] if data['clinet_version'] >= '2.3.9_p' else game_data['survey']
             for qa in survey_data:
