@@ -275,6 +275,9 @@ def clf_map_task_dataset():
         print(f'do: {file_name}')
 
         data = json.load(json_file)
+        if data['server_version'] < '2.3.1_p':
+            continue
+
         for game in data['games_data']:
             chat = game['chat']
             for chat_ele in chat:

@@ -1,22 +1,22 @@
 little boat_masc
 polliwog_masc
 mat_fem
-snake_masc
+snake_fem
 elderly woman_fem
 boat_masc
 tent_fem
 grass_masc
 ocean_masc
-chest_masc
+chest_amb
 buffalo_masc
 telescope_masc
-dog_amb
-cat_amb
+dog_masc
+cat_masc
 flower stand_amb
-ball_fem
+ball_amb
 parrot_amb
 rock_fem
-camel_amb
+camel_masc
 branches_fem
 branch_fem
 coin_fem
@@ -27,17 +27,17 @@ canoe_fem
 antelope_masc
 frog_fem
 spider_fem
-stand_masc
+stand_amb
 toad_masc
 bushes_masc
-elephant_amb
+elephant_masc
 trunk_masc
 beach_fem
-florist_amb
+florist_masc
 giraffe_fem
 jaguar_masc
 caecilian_masc
-money_masc
+money_amb
 bicycle_fem
 campfire_fem
 gold_masc
@@ -52,9 +52,9 @@ volleyball_masc
 barbecue_fem
 bridge_masc
 tiger_masc
-puppy_amb
+puppy_masc
 deer_masc
-path_masc
+path_amb
 people_fem
 cobra_fem
 berries_fem
@@ -63,17 +63,17 @@ fire_masc
 mushrooms_amb
 prize_masc
 palm tree_fem
-elderly people_amb
+elderly people_masc
 island_fem
 twig_fem
 bench_masc
-road_masc
+road_fem
 palm_fem
 pond_masc
-grandparents_amb
+grandparents_masc
 sea_masc
 alligator_masc
-bikers_amb
+bikers_masc
 river_masc
 tree_masc
 car_masc
@@ -84,7 +84,7 @@ butterfly_fem
 treasure_masc
 berry_fem
 house_fem
-speaker_masc
+speaker_amb
 trees_masc
 bush_masc
 basilisk_masc
