@@ -37,21 +37,12 @@ if 'file_idx' not in st.session_state:
     st.session_state.file_idx = 0
 if 'game_idx' not in st.session_state:
     st.session_state.game_idx = 0
-if 'selected_ex' not in st.session_state:
-    st.session_state.selected_ex = 'all'
-
-
-def filter_data(data_ele):
-    curr_ex = st.session_state.selected_ex
-    if curr_ex == 'all':
-        return True
-    short_name = experiments_short_names[data_ele['server_version']]
-    return short_name == curr_ex
+if 'search_id' not in st.session_state:
+    st.session_state.search_id = ''
 
 
 def next_call_click():
-    fdata = list(filter(filter_data, data_list))
-    if st.session_state.file_idx == len(fdata) - 1:
+    if st.session_state.file_idx == len(data_list) - 1:
         return
     st.session_state.file_idx += 1
     st.session_state.game_idx = 0
@@ -65,8 +56,7 @@ def last_call_click():
 
 
 def next_game_click():
-    fdata = list(filter(filter_data, data_list))
-    games_data = fdata[st.session_state.file_idx]['games_data']
+    games_data = data_list[st.session_state.file_idx]['games_data']
     if st.session_state.game_idx == len(games_data) - 1:
         return
     st.session_state.game_idx += 1
@@ -78,20 +68,29 @@ def last_game_click():
     st.session_state.game_idx -= 1
 
 
-def reset():
-    st.session_state.file_idx = 0
-    st.session_state.game_idx = 0
+def search_by_pid():
+    new_pid = st.session_state.search_id
+
+    found = False
+    for idx, data_ele in enumerate(data_list):
+        if data_ele['prolific']['prolific_id'] == new_pid:
+            st.session_state.file_idx = idx
+            st.session_state.game_idx = 0
+            found = True
+            break
+
+    if not found:
+        st.warning(f"pid: '{new_pid}' doesnt exist", icon="⚠️")
 
 
-all_experiments = list(experiments_short_names.values())
-all_experiments.insert(0, 'all')
+def clear_text():
+    search_by_pid()
+    st.session_state.search_id = ""
+
 
 # keep in first render
-st.session_state.selected_ex = st.selectbox('Choose experiment:', tuple(all_experiments), on_change=reset)
-
-fdata = list(filter(filter_data, data_list))
-st.header(f"Participant: {st.session_state.file_idx + 1}/{len(fdata)}")
-
+st.text_input('Search Prolific Id', key='search_id', on_change=clear_text, placeholder="Type here")
+st.header(f"Participant: {st.session_state.file_idx + 1}/{len(data_list)}")
 map_img_col, general_info_col, nav_btns_col = st.columns([0.4, 0.4, 0.4])
 
 
@@ -128,8 +127,7 @@ with map_img_col:
     map_idx = st.session_state.game_idx
     image = Image.open(f"maps/map{map_idx + 1}_1.jpg")
 
-    # fdata = list(filter(filter_data, data_list))
-    call_data = fdata[st.session_state.file_idx]
+    call_data = data_list[st.session_state.file_idx]
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
     img_width = 500
     if curr_game_data['config']['game_role'] == 'navigator':
@@ -138,8 +136,7 @@ with map_img_col:
 
     st.image(image, width=img_width, caption=f'Map: {map_idx + 1}')
 
-    fdata = list(filter(filter_data, data_list))
-    call_data = fdata[st.session_state.file_idx]
+    call_data = data_list[st.session_state.file_idx]
     version = call_data['server_version']
 
     st.text(f"Version: {version} ")
@@ -150,8 +147,7 @@ with map_img_col:
     st.text(f"Game time: {curr_game_data['game_time']} seconds ⌛")
 
 with general_info_col:
-    fdata = list(filter(filter_data, data_list))
-    call_data = fdata[st.session_state.file_idx]
+    call_data = data_list[st.session_state.file_idx]
     curr_game_data = call_data['games_data'][st.session_state.game_idx]
     version = call_data['server_version']
 
@@ -196,8 +192,7 @@ with nav_btns_col:
 
 
 def render_chat():
-    fdata = list(filter(filter_data, data_list))
-    curr_game_data = fdata[st.session_state.file_idx]['games_data'][st.session_state.game_idx]
+    curr_game_data = data_list[st.session_state.file_idx]['games_data'][st.session_state.game_idx]
     curr_chat = curr_game_data['chat']
     human_role = curr_game_data['config']['game_role']
     is_nav = human_role == 'navigator'
@@ -248,8 +243,7 @@ def render_chat():
 
 
 def render_survey(dash_key: str):
-    fdata = list(filter(filter_data, data_list))
-    call_data = fdata[st.session_state.file_idx]
+    call_data = data_list[st.session_state.file_idx]
 
     if call_data['clinet_version'] >= '2.3.9_p':
         map_survey_data = call_data['map_survey']
