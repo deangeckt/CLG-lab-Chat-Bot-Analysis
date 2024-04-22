@@ -269,14 +269,14 @@ def clf_map_task_dataset():
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
-        # if os.path.exists(os.path.join(output_folder, file_name)):
-        #     continue
-
-        print(f'do: {file_name}')
+        if os.path.exists(os.path.join(output_folder, file_name)):
+            continue
 
         data = json.load(json_file)
         if data['server_version'] < '2.3.1_p':
             continue
+
+        print(f'do: {file_name}')
 
         for game in data['games_data']:
             chat = game['chat']
