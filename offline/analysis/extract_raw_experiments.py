@@ -49,7 +49,7 @@ def read_games_data():
                 game_data_dict[f'user {k}'] = user_dialog[k]
 
             for k in bot_dialog:
-                game_data_dict[f'bot {k}'] = user_dialog[k]
+                game_data_dict[f'bot {k}'] = bot_dialog[k]
 
             survey_data = data['map_survey'] if data['clinet_version'] >= '2.3.9_p' else game_data['survey']
             for qa in survey_data:
