@@ -2,7 +2,7 @@ import json
 import os
 import re
 import pandas as pd
-from lingua import Language, LanguageDetectorBuilder
+from lingua import Language
 import langid
 from codeswitch.codeswitch import LanguageIdentification
 from collections import Counter

@@ -68,10 +68,10 @@ def analysis_role_aux(elements):
             det_cs_dict[det] += 1
 
     cong_cs_labels_dict_format = {f'number of {k} switches': cong_cs_labels_dict[k] for k in cong_cs_labels_dict}
-    det_cs_dict_format = {f'number of {k} switches': det_cs_dict[k] for k in det_cs_dict}
+    det_cs_dict_format = {f'number of {k} det switches': det_cs_dict[k] for k in det_cs_dict}
 
-    cong_dict_format = {'number of utterances with some congruent switch': uter_switch_amount,
-                        'number of total congruent switches': switch_amount}
+    cong_dict_format = {'number of utterances with some ins switch': uter_switch_amount,
+                        'number of total ins switches': switch_amount}
     cong_dict_format = {**cong_dict_format, **cong_cs_labels_dict_format,  **det_cs_dict_format}
 
     return {**counts_dict, **lang_dict_format, **cong_dict_format}

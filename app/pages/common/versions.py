@@ -42,8 +42,8 @@ experiments_short_names = {
     '2.3.4_p': 'Alternation Adversarial CS',
     '2.3.5_p': 'Alternation Alignment CS',
     '2.4.0_p': 'Insertional Spanish Congruent',
-    '2.4.1_p': 'Insertional Spanish InCongruent1',
-    '2.4.2_p': 'Insertional Spanish InCongruent2',
+    '2.4.1_p': 'Insertional Spanish Masculine InCongruent',
+    '2.4.2_p': 'Insertional Spanish Feminine InCongruent',
     '2.4.3_p': 'Insertional Spanish Baseline'
 }
 
