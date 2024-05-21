@@ -8,7 +8,7 @@ import pandas as pd
 import json
 import os
 from app.pages.common.dialog_analysis import analysis_game_chat
-from app.pages.common.gt_path import levenshtein_distance
+from app.pages.common.gt_path import path_dist
 from app.pages.common.versions import experiments_short_names, root_folder, time_success_metric
 
 
@@ -31,7 +31,7 @@ def read_games_data():
                               'pid': file_name.split('.')[0]}
 
             if game_role == 'navigator':
-                dist_score = levenshtein_distance(game_data['config']['map_index'], game_data['user_map_path'])
+                dist_score = path_dist(game_data['config']['map_index'], game_data['user_map_path'])
                 game_data_dict['dist_score'] = dist_score
 
             game_time = game_data['game_time']

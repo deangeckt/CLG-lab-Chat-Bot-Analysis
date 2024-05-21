@@ -183,7 +183,7 @@ def avg_role_metadata(agg_metadata: defaultdict):
         res[f"{q} [mean]"] = mean_and_format_str(agg_metadata[q])
 
     if 'dist_score' in agg_metadata:
-        res['mean levenshtein distance'] = f"{np.mean(agg_metadata['dist_score']):.2f}"
+        res['mean path distance'] = f"{np.mean(agg_metadata['dist_score']):.2f}"
     return res
 
 
@@ -208,7 +208,7 @@ def read_games_data() -> tuple[pd.DataFrame, dict, dict]:
                 # update to correct role
                 agg_meta = agg_metadata_nav
 
-                dist_score = levenshtein_distance(game_data['config']['map_index'], game_data['user_map_path'])
+                dist_score = path_dist(game_data['config']['map_index'], game_data['user_map_path'])
                 agg_meta[experiment]['dist_score'].append(dist_score)
 
             game_time = game_data['game_time']

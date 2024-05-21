@@ -169,8 +169,7 @@ with general_info_col:
 
     is_nav = curr_game_data['config']['game_role'] == 'navigator'
     if is_nav:
-        dist_score = levenshtein_distance(st.session_state.game_idx,
-                                          curr_game_data['user_map_path'])
+        dist_score = path_dist(st.session_state.game_idx, curr_game_data['user_map_path'])
         st.text(f"Dist Score: {dist_score:.2f} ")
 
 with nav_btns_col:
