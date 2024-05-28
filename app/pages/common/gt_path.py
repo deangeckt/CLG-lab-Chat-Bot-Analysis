@@ -90,8 +90,10 @@ map6 = [{'r': 8, 'c': 7}, {'r': 7, 'c': 7}, {'r': 6, 'c': 7}, {'r': 5, 'c': 7}, 
         {'r': 16, 'c': 4}, {'r': 16, 'c': 3}, {'r': 16, 'c': 2}, {'r': 16, 'c': 1}, {'r': 15, 'c': 1},
         {'r': 14, 'c': 1}, {'r': 13, 'c': 1}, {'r': 12, 'c': 1}, {'r': 11, 'c': 1}, {'r': 10, 'c': 1}, {'r': 9, 'c': 1},
         {'r': 8, 'c': 1}, {'r': 7, 'c': 1}]
+mock_map = [{'r': 1, 'c': 1}]
 
-gt_maps = [map1, map2, map3, map4, map5, map6]
+
+gt_maps = [map1, map2, map3, map4, map5, map6, mock_map]
 
 
 def tuple_distance(tuple1, tuple2):
@@ -108,7 +110,7 @@ def dtw(map_idx, pred: list):
     x = [(g['r'], g['c']) for g in gt]
     y = [(p['r'], p['c']) for p in pred]
     distance, path = fastdtw(x, y, dist=euclidean)
-    return distance
+    return distance / len(gt)
 
 
 def hausdorff_distance(map_idx, pred: list):
@@ -574,11 +576,17 @@ if __name__ == '__main__':
     # print()
 
     foo = dtw
+    print(foo(3, empty))
     print(foo(1, empty))
     print(foo(1, far_1))
 
     # print(foo(1, gt_maps[0]))
     print(foo(1, close_1))
     print(foo(1, gt_maps[1]))
-
+    p = [
+        {'r': 0, 'c': 0},
+        {'r': 0, 'c': 1},
+        {'r': 1, 'c': 1}
+    ]
+    # print(foo(6, p))
 
