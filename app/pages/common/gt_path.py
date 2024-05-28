@@ -109,7 +109,7 @@ def dtw(map_idx, pred: list):
     gt = gt_maps[map_idx]
     x = [(g['r'], g['c']) for g in gt]
     y = [(p['r'], p['c']) for p in pred]
-    distance, path = fastdtw(x, y, dist=euclidean)
+    distance, path = fastdtw(x, y, dist=manhattan)
     return distance / len(gt)
 
 
