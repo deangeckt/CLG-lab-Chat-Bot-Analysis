@@ -82,13 +82,13 @@ def squash_bot_chat(role: str, chat: list):
     since some turns of the bot includes 2 utterances, we remove duplicat langauge uters for later easier analysis:
     e.g: bot: 'en', 'en' -> 'en'
     """
+
     same_lng_turn_bot_indices = []
     for i in range(len(chat) - 1):
         curr_ele = chat[i]
-        if curr_ele['id'] == role:
-            continue
         next_ele = chat[i + 1]
-        if next_ele['id'] != role and next_ele['lang'] == curr_ele['lang']:
+
+        if next_ele['id'] == curr_ele['id']:
             same_lng_turn_bot_indices.append(i)
 
     for del_idx in sorted(same_lng_turn_bot_indices, reverse=True):
@@ -178,11 +178,11 @@ if __name__ == '__main__':
     from app.pages.common.versions import root_folder
 
     for file_name in os.listdir(root_folder):
-        if file_name != '60fd64fd34ee5940500d499f.json':
+        if file_name != '5c475608cae0ab000188cb6e.json':
             continue
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
-        chat = data['games_data'][3]['chat']
+        chat = data['games_data'][1]['chat']
         role = 'navigator'
 
         analysis_game_chat(role, chat)
