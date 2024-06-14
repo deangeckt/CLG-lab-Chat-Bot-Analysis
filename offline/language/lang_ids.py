@@ -2,7 +2,7 @@ import json
 import os
 import re
 import pandas as pd
-from lingua import Language
+from lingua import Language, LanguageDetectorBuilder
 import langid
 from codeswitch.codeswitch import LanguageIdentification
 from collections import Counter
@@ -86,6 +86,9 @@ masc_femi_determiners_dict = {
     #### ADP
     'del': 'de la',  # to the
     'al': 'a la',  # of / to the (al = a + el shortcut)
+    ### new:
+    'otro': 'otra',
+    'otros': 'otras'
 }
 
 eng_determiners = [
@@ -262,6 +265,22 @@ def __clf_map_task_dataset_uter_cong_switch(uter: str, labels='all') -> list[str
     return switches
 
 
+def remove_invalid_incong_data():
+    root_folder = r"data/prolific/"
+    target_folder = r"data/trash/invalid_ins_incong"
+
+    for file_name in os.listdir(root_folder):
+        json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
+
+        data = json.load(json_file)
+        json_file.close()
+        version = data['server_version']
+        if version == '2.4.1_p' or version == '2.4.2_p':
+            source = os.path.join(root_folder, file_name)
+            destination = os.path.join(target_folder, file_name)
+            os.rename(source, destination)
+
+
 def clf_map_task_dataset():
     root_folder = r"data/prolific/"
     output_folder = r'data/prolific_lang_ids'
@@ -269,10 +288,12 @@ def clf_map_task_dataset():
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
-        if os.path.exists(os.path.join(output_folder, file_name)):
-            continue
+        # if os.path.exists(os.path.join(output_folder, file_name)):
+        #     continue
 
         data = json.load(json_file)
+        json_file.close()
+        # only valid data from either ALT or INS experiments
         if data['server_version'] < '2.3.1_p':
             continue
 
@@ -374,9 +395,9 @@ def eval_on_custom_dataset():
     lingua_sent_pred = [pred_sentence_lingua(sent) for sent in sentences]
     bert_linsec_pred = [pred_sentence_bert(sent) for sent in sentences]
 
-    # display_and_print(lingua_token_pred, 'lingua token-lvl')
-    # display_and_print(langid_token_pred, 'langid token-lvl')
-    # display_and_print(lingua_sent_pred, 'lingua sentence-lvl')
+    display_and_print(lingua_token_pred, 'lingua token-lvl')
+    display_and_print(langid_token_pred, 'langid token-lvl')
+    display_and_print(lingua_sent_pred, 'lingua sentence-lvl')
     display_and_print(bert_linsec_pred, 'bert-lince sentence-lvl')
 
     # explore mistakes

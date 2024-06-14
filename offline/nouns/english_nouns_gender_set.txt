@@ -67,7 +67,7 @@ elderly people_masc
 island_fem
 twig_fem
 bench_masc
-road_fem
+road_amb
 palm_fem
 pond_masc
 grandparents_masc
@@ -93,7 +93,6 @@ cabin_fem
 bird_amb
 tablecloth_masc
 sand_fem
-kayak_masc
 flowers_fem
 lynx_masc
 cougar_masc
