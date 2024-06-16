@@ -312,6 +312,7 @@ def clf_map_task_dataset():
 
 def show_examples():
     sents = [
+
         'Go around the bottom of teh tiger and travel accross to the island with the parrot and elephant',
         'debe empezar',
         'go down al la isla con el snake y ya llegastes',
@@ -348,26 +349,34 @@ def show_examples():
         "despues tienes que cruzar el alligator"
     ]
 
-    print('token-lvl predication using lingua')
-    for sentence in sents:
-        print(sentence, '->', pred_sentence_via_token_lvl(sentence, pred_token_lingua).upper())
-    print()
+    sents = [
+        "a la izquierda veo un camino ramificado hacia una isla pequeña con una tiger. ¿cómo debo proceder?",
+        "de acuerdo, he llegado a la isla de la parrot",
+        " ahora veo una elephant a la izquierda. ¿qué sigue?"
+    ]
 
-    print('token-lvl predication using langid')
-    for sentence in sents:
-        print(sentence, '->', pred_sentence_via_token_lvl(sentence, pred_token_langid).upper())
-    print()
-
-    print('sentence-lvl predication using lingua')
-    for sentence in sents:
-        print(sentence, '->', pred_sentence_lingua(sentence).upper())
-    print()
+    # print('token-lvl predication using lingua')
+    # for sentence in sents:
+    #     print(sentence, '->', pred_sentence_via_token_lvl(sentence, pred_token_lingua).upper())
+    # print()
+    #
+    # print('token-lvl predication using langid')
+    # for sentence in sents:
+    #     print(sentence, '->', pred_sentence_via_token_lvl(sentence, pred_token_langid).upper())
+    # print()
+    #
+    # print('sentence-lvl predication using lingua')
+    # for sentence in sents:
+    #     print(sentence, '->', pred_sentence_lingua(sentence).upper())
+    # print()
 
     print('sentence-lvl predication using lince-bert')
     for sentence in sents:
         sent = sentence.replace('*finished*', '').strip()
         sent = re.sub("(Ok,|OK,|ok,|Ok|OK|ok)", '', sent).strip()
         print(sentence, '->', pred_sentence_bert(sent).upper())
+        ins_cs_label = __clf_map_task_dataset_uter_cong_switch(sent, labels='all')
+        print(ins_cs_label)
     print()
 
 
@@ -423,6 +432,6 @@ if __name__ == '__main__':
     nouns_file = codecs.open('offline/nouns/english_nouns_gender_set.txt', "r", "utf-8")
     eng_nouns = {n.strip().split('_')[0]: n.strip().split('_')[1] for n in nouns_file.readlines()}
 
-    # show_examples()
+    show_examples()
     # eval_on_custom_dataset()
-    clf_map_task_dataset()
+    # clf_map_task_dataset()

@@ -76,7 +76,6 @@ pez_fish
 pescado_fish
 pescados_fish
 manta_blanket
-pícnic_picnic
 cuenco_bowl
 estera_mat
 biciclistas_bikers
@@ -126,9 +125,7 @@ cangrejo_crab
 vóleibol_volleyball
 arena_sand
 playa_beach
-kayac_kayak
 canoa_canoe
-kayak_kayak
 agua_water
 mar_sea
 tierra_land
