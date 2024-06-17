@@ -288,8 +288,8 @@ def clf_map_task_dataset():
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
-        # if os.path.exists(os.path.join(output_folder, file_name)):
-        #     continue
+        if os.path.exists(os.path.join(output_folder, file_name)):
+            continue
 
         data = json.load(json_file)
         json_file.close()
@@ -432,6 +432,6 @@ if __name__ == '__main__':
     nouns_file = codecs.open('offline/nouns/english_nouns_gender_set.txt', "r", "utf-8")
     eng_nouns = {n.strip().split('_')[0]: n.strip().split('_')[1] for n in nouns_file.readlines()}
 
-    show_examples()
+    # show_examples()
     # eval_on_custom_dataset()
-    # clf_map_task_dataset()
+    clf_map_task_dataset()

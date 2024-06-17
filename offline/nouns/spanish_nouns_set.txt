@@ -126,7 +126,6 @@ vóleibol_volleyball
 arena_sand
 playa_beach
 canoa_canoe
-agua_water
 mar_sea
 tierra_land
 océano_ocean
