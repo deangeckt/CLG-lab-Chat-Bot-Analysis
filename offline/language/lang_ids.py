@@ -10,6 +10,7 @@ import codecs
 
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 
 def clean_endings(token: str):
@@ -420,6 +421,21 @@ def eval_on_custom_dataset():
                 pred_sentence_bert(sent)
 
 
+def clf_mb_dataset():
+    import pickle
+    with open("offline/language/miami_bangor_cs_uters.dat", "rb") as f:
+        cs_uters = pickle.load(f)
+
+    for uter in cs_uters:
+        ins_clf_labels = __clf_map_task_dataset_uter_cong_switch(uter, labels='all')
+        det_labels = __clf_map_task_dataset_uter_cong_switch(uter, labels='det')
+        if ins_clf_labels:
+            print(uter)
+            print()
+        if det_labels:
+            print(det_labels)
+
+
 if __name__ == '__main__':
     """
     run from root repo
@@ -435,3 +451,5 @@ if __name__ == '__main__':
     # show_examples()
     # eval_on_custom_dataset()
     clf_map_task_dataset()
+    # clf_mb_dataset()
+
