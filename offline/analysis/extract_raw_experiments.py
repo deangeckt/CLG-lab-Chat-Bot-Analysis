@@ -14,6 +14,7 @@ from app.pages.common.versions import experiments_short_names, root_folder, time
 
 def read_games_data():
     df = pd.DataFrame()
+    empty_nav_pids = set()
 
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
@@ -33,6 +34,9 @@ def read_games_data():
             if game_role == 'navigator':
                 dist_score = path_dist(game_data['config']['map_index'], game_data['user_map_path'])
                 game_data_dict['dist_score'] = dist_score
+                if len(game_data['user_map_path']) == 1:
+                    print(f'empty nav data: {experiment} - {file_name} - map: {idx}')
+                    empty_nav_pids.add(file_name)
 
             game_time = game_data['game_time']
             max_game_time = time_success_metric(version=version)
@@ -42,7 +46,7 @@ def read_games_data():
 
             user_dialog, bot_dialog = analysis_game_chat(game_data['config']['game_role'], game_data['chat'])
             if user_dialog is None:
-                print(f'empty user data: {experiment} - {file_name} - map: {idx}')
+                print(f'empty chat data: {experiment} - {file_name} - map: {idx}')
                 continue
 
             for k in user_dialog:
@@ -61,6 +65,7 @@ def read_games_data():
             df = pd.concat([df, pd.DataFrame.from_dict(game_data_dict, orient='index').T], ignore_index=True)
 
     df.to_csv(r'offline/analysis/raw_experiments.csv')
+    print(len(empty_nav_pids))
 
 
 if __name__ == '__main__':
