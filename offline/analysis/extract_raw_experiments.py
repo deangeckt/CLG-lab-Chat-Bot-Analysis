@@ -4,6 +4,8 @@ Each row in a single experiment-game
 Each column is a "feature" e.g.: game_time, number of utterance
 Extra columns: experiment name, human/bot and game role (navigator/instructor)
 """
+from collections import defaultdict
+
 import pandas as pd
 import json
 import os
@@ -14,7 +16,7 @@ from app.pages.common.versions import experiments_short_names, root_folder, time
 
 def read_games_data():
     df = pd.DataFrame()
-    empty_nav_pids = set()
+    empty_nav_pids = defaultdict(lambda: set())
 
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
@@ -36,7 +38,7 @@ def read_games_data():
                 game_data_dict['dist_score'] = dist_score
                 if len(game_data['user_map_path']) == 1:
                     print(f'empty nav data: {experiment} - {file_name} - map: {idx}')
-                    empty_nav_pids.add(file_name)
+                    empty_nav_pids[experiment].add(file_name)
 
             game_time = game_data['game_time']
             max_game_time = time_success_metric(version=version)
@@ -65,7 +67,9 @@ def read_games_data():
             df = pd.concat([df, pd.DataFrame.from_dict(game_data_dict, orient='index').T], ignore_index=True)
 
     df.to_csv(r'offline/analysis/raw_experiments.csv')
-    print(len(empty_nav_pids))
+
+    for e in empty_nav_pids:
+        print(e, len(empty_nav_pids[e]))
 
 
 if __name__ == '__main__':

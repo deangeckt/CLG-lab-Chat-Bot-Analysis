@@ -180,7 +180,7 @@ def __clf_map_task_dataset_uter_cong_switch_per_token(eng_token: str, idx: int, 
         print(f'{eng_token} in IDX 0')
         return None
 
-    prev_token = sentence[idx - 1]
+    prev_token = sentence[idx - 1].lower()
     if prev_token in eng_determiners:
         return 'NP'
 
@@ -213,7 +213,7 @@ def __clf_map_task_dataset_uter_cong_switch_per_det(eng_token: str, idx: int, se
         print(f'{eng_token} in IDX 0')
         return None
 
-    prev_token = sentence[idx - 1]
+    prev_token = sentence[idx - 1].lower()
     if prev_token in eng_determiners:
         return None
 
@@ -245,7 +245,7 @@ def __clf_map_task_dataset_uter_cong_switch(uter: str, labels='all') -> list[str
     eng_tokens = [(ele['word'], idx) for idx, ele in enumerate(lng_tokens) if ele['entity'] == 'en']
     sentence_by_clf = [ele['word'] for ele in lng_tokens]
     for eng_token, idx in eng_tokens:
-        label = __clf_per_token_foo(eng_token, idx, sentence_by_clf)
+        label = __clf_per_token_foo(eng_token.lower(), idx, sentence_by_clf)
         if label is not None:
             switches.append(label)
             # print('clf', eng_token, label)
