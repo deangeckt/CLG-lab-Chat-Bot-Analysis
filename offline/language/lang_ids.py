@@ -267,8 +267,8 @@ def __clf_map_task_dataset_uter_cong_switch(uter: str, labels='all') -> list[str
 
 
 def remove_invalid_incong_data():
-    root_folder = r"data/prolific/"
-    target_folder = r"data/trash/invalid_ins_incong"
+    root_folder = r"data/prolific_lang_ids/"
+    target_folder = r"data/trash/t"
 
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
@@ -276,7 +276,8 @@ def remove_invalid_incong_data():
         data = json.load(json_file)
         json_file.close()
         version = data['server_version']
-        if version == '2.4.1_p' or version == '2.4.2_p':
+        # if version == '2.4.1_p' or version == '2.4.2_p':
+        if version == '2.4.0_p':
             source = os.path.join(root_folder, file_name)
             destination = os.path.join(target_folder, file_name)
             os.rename(source, destination)
@@ -450,6 +451,6 @@ if __name__ == '__main__':
 
     # show_examples()
     # eval_on_custom_dataset()
-    clf_map_task_dataset()
+    # clf_map_task_dataset()
     # clf_mb_dataset()
 
