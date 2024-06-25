@@ -1,6 +1,8 @@
 import numpy as np
 import datetime
 
+cong_cs_labels = ['cong_masc', 'cong_fem', 'incong_masc', 'incong_fem', 'NP', 'amb_masc', 'amb_fem']
+
 
 def get_tokens(utterances: list[str]):
     return [uter.split(' ') for uter in utterances]
@@ -49,7 +51,6 @@ def analysis_role_aux(elements):
     uter_switch_amount = 0
     switch_amount = 0
 
-    cong_cs_labels = ['cong_masc', 'cong_fem', 'incong_masc', 'incong_fem', 'NP', 'amb_masc', 'amb_fem']
     det_labels = ['masc', 'fem']
 
     cong_cs_labels_dict = {k: 0 for k in cong_cs_labels}
@@ -61,23 +62,23 @@ def analysis_role_aux(elements):
             continue
         uter_switch_amount += 1
         switch_amount += len(uter_switches)
-        for cong_cs_label in uter_switches:
+        for cong_cs_label, noun in uter_switches:
             cong_cs_labels_dict[cong_cs_label] += 1
 
-        for det in uter_ele['det_cs']:
-            det_cs_dict[det] += 1
+        for label, noun in uter_ele['det_cs']:
+            det_cs_dict[label] += 1
 
     cong_cs_labels_dict_format = {f'number of {k} switches': cong_cs_labels_dict[k] for k in cong_cs_labels_dict}
     det_cs_dict_format = {f'number of {k} det switches': det_cs_dict[k] for k in det_cs_dict}
 
     cong_dict_format = {'number of utterances with some ins switch': uter_switch_amount,
                         'number of total ins switches': switch_amount}
-    cong_dict_format = {**cong_dict_format, **cong_cs_labels_dict_format,  **det_cs_dict_format}
+    cong_dict_format = {**cong_dict_format, **cong_cs_labels_dict_format, **det_cs_dict_format}
 
     return {**counts_dict, **lang_dict_format, **cong_dict_format}
 
 
-def squash_bot_chat(role: str, chat: list):
+def squash_bot_chat(chat: list):
     """
     since some turns of the bot includes 2 utterances, we remove duplicat langauge uters for later easier analysis:
     e.g: bot: 'en', 'en' -> 'en'
@@ -96,7 +97,41 @@ def squash_bot_chat(role: str, chat: list):
     return chat
 
 
-def analysis_entrainment(role: str, chat: list):
+def analysis_cong_entrainment(role: str, chat: list):
+    aligned_to_bot_dict = {k: 0 for k in cong_cs_labels}
+    aligned_to_bot_immediate_dict = {k: 0 for k in cong_cs_labels}
+
+    human_switches = [(i, e['cong_cs']) for i, e in enumerate(chat) if e['cong_cs'] and e['id'] == role]
+    bot_switches = [(i, e['cong_cs']) for i, e in enumerate(chat) if e['cong_cs'] and e['id'] != role]
+
+    for i, uter_swtiches in human_switches:
+        for cong_cs_label, noun in uter_swtiches:
+            for j, bot_uter_switches in bot_switches:
+                if j > i:
+                    break
+                for _, bot_noun in bot_uter_switches:
+                    if bot_noun == noun:
+                        aligned_to_bot_dict[cong_cs_label] += 1
+                        break
+
+    for i, uter_swtiches in human_switches:
+        for cong_cs_label, noun in uter_swtiches:
+            for j, bot_uter_switches in bot_switches:
+                if j > i:
+                    break
+                for _, bot_noun in bot_uter_switches:
+                    if bot_noun == noun and (i == j + 1 or i == j + 2):
+                        aligned_to_bot_immediate_dict[cong_cs_label] += 1
+                        break
+
+    aligned_to_bot_dict = {f'number of {k} aligned to bot': aligned_to_bot_dict[k] for k in aligned_to_bot_dict}
+    aligned_to_bot_immediate_dict = {f'number of {k} immediate aligned to bot': aligned_to_bot_immediate_dict[k] for k
+                                     in aligned_to_bot_immediate_dict}
+
+    return {**aligned_to_bot_dict, **aligned_to_bot_immediate_dict}
+
+
+def analysis_intra_entrainment(role: str, chat: list):
     """
     Counts the number of times a human utterance is the same language as the prev bot language OR
     does it only when the Bot switched language.
@@ -104,7 +139,7 @@ def analysis_entrainment(role: str, chat: list):
     return percentage already
     """
     chat = [{'id': ele['id'], 'lang': ele['lang']} for ele in chat]
-    chat = squash_bot_chat(role, chat)
+    chat = squash_bot_chat(chat)
 
     human_uters = len(list(filter(lambda e: e['id'] == role, chat)))
 
@@ -163,8 +198,9 @@ def analysis_game_chat(role: str, chat: list):
     user_res = None
     if user_utterances:
         user_res = analysis_role_aux(user_utterances)
-        user_entrainment = analysis_entrainment(role, chat)
-        user_res = {**user_res, **user_entrainment}
+        user_intra_entrainment = analysis_intra_entrainment(role, chat)
+        user_cong_entrainment = analysis_cong_entrainment(role, chat)
+        user_res = {**user_res, **user_intra_entrainment, **user_cong_entrainment}
 
     bot_res = analysis_role_aux(bot_utterances)
 
@@ -178,11 +214,11 @@ if __name__ == '__main__':
     from app.pages.common.versions import root_folder
 
     for file_name in os.listdir(root_folder):
-        if file_name != '5c475608cae0ab000188cb6e.json':
+        if file_name != '6579c5b1f197bc340f8bff61.json':
             continue
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
-        chat = data['games_data'][1]['chat']
-        role = 'navigator'
+        chat = data['games_data'][0]['chat']
+        role = 'instructor'
 
         analysis_game_chat(role, chat)

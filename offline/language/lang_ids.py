@@ -228,7 +228,7 @@ def __clf_map_task_dataset_uter_cong_switch_per_det(eng_token: str, idx: int, se
     return det_gender
 
 
-def __clf_map_task_dataset_uter_cong_switch(uter: str, labels='all') -> list[str]:
+def __clf_map_task_dataset_uter_cong_switch(uter: str, labels='all') -> list[tuple]:
     """
     :return: list of switches per sentences
     """
@@ -247,7 +247,7 @@ def __clf_map_task_dataset_uter_cong_switch(uter: str, labels='all') -> list[str
     for eng_token, idx in eng_tokens:
         label = __clf_per_token_foo(eng_token.lower(), idx, sentence_by_clf)
         if label is not None:
-            switches.append(label)
+            switches.append((label, eng_token))
             # print('clf', eng_token, label)
             found_by_clf.add(eng_token)
 
@@ -260,7 +260,7 @@ def __clf_map_task_dataset_uter_cong_switch(uter: str, labels='all') -> list[str
             continue
         label = __clf_per_token_foo(eng_token, idx, sentence_by_split)
         if label is not None:
-            switches.append(label)
+            switches.append((label, eng_token))
             # print('basic', eng_token, label)
 
     return switches
@@ -290,8 +290,8 @@ def clf_map_task_dataset():
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
-        if os.path.exists(os.path.join(output_folder, file_name)):
-            continue
+        # if os.path.exists(os.path.join(output_folder, file_name)):
+        #     continue
 
         data = json.load(json_file)
         json_file.close()
@@ -451,6 +451,6 @@ if __name__ == '__main__':
 
     # show_examples()
     # eval_on_custom_dataset()
-    # clf_map_task_dataset()
+    clf_map_task_dataset()
     # clf_mb_dataset()
 

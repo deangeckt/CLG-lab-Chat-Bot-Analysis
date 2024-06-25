@@ -165,6 +165,9 @@ with general_info_col:
                 val = f'{round(user_dialog[dialog_key] * 100, 2)}%'
             else:
                 val = user_dialog[dialog_key]
+
+            if any(l in dialog_key for l in cong_cs_labels) and val == 0:
+                continue
             st.text(f"user - {dialog_key}: {val} 💪️")
 
     is_nav = curr_game_data['config']['game_role'] == 'navigator'
@@ -213,13 +216,20 @@ def render_chat():
                     coord = chat_ele['curr_nav_cell']
                     chat_map_path_idx = curr_game_data['user_map_path'].index(coord) + 1
                     chat_map_path_idx = f"path idx: {chat_map_path_idx}"
+
+                ins_cs_switch = ''
+                if chat_ele['cong_cs']:
+                    nouns = [f'{noun}-{label}' for label, noun in chat_ele['cong_cs']]
+                    ins_cs_switch = ' '.join(nouns)
+
                 html.div(
                     html.div(
                         html.p(f"{chat_ele['id']}: ", css={'fontWeight': '700'}),
                         html.p(f"{chat_ele['msg']}"),
                         html.p(f"{chat_ele['time']}", css={'font-size': '13px', 'margin-bottom': '14px'}),
                         html.p(f"{chat_ele['lang']}", css={'font-size': '13px', 'margin-bottom': '14px'}),
-                        html.p(chat_map_path_idx, css={'font-size': '13px', 'margin-bottom': '14px'}),
+                        html.p(ins_cs_switch, css={'font-size': '13px', 'margin-bottom': '14px'}),
+                        html.p(chat_map_path_idx, css={'font-size': '13px', 'margin-bottom': '14px', 'font-style': 'italic'}),
 
                         css={
                             "display": "flex",
