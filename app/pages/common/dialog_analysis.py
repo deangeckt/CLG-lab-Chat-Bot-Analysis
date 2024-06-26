@@ -97,6 +97,28 @@ def squash_bot_chat(chat: list):
     return chat
 
 
+def analysis_cong_entrainment_aux(human_switches, bot_switches, dict_res, immediate):
+    for i, uter_swtiches in human_switches:
+        i_found = False
+        for u_label, noun in uter_swtiches:
+            for j, bot_uter_switches in bot_switches:
+                if i_found:
+                    i_found = False
+                    break
+                if j > i:
+                    break
+                for b_label, bot_noun in bot_uter_switches:
+                    if not (bot_noun == noun and b_label == u_label):
+                        continue
+
+                    if immediate and not (i == j + 1 or i == j + 2):
+                        continue
+
+                    dict_res[u_label] += 1
+                    i_found = True
+                    break
+
+
 def analysis_cong_entrainment(role: str, chat: list):
     aligned_to_bot_dict = {k: 0 for k in cong_cs_labels}
     aligned_to_bot_immediate_dict = {k: 0 for k in cong_cs_labels}
@@ -104,25 +126,8 @@ def analysis_cong_entrainment(role: str, chat: list):
     human_switches = [(i, e['cong_cs']) for i, e in enumerate(chat) if e['cong_cs'] and e['id'] == role]
     bot_switches = [(i, e['cong_cs']) for i, e in enumerate(chat) if e['cong_cs'] and e['id'] != role]
 
-    for i, uter_swtiches in human_switches:
-        for cong_cs_label, noun in uter_swtiches:
-            for j, bot_uter_switches in bot_switches:
-                if j > i:
-                    break
-                for _, bot_noun in bot_uter_switches:
-                    if bot_noun == noun:
-                        aligned_to_bot_dict[cong_cs_label] += 1
-                        break
-
-    for i, uter_swtiches in human_switches:
-        for cong_cs_label, noun in uter_swtiches:
-            for j, bot_uter_switches in bot_switches:
-                if j > i:
-                    break
-                for _, bot_noun in bot_uter_switches:
-                    if bot_noun == noun and (i == j + 1 or i == j + 2):
-                        aligned_to_bot_immediate_dict[cong_cs_label] += 1
-                        break
+    analysis_cong_entrainment_aux(human_switches, bot_switches, aligned_to_bot_dict, False)
+    analysis_cong_entrainment_aux(human_switches, bot_switches, aligned_to_bot_immediate_dict, True)
 
     aligned_to_bot_dict = {f'number of {k} aligned to bot': aligned_to_bot_dict[k] for k in aligned_to_bot_dict}
     aligned_to_bot_immediate_dict = {f'number of {k} immediate aligned to bot': aligned_to_bot_immediate_dict[k] for k
@@ -214,7 +219,7 @@ if __name__ == '__main__':
     from app.pages.common.versions import root_folder
 
     for file_name in os.listdir(root_folder):
-        if file_name != '6579c5b1f197bc340f8bff61.json':
+        if file_name != '6655e4f304ea91b8ecb46edc.json':
             continue
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
         data = json.load(json_file)
