@@ -26,9 +26,9 @@ def read_games_data():
         experiment = experiments_short_names.get(version, 'err')
 
         # check if nav is empty - ignore the whole participant
-        nav_game_data = [data['games_data'][1], data['games_data'][3]]
-        if any([len(gd['user_map_path']) == 1 for gd in nav_game_data]):
-            continue
+        # nav_game_data = [data['games_data'][1], data['games_data'][3]]
+        # if any([len(gd['user_map_path']) == 1 for gd in nav_game_data]):
+        #     continue
 
         for idx, game_data in enumerate(data['games_data']):
             game_role = game_data['config']['game_role']
@@ -71,7 +71,7 @@ def read_games_data():
 
             df = pd.concat([df, pd.DataFrame.from_dict(game_data_dict, orient='index').T], ignore_index=True)
 
-    df.to_csv(r'offline/analysis/raw_experiments.csv')
+    # df.to_csv(r'offline/analysis/raw_experiments.csv')
     print(len(df))
 
     for e in empty_nav_pids:

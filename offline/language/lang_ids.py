@@ -290,8 +290,8 @@ def clf_map_task_dataset():
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
 
-        # if os.path.exists(os.path.join(output_folder, file_name)):
-        #     continue
+        if os.path.exists(os.path.join(output_folder, file_name)):
+            continue
 
         data = json.load(json_file)
         json_file.close()
