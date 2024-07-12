@@ -1,6 +1,7 @@
 import json
 import os
 import re
+
 import pandas as pd
 from lingua import Language, LanguageDetectorBuilder
 import langid
@@ -11,6 +12,7 @@ import codecs
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, precision_score
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import datetime
 
 
 def clean_endings(token: str):
@@ -267,8 +269,8 @@ def __clf_map_task_dataset_uter_cong_switch(uter: str, labels='all') -> list[tup
 
 
 def remove_invalid_incong_data():
-    root_folder = r"data/prolific_lang_ids/"
-    target_folder = r"data/trash/t"
+    root_folder = r"data/prolific/"
+    target_folder = r"data/trash/saturday_invalid_cong"
 
     for file_name in os.listdir(root_folder):
         json_file = open(os.path.join(root_folder, file_name), encoding='utf8')
@@ -277,7 +279,16 @@ def remove_invalid_incong_data():
         json_file.close()
         version = data['server_version']
         # if version == '2.4.1_p' or version == '2.4.2_p':
+
         if version == '2.4.0_p':
+            chat_ele = data['games_data'][0]['chat'][0]
+            timestamp = chat_ele['timestamp']
+
+            date_obj = datetime.datetime.fromtimestamp(timestamp / 1000.0)
+            date_of_chat = date_obj.strftime("%D")
+            if date_of_chat == '06/21/24':
+                continue
+
             source = os.path.join(root_folder, file_name)
             destination = os.path.join(target_folder, file_name)
             os.rename(source, destination)
@@ -450,8 +461,7 @@ if __name__ == '__main__':
     nouns_file = codecs.open('offline/nouns/english_nouns_gender_set.txt', "r", "utf-8")
     eng_nouns = {n.strip().split('_')[0]: n.strip().split('_')[1] for n in nouns_file.readlines()}
 
-    show_examples()
+    # show_examples()
     # eval_on_custom_dataset()
-    # clf_map_task_dataset()
+    clf_map_task_dataset()
     # clf_mb_dataset()
-
