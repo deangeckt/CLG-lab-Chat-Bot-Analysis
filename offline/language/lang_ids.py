@@ -279,16 +279,7 @@ def remove_invalid_incong_data():
         json_file.close()
         version = data['server_version']
         # if version == '2.4.1_p' or version == '2.4.2_p':
-
         if version == '2.4.0_p':
-            chat_ele = data['games_data'][0]['chat'][0]
-            timestamp = chat_ele['timestamp']
-
-            date_obj = datetime.datetime.fromtimestamp(timestamp / 1000.0)
-            date_of_chat = date_obj.strftime("%D")
-            if date_of_chat == '06/21/24':
-                continue
-
             source = os.path.join(root_folder, file_name)
             destination = os.path.join(target_folder, file_name)
             os.rename(source, destination)
