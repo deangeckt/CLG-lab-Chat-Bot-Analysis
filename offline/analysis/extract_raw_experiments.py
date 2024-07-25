@@ -16,7 +16,7 @@ from app.pages.common.versions import experiments_short_names, root_folder, time
 
 def read_games_data():
 
-    report_only = False
+    report_only = True
 
     df = pd.DataFrame()
     empty_nav_pids = defaultdict(lambda: set())
