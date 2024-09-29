@@ -5,7 +5,9 @@ from tqdm import tqdm
 
 from app.pages.common.versions import experiments_short_names, root_folder
 import pandas as pd
+
 experiments = ['Baseline', 'Random CS', 'Short-context CS', 'Adversarial CS', 'Alignment CS']
+
 
 def merge_phrases(doc):
     with doc.retokenize() as retokenizer:
