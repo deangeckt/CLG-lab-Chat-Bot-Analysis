@@ -1,0 +1,218 @@
+Birth: Virginia, United States || Residence: San Jose, California, United States || Virginia || US || California || US
+Birth: texas, united states || Residence: corpus, christ, texas, united states || Texas || US || Texas || US
+Birth: washington usa || Residence: syracuse ny usa || Washington || US || New York || US
+Birth: Colorado, United States || Residence: Texas || Colorado || US || Texas || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: North Caroline || Residence: Linn, Missouri, United States || North Carolina || US || Missouri || US
+Birth: New Mexico, United States of America || Residence: Irvine, California, United States of America || New Mexico || US || California || US
+Birth: TEXAS, US || Residence: dallas. Texas US || Texas || US || Texas || US
+Birth: maracaibo, venezuela || Residence: Belton, Texas, United States || Venezuela || VE || Texas || US
+Birth: Arizona, United States || Residence: Chandler, Arizona, United States || Arizona || US || Arizona || US
+Birth: Illinois, United States || Residence: Chicago || Illinois || US || Illinois || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: France || Residence: USA || France || FR || United States || US
+Birth: Virginia, USA || Residence: Tucson, Arizona, USA || Virginia || US || Arizona || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: CA, USA || Residence: San Jose, CA, USA || California || US || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Texas, USA || Residence: The Woodlands, Texas, USA || Texas || US || Texas || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Pennsylvania, PA || Residence: Bloomington, IN, USA || Pennsylvania || US || Indiana || US
+Birth: Florida, United States of America || Residence: San Diego, CA, USA || Florida || US || California || US
+Birth: kentucky, united states || Residence: bluffdale, utah, united states || Kentucky || US || Utah || US
+Birth: nebraska, united states || Residence: Kearney || Nebraska || US || Nebraska || US
+Birth: NY, USA || Residence: NYC || New York || US || New York || US
+Birth: Florida, United States || Residence: Palatka, Florida, United States || Florida || US || Florida || US
+Birth: Pennsylvania, USA || Residence: Altoona, USA || Pennsylvania || US || Pennsylvania || US
+Birth: NJ, United States || Residence: Passaic, NJ, United States || New Jersey || US || New Jersey || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Estado de Mexico, Mexico || Residence: Houston, Texas, USA || Mexico || MX || Texas || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: California, United States || Residence: Riverside, California, United States || California || US || California || US
+Birth: Ohio, USA || Residence: Oberlin, Ohio, USA || Ohio || US || Ohio || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: CA. USA || Residence: los angeles || California || US || California || US
+Birth: Texas, USA || Residence: Rockwall, Texas, USA || Texas || US || Texas || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Tennessee, USA || Residence: Tennessee, USA || Tennessee || US || Tennessee || US
+Birth: texas usa || Residence: austin texas usa || Texas || US || Texas || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: MA, USA || Residence: Boston, MA, USA || Massachusetts || US || Massachusetts || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Arizona, United States || Residence: Phoenix, Arizona || Arizona || US || Arizona || US
+Birth: Illinois, USA || Residence: Chicago, IL, USA || Illinois || US || Illinois || US
+Birth: Texas || Residence: Houston || Texas || US || Texas || US
+Birth: New york ,United States || Residence: Staten Island, NY, United States || New York || US || New York || US
+Birth: California, United States || Residence: American Canyon, California, United States || California || US || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Nuevo Laredo, Mexico || Residence: Durham, North Carolina, USA || Mexico || MX || North Carolina || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: USA || Residence: Florida, USA || United States || US || Florida || US
+Birth: oregon, united states || Residence: vancouver, washington, united states || Oregon || US || Washington || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Colorado, USA || Residence: Los Angeles || Colorado || US || California || US
+Birth: georgia, united states of america || Residence: denver, colorado, united states of america || Georgia || US || Colorado || US
+Birth: florida || Residence: orlando || Florida || US || Florida || US
+Birth: Durango, Mexico || Residence: Wichita, KS USA || Mexico || MX || Kansas || US
+Birth: Colorado, United States of America || Residence: Colorado Springs, Colorado || Colorado || US || Colorado || US
+Birth: Virginia, USA || Residence: Murrieta, California, USA || Virginia || US || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: California || Residence: Santa Barbara, CA, USA || California || US || California || US
+Birth: Lima, Peru || Residence: Coral Springs, Florida, United States || Peru || PE || Florida || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Delaware, United States || Residence: Tampa, Florida, United States || Delaware || US || Florida || US
+Birth: Guerrero, Mexico || Residence: Dallas, TX, USA || Mexico || MX || Texas || US
+Birth: california,usa || Residence: victorville,ca,usa || California || US || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: NE, united states || Residence: cerritos, CA || Nebraska || US || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: New York, USA || Residence: Queens, New York, USA || New York || US || New York || US
+Birth: CA , USA || Residence: Los Angeles , California , USA || California || US || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: FL, USA || Residence: Miami, FL || Florida || US || Florida || US
+Birth: California, United States of America || Residence: Salinas, California, United States of America || California || US || California || US
+Birth: Massachusetts, USA || Residence: Chicago, IL USA || Massachusetts || US || Illinois || US
+Birth: Colorado, USA || Residence: Broken Arrow, Oklahoma, USA || Colorado || US || Oklahoma || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: NJ USA || Residence: hackettstown nj USA || New Jersey || US || New Jersey || US
+Birth: Iowa, United States || Residence: Iowa, United States || Iowa || US || Iowa || US
+Birth: San Luis Potosi, Mexico || Residence: Cary, Illinois, United States || Mexico || MX || Illinois || US
+Birth: Arizona, United States || Residence: Arizona, United States || Arizona || US || Arizona || US
+Birth: Indiana, USA || Residence: Chicago suburbs, Illinois, USA || Indiana || US || Illinois || US
+Birth: Guatemala || Residence: Los Angeles, CA || Guatemala || GT || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: New York, United States || Residence: New York || New York || US || New York || US
+Birth: Illinois, United States || Residence: Chicago, Illinois, United States || Illinois || US || Illinois || US
+Birth: Utah, USA || Residence: Buda, Texas, USA || Utah || US || Texas || US
+Birth: MI,USA || Residence: Charlotte, NC || Michigan || US || North Carolina || US
+Birth: california, united states of america || Residence: bakersfield, california, united states of america || California || US || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Texas, United States || Residence: Houston, Texas || Texas || US || Texas || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Mexico || Residence: California, USA || Mexico || MX || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Florida, USA || Residence: Miami, Florida, USA || Florida || US || Florida || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: new york, USA || Residence: NY, USA || New York || US || New York || US
+Birth: USA, Az. || Residence: Douglas Arizona USA || Arizona || US || Arizona || US
+Birth: Puerto Rico, USA || Residence: Grand Rapids, MI, USA || Puerto Rico || US || Michigan || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Dominican Republic || Residence: New York, USA || Dominican Republic || DO || New York || US
+Birth: Caracas, Venezuela || Residence: Fredericksburg, Virginia, United States || Venezuela || VE || Virginia || US
+Birth: Cuba || Residence: USA || Cuba || CU || United States || US
+Birth: USA || Residence: USA || United States || US || United States || US
+Birth: Lima, Peru || Residence: long beach, california, united states || Peru || PE || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Texas, USA || Residence: Austin || Texas || US || Texas || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: New Jersey, USA || Residence: Union, NJ, USA || New Jersey || US || New Jersey || US
+Birth: Dominican Republic || Residence: Pennsylvania, USA || Dominican Republic || DO || Pennsylvania || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Korea || Residence: US || South Korea || KR || United States || US
+Birth: Texas, USA || Residence: San Antonio, Texas, USA || Texas || US || Texas || US
+Birth: Bern, Switzerland || Residence: USA || Switzerland || CH || United States || US
+Birth: California, USA || Residence: San Francisco, CA, USA || California || US || California || US
+Birth: Texas, USA || Residence: San Antonio, Texas, USA || Texas || US || Texas || US
+Birth: Maryland, USA || Residence: Atlanta, GA USA || Maryland || US || Georgia || US
+Birth: colombia, Medellin || Residence: Houston, Texas || Colombia || CO || Texas || US
+Birth: Nuevo Leon, Mexico || Residence: Philadephia, Pennsylvania, USA || Mexico || MX || Pennsylvania || US
+Birth: Massachusetts, United States || Residence: Seekonk, MA, USA || Massachusetts || US || Massachusetts || US
+Birth: California, United States || Residence: Thermal, California, United States || California || US || California || US
+Birth: texas united states || Residence: la porte || Texas || US || Texas || US
+Birth: Jalisco, Mexico || Residence: Houston, TX, USA || Mexico || MX || Texas || US
+Birth: California, USA || Residence: Bonney Lake, WA, USA || California || US || Washington || US
+Birth: NY,USA || Residence: NY, USA || New York || US || New York || US
+Birth: VA, United States || Residence: Williamsburg, VA, United States || Virginia || US || Virginia || US
+Birth: Miami, Florida || Residence: Washington, D.C. || Florida || US || District of Columbia || US
+Birth: Texas, United States || Residence: Columbus, Ohio, USA || Texas || US || Ohio || US
+Birth: zulia, venezuela || Residence: dallas, texas, US || Venezuela || VE || Texas || US
+Birth: CA, United States || Residence: Los Angeles || California || US || California || US
+Birth: California, United States || Residence: Los Angeles, California, United States || California || US || California || US
+Birth: California, United States || Residence: Los Angeles, California, USA || California || US || California || US
+Birth: California, USA || Residence: San Bernardino, CA, USA || California || US || California || US
+Birth: US || Residence: Florida || United States || US || Florida || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Texas,USA || Residence: San antonio, Texas, USA || Texas || US || Texas || US
+Birth: Baja California, Mexico || Residence: La Habra, Ca. U.S. || Mexico || MX || California || US
+Birth: United States || Residence: Houston, Texas, US || United States || US || Texas || US
+Birth: Loja, Ecuador || Residence: Seattle, Washington, USA || Ecuador || EC || Washington || US
+Birth: Lima, Peru || Residence: Cleveland, Ohio, United States of America || Peru || PE || Ohio || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Texas, USA || Residence: Houston, Texas, USA || Texas || US || Texas || US
+Birth: california, united states || Residence: los angeles, california, USA || California || US || California || US
+Birth: California,USA || Residence: Jurupa Valley, California,USA || California || US || California || US
+Birth: Florida, United State of America || Residence: New York, New York, United States of America || Florida || US || New York || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Paraguay || Residence: Irvine || Paraguay || PY || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Bayamon, Puerto Rico || Residence: New Jersey || Puerto Rico || US || New Jersey || US
+Birth: United States || Residence: Florida || United States || US || Florida || US
+Birth: Valencia, Spain || Residence: Atlanta, GA USA || Spain || ES || Georgia || US
+Birth: Bogota, Colombia || Residence: Orlando, Florida, Usa || Colombia || CO || Florida || US
+Birth: Jalisco, Mexico || Residence: Sachse, Texas, USA || Mexico || MX || Texas || US
+Birth: new york || Residence: new york, brooklyn || New York || US || New York || US
+Birth: california || Residence: california || California || US || California || US
+Birth: Venezuela || Residence: Florida || Venezuela || VE || Florida || US
+Birth: Colombia || Residence: Flushing, NY, USA || Colombia || CO || New York || US
+Birth: Nuevo Leon, Mexico || Residence: Brooklyn, New York, United States || Mexico || MX || New York || US
+Birth: arizona, USA || Residence: Katy, texas USA || Arizona || US || Texas || US
+Birth: Guayanilla, Puerto Rico || Residence: New Brunswick, New Jersey, United States || Puerto Rico || US || New Jersey || US
+Birth: San Juan, PR || Residence: Longwood, FL || Puerto Rico || US || Florida || US
+Birth: Pittsburgh, Pennsylvania || Residence: Philadelphia, Pennsylvania || Pennsylvania || US || Pennsylvania || US
+Birth: California, United States || Residence: Fontana, California, United States || California || US || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: New York, USA || Residence: Kissimmee, Florida, USA || New York || US || Florida || US
+Birth: Buenos Aires, Argentina || Residence: Manhattan, New York, USA || Argentina || AR || New York || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: NJ, USA || Residence: Tampa Fl, USA || New Jersey || US || Florida || US
+Birth: Florida, USA || Residence: Apopka, FL, USA || Florida || US || Florida || US
+Birth: Massachusetts, United States || Residence: Taunton, Massachusetts, United States || Massachusetts || US || Massachusetts || US
+Birth: Puerto Rico || Residence: Raleigh, NC, USA || Puerto Rico || US || North Carolina || US
+Birth: Texas, United States || Residence: Cypress, Texas, USA || Texas || US || Texas || US
+Birth: Florida, USA || Residence: Orlando, Florida, USA || Florida || US || Florida || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Tegucigalpa, Honduras || Residence: Cincinnati, Ohio, United States || Honduras || HN || Ohio || US
+Birth: Jima Abajo, Dominican Republic || Residence: Bronx, New York, USA || Dominican Republic || DO || New York || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Virginia, United States || Residence: Woodbridge, Virginia, United States || Virginia || US || Virginia || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: durango, mexico || Residence: seattle washington, usa || Mexico || MX || Washington || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Washington || Residence: Yakima || Washington || US || Washington || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Forida, USA || Residence: Pembroke Pines, FL || Florida || US || Florida || US
+Birth: USA || Residence: California || United States || US || California || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Miranda, Venezuela || Residence: Naples, FL , US || Venezuela || VE || Florida || US
+Birth: New Mexico, USA || Residence: Big Spring, Texas, USA || New Mexico || US || Texas || US
+Birth: NY USA || Residence: Austin TX USA || New York || US || Texas || US
+Birth: telangana, india || Residence: jersey city, new jersey || India || IN || New Jersey || US
+Birth: California || Residence: San Bernardino County || California || US || California || US
+Birth: Washington state, USA || Residence: Newcastle, WA, USA || Washington || US || Washington || US
+Birth: Ghana || Residence: carlifonia || Ghana || GH || California || US
+Birth: New Jersey, United States || Residence: Morristown, NJ, USA || New Jersey || US || New Jersey || US
+Birth:  || Residence:  ||  ||  ||  ||
+Birth: Seoul, South Korea || Residence: Columbia, SC, USA || South Korea || KR || South Carolina || US
+Birth: Colombia || Residence: Easton, Pensilvania || Colombia || CO || Pennsylvania || US
+Birth:  || Residence:  ||  ||  ||  ||

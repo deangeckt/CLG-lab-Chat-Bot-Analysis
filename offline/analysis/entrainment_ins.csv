@@ -1,0 +1,8 @@
+,% entrainment - all dialog,Inter-Sentential CS %
+mean,80.11,2.53
+std,32.42,9.01
+Insertional Spanish Baseline,80.1,2.22
+Insertional Spanish Congruent,81.87,2.9
+Insertional Spanish Feminine InCongruent,82.94,2.65
+Insertional Spanish Masculine InCongruent,75.76,2.41
+Insertional,80.11,2.53
